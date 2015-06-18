@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.webdav;
+package com.oxygenxml.sdksamples.github;
 
 import ro.sync.exml.plugin.Plugin;
 import ro.sync.exml.plugin.PluginDescriptor;
@@ -12,7 +12,7 @@ public class GitHubPlugin extends Plugin {
    * 
    * @param descriptor The plugin descriptor.
    */
-  public WebdavPlugin(PluginDescriptor descriptor) {
+  public GitHubPlugin(PluginDescriptor descriptor) {
     super(descriptor);
   }
 }
