@@ -4,7 +4,7 @@
 
 <plugin
  id="com.oxygenxml.sdksamples.github.GitHubPlugin"
- name="WebDAVCustomProtocol"
+ name="GitHubPlugin"
  description="WebApp GitHub connector"
  version="${project.version}"
  vendor="SyncRO"

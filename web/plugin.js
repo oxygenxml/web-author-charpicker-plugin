@@ -113,7 +113,7 @@
       // It is a GitHub URL.
       e.options.url = url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
 
-      goog.events.listen(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function() {
+      goog.events.listen(e.editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function() {
         // Disable the Ctrl+S shortcut.
         var noopAction = new sync.actions.NoopAction('M1 S');
         editor.getActionsManager().registerAction('DoNothing', noopAction);
