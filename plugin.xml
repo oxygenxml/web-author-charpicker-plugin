@@ -12,4 +12,6 @@
  <runtime>
   <librariesFolder name="lib"/>
  </runtime>
+ <extension type="WebappServlet" 
+    class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
 </plugin>
