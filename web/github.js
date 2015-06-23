@@ -1,4 +1,3 @@
-
 /*!
  * @overview  Github.js
  *
@@ -19,29 +18,37 @@
   var XMLHttpRequest,  _;
   /* istanbul ignore else  */
   if (typeof exports !== 'undefined') {
-    XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-    _ = require('underscore');
+      XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+      _ = require('underscore');
+      // TODO:
+
+      if (typeof btoa === 'undefined') {
+        var btoa = require('btoa'); //jshint ignore:line
+      }
+
   } else {
-    _ = window._;
+      _ = window._;
+      btoa = window.btoa;
   }
 
   //prefer native XMLHttpRequest always
   /* istanbul ignore if  */
   if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined'){
-    XMLHttpRequest = window.XMLHttpRequest;
+      XMLHttpRequest = window.XMLHttpRequest;
   }
 
 
 
   var Github = function(options) {
     var API_URL = options.apiUrl || 'https://api.github.com';
+    var self = this;
 
     // HTTP Request Abstraction
     // =======
     //
     // I'm not proud of this and neither should you be if you were responsible for the XMLHttpRequest spec.
-    var self = this;
-    this.request = function (method, path, data, cb, raw, sync) {
+
+    self.request = function (method, path, data, cb, raw, sync) {
       function getURL() {
         var url = path.indexOf('//') >= 0 ? path : API_URL + path;
         return url + ((/\?/).test(url) ? '&' : '?') + (new Date()).getTime();
@@ -96,7 +103,7 @@
           results.push.apply(results, res);
 
           var links = (xhr.getResponseHeader('link') || '').split(/\s*,\s*/g),
-            next = _.find(links, function(link) { return /rel="next"/.test(link); });
+              next = _.find(links, function(link) { return /rel="next"/.test(link); });
 
           if (next) {
             next = (/<(.*)>/.exec(next) || [])[1];
@@ -379,7 +386,8 @@
 
       this.getSha = function(branch, path, cb) {
         if (!path || path === "") return that.getRef("heads/"+branch, cb);
-        self.request("GET", repoPath + "/contents/"+path+ "?ref=" +  branch,{}, function(err, pathContent) {
+        // TODO: refs.
+        self.request("GET", repoPath + "/contents/"+path, {ref: branch}, function(err, pathContent) {
           if (err) return cb(err);
           cb(null, pathContent.sha);
         });
@@ -405,11 +413,11 @@
             "encoding": "utf-8"
           };
         } else {
-          content = {
-            "content": btoa(String.fromCharCode.apply(null, new Uint8Array(content))),
-            "encoding": "base64"
-          };
-        }
+            content = {
+              "content": btoa(String.fromCharCode.apply(null, new Uint8Array(content))),
+              "encoding": "base64"
+            };
+          }
 
         self.request("POST", repoPath + "/git/blobs", content, function(err, res) {
           if (err) return cb(err);
@@ -679,39 +687,39 @@
       // -------
 
       this.getCommits = function(options, cb) {
-        options = options || {};
-        var url = repoPath + "/commits";
-        var params = [];
-        if (options.sha) {
-          params.push("sha=" + encodeURIComponent(options.sha));
-        }
-        if (options.path) {
-          params.push("path=" + encodeURIComponent(options.path));
-        }
-        if (options.since) {
-          var since = options.since;
-          if (since.constructor === Date) {
-            since = since.toISOString();
+          options = options || {};
+          var url = repoPath + "/commits";
+          var params = [];
+          if (options.sha) {
+              params.push("sha=" + encodeURIComponent(options.sha));
           }
-          params.push("since=" + encodeURIComponent(since));
-        }
-        if (options.until) {
-          var until = options.until;
-          if (until.constructor === Date) {
-            until = until.toISOString();
+          if (options.path) {
+              params.push("path=" + encodeURIComponent(options.path));
           }
-          params.push("until=" + encodeURIComponent(until));
-        }
-        if (options.page) {
-          params.push("page=" + options.page);
-        }
-        if (options.perpage) {
-          params.push("per_page=" + options.perpage);
-        }
-        if (params.length > 0) {
-          url += "?" + params.join("&");
-        }
-        self.request("GET", url, null, cb);
+          if (options.since) {
+              var since = options.since;
+              if (since.constructor === Date) {
+                  since = since.toISOString();
+              }
+              params.push("since=" + encodeURIComponent(since));
+          }
+          if (options.until) {
+              var until = options.until;
+              if (until.constructor === Date) {
+                  until = until.toISOString();
+              }
+              params.push("until=" + encodeURIComponent(until));
+          }
+          if (options.page) {
+              params.push("page=" + options.page);
+          }
+          if (options.perpage) {
+              params.push("per_page=" + options.perpage);
+          }
+          if (params.length > 0) {
+              url += "?" + params.join("&");
+          }
+          self.request("GET", url, null, cb);
       };
     };
 

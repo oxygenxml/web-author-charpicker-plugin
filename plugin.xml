@@ -14,4 +14,6 @@
  </runtime>
  <extension type="WebappServlet" 
     class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
+ <extension type="WebappServlet" 
+    class="com.oxygenxml.sdksamples.github.GitHubStaticContentServlet"/>
 </plugin>

@@ -1,0 +1,31 @@
+.github-status,
+.github-icon-octocat {
+    display:inline-block;
+    background-size: cover;
+}
+.github-icon-octocat {
+  background-image: url('GitHub-Mark-Light-64px.png');
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+.github-status {
+  height: 12px;
+  width: 12px;
+  vertical-align: top;
+  margin-left: 1px;
+}
+.github-status.github-status-none {
+    display: none;
+}
+.github-status.github-status-loading {
+  background-image: url('spinner.svg');
+}
+.github-status.github-status-success {
+  background-image: url('Checkmark_green.svg');
+}
+
+
+.github-input {
+    width: 100%;
+}

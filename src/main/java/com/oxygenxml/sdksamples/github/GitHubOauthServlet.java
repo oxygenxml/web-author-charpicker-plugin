@@ -26,6 +26,6 @@ public class GitHubOauthServlet extends HttpServlet implements WebappServletPlug
 
   @Override
   public String getPath() {
-    return "resources";
+    return "github-oauth";
   }
 }
