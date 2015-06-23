@@ -77,10 +77,10 @@
       this.dialog.setTitle('Commit on GitHub');
 
       var dialogHtml = '<div class="github-commit-dialog">';
-      dialogHtml += '<div><label>User Name: <input class="github-input" name="user" type="text" value="ctalau-oxygen"></label></div>';
-      dialogHtml += '<div><label>Password: <input class="github-input" name="pass" type="password" value="oxygen17"></label></div>';
-      dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message">Commit message</textarea></label></div>';
-      dialogHtml += '<div><label>Create new branch (optional):<input class="github-input" name="branch" type="text" value="review-' + Date.now() + '"></label></div>';
+      dialogHtml += '<div><label>User Name: <input class="github-input" name="user" type="text"></label></div>';
+      dialogHtml += '<div><label>Password: <input class="github-input" name="pass" type="password"></label></div>';
+      dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message"></textarea></label></div>';
+      dialogHtml += '<div><label>Create new branch (optional):<input class="github-input" name="branch" type="text"></label></div>';
       dialogHtml += '</div>';
       var el = this.dialog.getElement();
       el.innerHTML = dialogHtml;
