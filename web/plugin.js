@@ -34,14 +34,7 @@
    * @param {function(string)} cb The callback that will receive the file content.
    */
   CommitAction.prototype.getContent = function(cb) {
-    // TODO: create some api out of this.
-    RESTDocumentManager.downloadXMLContent({
-      id: this.editor.docId,
-      fileName: 'file.xml',
-      $callback: function(code, req, content) {
-        cb(content);
-      }
-    });
+    this.editor.getXmlContent(cb);
   };
 
   /** @override */
@@ -123,7 +116,7 @@
     var repo = github.getRepo(this.user, this.repo);
 
     // Obtain the content of the current file.
-    this.getContent(goog.bind(function(content) {
+    this.getContent(goog.bind(function(err, content) {
       ctx.content = content;
       this.tryCommit(repo, ctx, cb);
     }, this));
