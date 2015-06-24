@@ -9,28 +9,32 @@
  *            For all details and documentation:
  *            http://substance.io/michael/github
  */
+
 (function() {
   'use strict';
-
+  
   // Initial Setup
   // -------------
 
-  var XMLHttpRequest,  _;
+  var XMLHttpRequest,  _, b64encode;
   /* istanbul ignore else  */
   if (typeof exports !== 'undefined') {
       XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
       _ = require('underscore');
-      // TODO:
-
-      if (typeof btoa === 'undefined') {
-        var btoa = require('btoa'); //jshint ignore:line
-      }
-
-  } else {
-      _ = window._;
-      btoa = window.btoa;
+  } else { 
+      _ = window._; 
   }
 
+  if (typeof window !== 'undefined') {
+    b64encode = function(str) {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        return String.fromCharCode('0x' + p1);
+      }));
+    };
+  } else {
+    b64encode = require('js-base64').Base64.encode;
+  }
+  
   //prefer native XMLHttpRequest always
   /* istanbul ignore if  */
   if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined'){
@@ -41,14 +45,13 @@
 
   var Github = function(options) {
     var API_URL = options.apiUrl || 'https://api.github.com';
-    var self = this;
 
     // HTTP Request Abstraction
     // =======
     //
     // I'm not proud of this and neither should you be if you were responsible for the XMLHttpRequest spec.
 
-    self.request = function (method, path, data, cb, raw, sync) {
+    function _request(method, path, data, cb, raw, sync) {
       function getURL() {
         var url = path.indexOf('//') >= 0 ? path : API_URL + path;
         return url + ((/\?/).test(url) ? '&' : '?') + (new Date()).getTime();
@@ -79,7 +82,7 @@
 
       xhr.setRequestHeader('Content-Type','application/json;charset=UTF-8');
       if ((options.token) || (options.username && options.password)) {
-        var authorization = options.token ? 'token ' + options.token : 'Basic ' + btoa(options.username + ':' + options.password);
+        var authorization = options.token ? 'token ' + options.token : 'Basic ' + b64encode(options.username + ':' + options.password);
         xhr.setRequestHeader('Authorization', authorization);
       }
       if (data) {
@@ -95,7 +98,7 @@
     function _requestAllPages(path, cb) {
       var results = [];
       (function iterate() {
-        self.request('GET', path, null, function(err, res, xhr) {
+        _request('GET', path, null, function(err, res, xhr) {
           if (err) {
             return cb(err);
           }
@@ -135,7 +138,7 @@
       // -------
 
       this.orgs = function(cb) {
-        self.request("GET", '/user/orgs', null, function(err, res) {
+        _request("GET", '/user/orgs', null, function(err, res) {
           cb(err, res);
         });
       };
@@ -144,7 +147,7 @@
       // -------
 
       this.gists = function(cb) {
-        self.request("GET", '/gists', null, function(err, res) {
+        _request("GET", '/gists', null, function(err, res) {
           cb(err,res);
         });
       };
@@ -153,7 +156,7 @@
       // -------
 
       this.notifications = function(cb) {
-        self.request("GET", '/notifications', null, function(err, res) {
+        _request("GET", '/notifications', null, function(err, res) {
           cb(err,res);
         });
       };
@@ -164,7 +167,7 @@
       this.show = function(username, cb) {
         var command = username ? '/users/' + username : '/user';
 
-        self.request('GET', command, null, function(err, res) {
+        _request('GET', command, null, function(err, res) {
           cb(err, res);
         });
       };
@@ -183,7 +186,7 @@
       // -------
 
       this.userGists = function(username, cb) {
-        self.request('GET', '/users/' + username + '/gists', null, function(err, res) {
+        _request('GET', '/users/' + username + '/gists', null, function(err, res) {
           cb(err,res);
         });
       };
@@ -202,7 +205,7 @@
       // -------
 
       this.follow = function(username, cb) {
-        self.request('PUT', '/user/following/' + username, null, function(err, res) {
+        _request('PUT', '/user/following/' + username, null, function(err, res) {
           cb(err, res);
         });
       };
@@ -211,7 +214,7 @@
       // -------
 
       this.unfollow = function(username, cb) {
-        self.request('DELETE', '/user/following/' + username, null, function(err, res) {
+        _request('DELETE', '/user/following/' + username, null, function(err, res) {
           cb(err, res);
         });
       };
@@ -219,7 +222,7 @@
       // Create a repo
       // -------
       this.createRepo = function(options, cb) {
-        self.request('POST', '/user/repos', options, cb);
+        _request('POST', '/user/repos', options, cb);
       };
 
     };
@@ -244,7 +247,7 @@
       // --------
 
       this.deleteRepo = function(cb) {
-        self.request('DELETE', repoPath, options, cb);
+        _request('DELETE', repoPath, options, cb);
       };
 
       // Uses the cache if branch has not been changed
@@ -254,7 +257,7 @@
         if (branch === currentTree.branch && currentTree.sha) {
           return cb(null, currentTree.sha);
         }
-
+        
         that.getRef('heads/' + branch, function(err, sha) {
           currentTree.branch = branch;
           currentTree.sha = sha;
@@ -266,11 +269,11 @@
       // -------
 
       this.getRef = function(ref, cb) {
-        self.request('GET', repoPath + '/git/refs/' + ref, null, function(err, res) {
+        _request('GET', repoPath + '/git/refs/' + ref, null, function(err, res) {
           if (err) {
             return cb(err);
           }
-
+          
           cb(null, res.object.sha);
         });
       };
@@ -284,7 +287,7 @@
       // }
 
       this.createRef = function(options, cb) {
-        self.request('POST', repoPath + '/git/refs', options, cb);
+        _request('POST', repoPath + '/git/refs', options, cb);
       };
 
       // Delete a reference
@@ -294,32 +297,32 @@
       // repo.deleteRef('tags/v1.0')
 
       this.deleteRef = function(ref, cb) {
-        self.request('DELETE', repoPath + '/git/refs/' + ref, options, cb);
+        _request('DELETE', repoPath + '/git/refs/' + ref, options, cb);
       };
 
       // Create a repo
       // -------
 
       this.createRepo = function(options, cb) {
-        self.request('POST', '/user/repos', options, cb);
+        _request('POST', '/user/repos', options, cb);
       };
 
       // Delete a repo
       // --------
 
       this.deleteRepo = function(cb) {
-        self.request('DELETE', repoPath, options, cb);
+        _request('DELETE', repoPath, options, cb);
       };
 
       // List all tags of a repository
       // -------
 
       this.listTags = function(cb) {
-        self.request('GET', repoPath + '/tags', null, function(err, tags) {
+        _request('GET', repoPath + '/tags', null, function(err, tags) {
           if (err) {
             return cb(err);
           }
-
+          
           cb(null, tags);
         });
       };
@@ -328,7 +331,7 @@
       // -------
 
       this.listPulls = function(state, cb) {
-        self.request('GET', repoPath + "/pulls" + (state ? '?state=' + state : ''), null, function(err, pulls) {
+        _request('GET', repoPath + "/pulls" + (state ? '?state=' + state : ''), null, function(err, pulls) {
           if (err) return cb(err);
           cb(null, pulls);
         });
@@ -338,7 +341,7 @@
       // -------
 
       this.getPull = function(number, cb) {
-        self.request("GET", repoPath + "/pulls/" + number, null, function(err, pull) {
+        _request("GET", repoPath + "/pulls/" + number, null, function(err, pull) {
           if (err) return cb(err);
           cb(null, pull);
         });
@@ -348,7 +351,7 @@
       // -------
 
       this.compare = function(base, head, cb) {
-        self.request("GET", repoPath + "/compare/" + base + "..." + head, null, function(err, diff) {
+        _request("GET", repoPath + "/compare/" + base + "..." + head, null, function(err, diff) {
           if (err) return cb(err);
           cb(null, diff);
         });
@@ -358,7 +361,7 @@
       // -------
 
       this.listBranches = function(cb) {
-        self.request("GET", repoPath + "/git/refs/heads", null, function(err, heads) {
+        _request("GET", repoPath + "/git/refs/heads", null, function(err, heads) {
           if (err) return cb(err);
           cb(null, _.map(heads, function(head) { return _.last(head.ref.split('/')); }));
         });
@@ -368,14 +371,14 @@
       // -------
 
       this.getBlob = function(sha, cb) {
-        self.request("GET", repoPath + "/git/blobs/" + sha, null, cb, 'raw');
+        _request("GET", repoPath + "/git/blobs/" + sha, null, cb, 'raw');
       };
 
       // For a given file path, get the corresponding sha (blob for files, tree for dirs)
       // -------
 
       this.getCommit = function(branch, sha, cb) {
-        self.request("GET", repoPath + "/git/commits/"+sha, null, function(err, commit) {
+        _request("GET", repoPath + "/git/commits/"+sha, null, function(err, commit) {
           if (err) return cb(err);
           cb(null, commit);
         });
@@ -386,8 +389,7 @@
 
       this.getSha = function(branch, path, cb) {
         if (!path || path === "") return that.getRef("heads/"+branch, cb);
-        // TODO: refs.
-        self.request("GET", repoPath + "/contents/"+path, {ref: branch}, function(err, pathContent) {
+        _request("GET", repoPath + "/contents/" + path + (branch ? "?ref=" + branch : ""), null, function(err, pathContent) {
           if (err) return cb(err);
           cb(null, pathContent.sha);
         });
@@ -397,7 +399,7 @@
       // -------
 
       this.getTree = function(tree, cb) {
-        self.request("GET", repoPath + "/git/trees/"+tree, null, function(err, res) {
+        _request("GET", repoPath + "/git/trees/"+tree, null, function(err, res) {
           if (err) return cb(err);
           cb(null, res.tree);
         });
@@ -413,13 +415,13 @@
             "encoding": "utf-8"
           };
         } else {
-            content = {
-              "content": btoa(String.fromCharCode.apply(null, new Uint8Array(content))),
+          	content = {
+              "content": b64encode(String.fromCharCode.apply(null, new Uint8Array(content))),
               "encoding": "base64"
             };
           }
 
-        self.request("POST", repoPath + "/git/blobs", content, function(err, res) {
+        _request("POST", repoPath + "/git/blobs", content, function(err, res) {
           if (err) return cb(err);
           cb(null, res.sha);
         });
@@ -440,7 +442,7 @@
             }
           ]
         };
-        self.request("POST", repoPath + "/git/trees", data, function(err, res) {
+        _request("POST", repoPath + "/git/trees", data, function(err, res) {
           if (err) return cb(err);
           cb(null, res.sha);
         });
@@ -451,7 +453,7 @@
       // -------
 
       this.postTree = function(tree, cb) {
-        self.request("POST", repoPath + "/git/trees", { "tree": tree }, function(err, res) {
+        _request("POST", repoPath + "/git/trees", { "tree": tree }, function(err, res) {
           if (err) return cb(err);
           cb(null, res.sha);
         });
@@ -476,7 +478,7 @@
             ],
             "tree": tree
           };
-          self.request("POST", repoPath + "/git/commits", data, function(err, res) {
+          _request("POST", repoPath + "/git/commits", data, function(err, res) {
             if (err) return cb(err);
             currentTree.sha = res.sha; // update latest commit
             cb(null, res.sha);
@@ -488,7 +490,7 @@
       // -------
 
       this.updateHead = function(head, commit, cb) {
-        self.request("PATCH", repoPath + "/git/refs/heads/" + head, { "sha": commit }, function(err) {
+        _request("PATCH", repoPath + "/git/refs/heads/" + head, { "sha": commit }, function(err) {
           cb(err);
         });
       };
@@ -497,7 +499,7 @@
       // -------
 
       this.show = function(cb) {
-        self.request("GET", repoPath, null, cb);
+        _request("GET", repoPath, null, cb);
       };
 
       // Show repository contributors
@@ -506,7 +508,7 @@
       this.contributors = function (cb, retry) {
         retry = retry || 1000;
         var self = this;
-        self.request("GET", repoPath + "/stats/contributors", null, function (err, data, response) {
+        _request("GET", repoPath + "/stats/contributors", null, function (err, data, response) {
           if (err) return cb(err);
           if (response.status === 202) {
             setTimeout(
@@ -526,14 +528,14 @@
 
       this.contents = function(ref, path, cb) {
         path = encodeURI(path);
-        self.request("GET", repoPath + "/contents" + (path ? "/" + path : ""), { ref: ref }, cb);
+        _request("GET", repoPath + "/contents" + (path ? "/" + path : ""), { ref: ref }, cb);
       };
 
       // Fork repository
       // -------
 
       this.fork = function(cb) {
-        self.request("POST", repoPath + "/forks", null, cb);
+        _request("POST", repoPath + "/forks", null, cb);
       };
 
       // Branch repository
@@ -558,49 +560,49 @@
       // --------
 
       this.createPullRequest = function(options, cb) {
-        self.request("POST", repoPath + "/pulls", options, cb);
+        _request("POST", repoPath + "/pulls", options, cb);
       };
 
       // List hooks
       // --------
 
       this.listHooks = function(cb) {
-        self.request("GET", repoPath + "/hooks", null, cb);
+        _request("GET", repoPath + "/hooks", null, cb);
       };
 
       // Get a hook
       // --------
 
       this.getHook = function(id, cb) {
-        self.request("GET", repoPath + "/hooks/" + id, null, cb);
+        _request("GET", repoPath + "/hooks/" + id, null, cb);
       };
 
       // Create a hook
       // --------
 
       this.createHook = function(options, cb) {
-        self.request("POST", repoPath + "/hooks", options, cb);
+        _request("POST", repoPath + "/hooks", options, cb);
       };
 
       // Edit a hook
       // --------
 
       this.editHook = function(id, options, cb) {
-        self.request("PATCH", repoPath + "/hooks/" + id, options, cb);
+        _request("PATCH", repoPath + "/hooks/" + id, options, cb);
       };
 
       // Delete a hook
       // --------
 
       this.deleteHook = function(id, cb) {
-        self.request("DELETE", repoPath + "/hooks/" + id, null, cb);
+        _request("DELETE", repoPath + "/hooks/" + id, null, cb);
       };
 
       // Read file at given path
       // -------
 
       this.read = function(branch, path, cb) {
-        self.request("GET", repoPath + "/contents/"+encodeURI(path), {ref: branch}, function(err, obj) {
+        _request("GET", repoPath + "/contents/"+encodeURI(path) + (branch ? "?ref=" + branch : ""), null, function(err, obj) {
           if (err && err.error === 404) return cb("not found", null, null);
 
           if (err) return cb(err);
@@ -615,7 +617,7 @@
       this.remove = function(branch, path, cb) {
         that.getSha(branch, path, function(err, sha) {
           if (err) return cb(err);
-          self.request("DELETE", repoPath + "/contents/" + path, {
+          _request("DELETE", repoPath + "/contents/" + path, {
             message: path + " is removed",
             sha: sha,
             branch: branch
@@ -637,7 +639,7 @@
           delPath += "?message=" + encodeURIComponent(params.message);
           delPath += "&sha=" + encodeURIComponent(params.sha);
           delPath += '&branch=' + encodeURIComponent(branch);
-          self.request("DELETE", delPath, null, cb);
+          _request("DELETE", delPath, null, cb);
         });
       };
 
@@ -670,9 +672,9 @@
       this.write = function(branch, path, content, message, cb) {
         that.getSha(branch, encodeURI(path), function(err, sha) {
           if (err && err.error !== 404) return cb(err);
-          self.request("PUT", repoPath + "/contents/" + encodeURI(path), {
+          _request("PUT", repoPath + "/contents/" + encodeURI(path), {
             message: message,
-            content: btoa(content),
+            content: b64encode(content),
             branch: branch,
             sha: sha
           }, cb);
@@ -719,7 +721,7 @@
           if (params.length > 0) {
               url += "?" + params.join("&");
           }
-          self.request("GET", url, null, cb);
+          _request("GET", url, null, cb);
       };
     };
 
@@ -734,7 +736,7 @@
       // --------
 
       this.read = function(cb) {
-        self.request("GET", gistPath, null, function(err, gist) {
+        _request("GET", gistPath, null, function(err, gist) {
           cb(err, gist);
         });
       };
@@ -752,14 +754,14 @@
       // }
 
       this.create = function(options, cb){
-        self.request("POST","/gists", options, cb);
+        _request("POST","/gists", options, cb);
       };
 
       // Delete the gist
       // --------
 
       this.delete = function(cb) {
-        self.request("DELETE", gistPath, null, function(err,res) {
+        _request("DELETE", gistPath, null, function(err,res) {
           cb(err,res);
         });
       };
@@ -768,7 +770,7 @@
       // --------
 
       this.fork = function(cb) {
-        self.request("POST", gistPath+"/fork", null, function(err,res) {
+        _request("POST", gistPath+"/fork", null, function(err,res) {
           cb(err,res);
         });
       };
@@ -777,7 +779,7 @@
       // --------
 
       this.update = function(options, cb) {
-        self.request("PATCH", gistPath, options, function(err,res) {
+        _request("PATCH", gistPath, options, function(err,res) {
           cb(err,res);
         });
       };
@@ -786,7 +788,7 @@
       // --------
 
       this.star = function(cb) {
-        self.request("PUT", gistPath+"/star", null, function(err,res) {
+        _request("PUT", gistPath+"/star", null, function(err,res) {
           cb(err,res);
         });
       };
@@ -795,7 +797,7 @@
       // --------
 
       this.unstar = function(cb) {
-        self.request("DELETE", gistPath+"/star", null, function(err,res) {
+        _request("DELETE", gistPath+"/star", null, function(err,res) {
           cb(err,res);
         });
       };
@@ -804,7 +806,7 @@
       // --------
 
       this.isStarred = function(cb) {
-        self.request("GET", gistPath+"/star", null, function(err,res) {
+        _request("GET", gistPath+"/star", null, function(err,res) {
           cb(err,res);
         });
       };
