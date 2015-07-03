@@ -16,8 +16,8 @@
     var pathSplit = parser.pathname.split("/");
     this.user = pathSplit[1];
     this.repo = pathSplit[2];
-    this.branch = pathSplit[4];
-    this.filePath = pathSplit.slice(5).join("/");
+    this.branch = pathSplit[3];
+    this.filePath = pathSplit.slice(4).join("/");
 
     this.dialog = null;
     this.iconWrapper = null;
@@ -184,6 +184,8 @@
         msg = 'Commit not allowed';
       } else if (err.error == 422) {
         msg = JSON.parse(err.request.responseText).message;
+      } else if (err.error === 409) {
+        msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
       }
       var dialog = this.getCommitErrorDialog();
       dialog.getElement().textContent = msg;
@@ -262,8 +264,9 @@
 
     if (url.indexOf('github.com') != -1 || url.indexOf('raw.githubusercontent.com') != -1) {
       // It is a GitHub URL.
-      e.options.url = url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
-
+      url = url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
+      e.options.url = url;
+      
       var actionCreated = false;
       goog.events.listen(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function() {
         if (!actionCreated) {
