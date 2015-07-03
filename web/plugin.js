@@ -242,11 +242,17 @@
    * Loads the github-specific CSS.
    */
   function loadCss() {
-    var link = goog.dom.createDom('link', {
-      href: "../plugins-dispatcher/github-resources/web/static/github.css",
-      rel: "stylesheet"
-    });
-    goog.dom.appendChild(document.head, link);
+    var url = "../plugins-dispatcher/github-resources/web/static/github.css";
+    if (document.createStyleSheet) {
+      document.createStyleSheet(url);
+    } else {
+      var link = goog.dom.createDom('link', {
+        href: url,
+        rel: "stylesheet",
+        type: "text/css"
+      });
+      goog.dom.appendChild(document.head, link);
+    }
   }
 
   // Make sure we accept any kind of URLs.

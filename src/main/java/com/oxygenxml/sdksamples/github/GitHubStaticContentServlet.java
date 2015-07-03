@@ -42,6 +42,9 @@ public class GitHubStaticContentServlet extends HttpServlet implements WebappSer
     if (resourceFile.getName().endsWith(".svg")) {
       httpResponse.addHeader("Content-Type", "image/svg+xml");
     }
+    if (resourceFile.getName().endsWith(".css")) {
+      httpResponse.addHeader("Content-Type", "text/css");
+    }
 
     FileInputStream inputStream = null;
     try {
