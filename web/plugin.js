@@ -184,6 +184,7 @@
    */
   CommitAction.prototype.commitFinalized = function(cb, err) {
     if (!err) {
+      this.editor.setDirty(false);
       this.setStatus('success');
       this.statusTimeout = setTimeout(
         goog.bind(this.setStatus, this, 'none'), 4000);
