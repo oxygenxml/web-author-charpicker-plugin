@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,16 +15,7 @@ import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 /**
  * Servlet used to for the GitHub OAuth flow. 
  */
-@SuppressWarnings("serial")
-public class GitHubStaticContentServlet extends HttpServlet implements WebappServletPluginExtension{
-  /**
-   * Does nothing - not used.
-   */
-  @Override
-  public void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
-    super.doPost(httpRequest, httpResponse);
-  }
-
+public class GitHubStaticContentServlet extends WebappServletPluginExtension{
   /**
    * Serves files from the plugin's base directory.
    */
