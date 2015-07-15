@@ -9,7 +9,7 @@
 
   GitHubErrorReporter.prototype.showError = function(title, bodyHtml) {
     var dialog = this.getErrorDialog();
-    dialog.setTitle('Commit Error');
+    dialog.setTitle(title);
     dialog.getElement().innerHTML = bodyHtml;
     dialog.show();
   };
@@ -188,6 +188,7 @@
       this.setStatus('success');
       this.statusTimeout = setTimeout(
         goog.bind(this.setStatus, this, 'none'), 4000);
+      errorReporter.showError('Commit status', 'Commit successful!');
     } else {
       this.setStatus('none');
       var msg = 'Commit failed!';
@@ -259,10 +260,14 @@
   /**
    * The object that handles GitHub logins.
    *
+   * @param {String=} clientId The clientId used in the oauth flow
+   * @param {String=} state The state used in the oauth flow
+   *
    * @constructor
    */
-  var GitHubLoginManager = function() {
+  var GitHubLoginManager = function(clientId, state) {
     this.loginDialog = null;
+    this.setOauthProps(clientId, state);
   };
 
   /**
@@ -277,6 +282,11 @@
       dialogHtml += '<div class="error"></div>';
       dialogHtml += '<div><label>User Name: <input class="github-input" name="user" type="text"></label></div>';
       dialogHtml += '<div><label>Password: <input class="github-input" name="pass" type="password"></label></div>';
+
+      if (this.oauthProps.oauthUrl) {
+        dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat"></span><span class="github-oauth-text">Login with Github</span></a>';
+      }
+
       this.loginDialog.getElement().innerHTML = dialogHtml;
       this.loginDialog.setTitle("GitHub Login");
     }
@@ -284,7 +294,25 @@
   };
 
   /**
-   * Creates a github access object form the user and password.
+   * Sets the clientId
+   *
+   * @param {String=} clientId The Github client_id property
+   * @param {String=} state The Github state property
+   */
+  GitHubLoginManager.prototype.setOauthProps = function (clientId, state) {
+    var scopes = 'public_repo';
+    if (clientId && state) {
+      this.oauthProps = {
+        clientId: clientId,
+        oauthUrl: 'https://github.com/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
+      }
+    } else {
+      this.oauthProps = {};
+    }
+  };
+
+  /**
+   * Creates a github access object form the user and password or auth token.
    */
   GitHubLoginManager.prototype.createGitHub = function() {
     var githubCredentials = localStorage.getItem('github.credentials');
@@ -307,6 +335,7 @@
       cb(github);
       return;
     }
+
     var dialog = this.getLoginDialog();
     dialog.onSelect(goog.bind(function() {
       var user = dialog.getElement().querySelector('[name="user"]').value;
@@ -318,26 +347,110 @@
       }));
       cb(this.createGitHub());
     }, this));
+
     dialog.show();
   };
 
+  /**
+   * Exchanges the github code for a login token
+   *
+   * @param {String} github_code The Github code property
+   * @param {String} github_state The Github state property
+   * @param callback The method to call on result
+   */
+  function getAccessToken(github_code, github_state, callback) {
+    var xhrRequest = new XMLHttpRequest();
+    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/access_token', true);
+
+    xhrRequest.setRequestHeader('Accept', 'application/json');
+    xhrRequest.setRequestHeader('Content-type', 'application/json');
+
+    xhrRequest.onreadystatechange = function () {
+      if (xhrRequest.readyState == 4 && xhrRequest.status == 200) {
+        var response = JSON.parse(xhrRequest.responseText);
+        var accessToken = response.access_token;
+        var redirectTo = response.redirect_to;
+        callback(null, {accessToken: accessToken, redirectTo: redirectTo});
+      } else if (xhrRequest.readyState == 4) {
+        callback({message: xhrRequest.responseText}, null);
+      }
+    };
+
+    xhrRequest.send(JSON.stringify({code: github_code, state: github_state}));
+  }
+
+  /**
+   * Returns an object containing all the url params and their values
+   *
+   * @returns {Object} An object containing all the url params and their values
+   */
+  function getUrlParams() {
+    var query = window.location.search.substring(1);
+    var queryArray = query.split('&');
+
+    var urlParams = {};
+
+    for (var i = 0; i < queryArray.length; i++) {
+      var param = queryArray[i].split('=');
+      urlParams[param[0]] = param[1];
+    }
+
+    return urlParams;
+  }
+
   // Make sure we accept any kind of URLs.
   goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function(e) {
+
     var url = e.options.url;
     var editor = e.editor;
     if (!isGitHubUrl(url)) {
       return;
     }
+
+    e.preventDefault();
+
+    // load the css by now because we will show a styled "Login with Github" button
+    loadCss();
+
     var loadingOptions = e.options;
     loadingOptions.url = normalizeGitHubUrl(url);
     var fileLocation = getFileLocation(loadingOptions.url);
-    e.preventDefault();
 
     var loginManager = new GitHubLoginManager();
+    var github = loginManager.createGitHub();
+
+    if (github) {
+      loadDocument(github);
+    } else {
+      getGithubCredentials(goog.bind(function (err, credentials) {
+        if (err) {
+          console.log('OAuth flow not working. ' + err.message);
+          // Clear the oauth props so we won't show the login with github button (The github oauth flow servlet is not available)
+          loginManager.setOauthProps(null);
+          loginManager.resetCredentials();
+
+          loginManager.getCredentials(loadDocument);
+        } else {
+          // Got the access token, we can load the document
+          if (credentials.accessToken) {
+            localStorage.setItem('github.credentials', JSON.stringify({
+              token: credentials.accessToken,
+              auth: "oauth"
+            }));
+
+            loadDocument(loginManager.createGitHub());
+          } else {
+            loginManager.setOauthProps(credentials.clientId, credentials.state);
+            loginManager.getCredentials(loadDocument);
+          }
+        }
+      }, this));
+    }
+
     function loadDocument(github) {
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
       // Read the content using the GitHub API.
-      repo.read(fileLocation.branch, fileLocation.filePath, function(err, content) {
+      repo.read(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, content) {
         if (err) {
           // Try to authenticate again.
           loginManager.resetCredentials();
@@ -348,13 +461,35 @@
         loadingOptions.content = content;
         editor.load(loadingOptions);
         goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function() {
-          loadCss();
           installCommitAction(editor, new CommitAction(editor, github, fileLocation));
         });
-      });
+      }, this));
     }
-    loginManager.getCredentials(loadDocument);
   });
+
+  /**
+   * Gets the github access token or client_id
+   *
+   * @param {Function} callback The method to call on result
+   */
+  function getGithubCredentials(callback) {
+    var xhrRequest = new XMLHttpRequest();
+
+    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_credentials/', true);
+
+    xhrRequest.onreadystatechange = function () {
+      if (xhrRequest.readyState == 4 && xhrRequest.status == 200) {
+        var response = JSON.parse(xhrRequest.responseText);
+
+        callback(null, {accessToken: response.access_token, clientId: response.client_id, state: response.state});
+      } else if (xhrRequest.readyState == 4) {
+        console.log('Error retrieving github credentials', xhrRequest.responseText);
+        callback({message: xhrRequest.responseText}, null);
+      }
+    };
+
+    xhrRequest.send(JSON.stringify({redirectTo: window.location.href}));
+  }
 
   // Returns an object representing the file location.
   function getFileLocation(url) {
