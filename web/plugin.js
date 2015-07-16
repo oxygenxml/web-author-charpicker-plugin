@@ -423,13 +423,8 @@
 
   /**
    * Returns the github access object asynchronously.
-<<<<<<< .mine
    *
    * @param {Function} cb The method to call when we have the github instance
-=======
-   * 
-   * @param {function(object)} cb callback that receives the github access object.
->>>>>>> .r129698
    */
   GitHubLoginManager.prototype.getCredentials = function(cb) {
     var github = this.createGitHub();
@@ -578,7 +573,6 @@
     xhrRequest.send(JSON.stringify({redirectTo: window.location.href}));
   }
 
-<<<<<<< .mine
   /**
    * Clears the github credentials from the client and from the server
     */
@@ -591,13 +585,6 @@
   }
 
   // Returns an object representing the file location.
-=======
-  /**
-   * Returns an object representing the file location.
-   * @param {string} url The url of the file.
-   * @return {object} The file location descriptor.
-   */ 
->>>>>>> .r129698
   function getFileLocation(url) {
     // Retrieve the repo details.
     var parser = document.createElement('a');
@@ -611,7 +598,6 @@
     };
   }
 
-<<<<<<< .mine
   /**
    * Adds a toolbar to the builtin toolbar
    *
@@ -636,14 +622,6 @@
   }
 
   // Installs the Commit action in the toolbar.
-=======
-  /**
-   * Installs the Commit action in the toolbar.
-   *
-   * @param {sync.api.Editor} editor The editor.
-   * @param {sync.actions.AbstractAction} commitAction The commit-to-github action.
-   */
->>>>>>> .r129698
   function installCommitAction(editor, commitAction) {
     // Disable the Ctrl+S shortcut.
     var noopAction = new sync.actions.NoopAction('M1 S');
@@ -658,7 +636,6 @@
     return actionId;
   }
 
-<<<<<<< .mine
   // Installs the logout action in the toolbar
   function installLogoutAction(editor, logoutAction) {
     var actionId = 'Github/Logout';
@@ -668,22 +645,11 @@
   }
 
   // Normalize the github URL to point to the raw content.
-=======
-  /**
-   * Normalize the github URL to point to the raw content.
-   * @param {string} url The URL.
-   * @return {string} The normalized URL. 
-   */
->>>>>>> .r129698
   function normalizeGitHubUrl(url) {
     return url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
   }
 
-  /**
-   * Checks whether the url points to a github resource.
-   * @param {string} url Checks whether the URL points to a github file.
-   * @return {boolean} true if the url points to a github resource.  
-   */
+  // Checks whether the url points to a github resource.
   function isGitHubUrl(url) {
     return url.indexOf('github.com') != -1 || url.indexOf('raw.githubusercontent.com') != -1;
   }
