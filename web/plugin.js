@@ -590,6 +590,10 @@
     var parser = document.createElement('a');
     parser.href = url.replace(/^[^:]*:/, 'http:');
     var pathSplit = parser.pathname.split("/");
+    // In some browsers, the pathname starts with a "/".
+    if (pathSplit[0] === "") {
+      pathSplit = pathSplit.slice(1);
+    }
     return {
       user: pathSplit[1],
       repo: pathSplit[2],
