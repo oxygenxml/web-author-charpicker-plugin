@@ -595,10 +595,10 @@
       pathSplit = pathSplit.slice(1);
     }
     return {
-      user: pathSplit[1],
-      repo: pathSplit[2],
-      branch: pathSplit[3],
-      filePath: pathSplit.slice(4).join("/")
+      user: pathSplit[0],
+      repo: pathSplit[1],
+      branch: pathSplit[2],
+      filePath: pathSplit.slice(3).join("/")
     };
   }
 
