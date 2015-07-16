@@ -1,14 +1,22 @@
 .github-status,
-.github-icon-octocat {
+.github-icon-octocat-large,
+.github-icon-octocat-small{
     display:inline-block;
     background-size: cover;
 }
-.github-icon-octocat {
+.github-icon-octocat-large {
   background-image: url('GitHub-Mark-Light-64px.png');
     width: 24px;
     height: 24px;
     vertical-align: middle;
 }
+.github-icon-octocat-small {
+    background-image: url('GitHub-Mark-Dark-16px.png');
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
 .github-status {
   height: 12px;
   width: 12px;
@@ -28,4 +36,39 @@
 
 .github-input {
     width: 100%;
+    padding: 0 3px;
+}
+#github-oauth-button {
+    display: block;
+    border-radius: 6px;
+    background-color: #5d5d5d;
+    color: #fff;
+    border: 1px solid rgba(0,0,0,0.2);
+    padding: 0 10px 0 5px;
+    text-align: center;
+    text-decoration: none;
+}
+#github-oauth-button:hover {
+    background-color: #6f6f6f;
+}
+.github-oauth-text {
+    margin-left: 5px;
+}
+
+.github-login-dialog {
+    text-align: right;
+}
+
+.github-login-center-aligned {
+    text-align: center;
+    margin-top: -5px;
+}
+
+.goog-toolbar-menu-button-inner-box {
+    color: white;
+    font-family: roboto, Arial, Helvetica, sans-serif;
+}
+
+.github-icon-logout {
+    /*TODO*/
 }

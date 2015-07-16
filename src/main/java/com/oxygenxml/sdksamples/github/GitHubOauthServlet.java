@@ -6,16 +6,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.UUID;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,11 +27,11 @@ import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 public class GitHubOauthServlet extends WebappServletPluginExtension{
   
   /** 
-   * The github clientId
+   * The Github clientId
    */
   private String clientId;
   /**
-   * The github clientSecret
+   * The Github clientSecret
    */
   private String clientSecret;
   
@@ -42,69 +40,165 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     return "github-oauth";
   }
   
-  private Logger logger;
+  private Logger logger = Logger.getLogger(GitHubOauthServlet.class.getName());
   
   @Override
   public void init() throws ServletException {
-    // TODO: remove the hard-coding, get the values from a config file
-    clientId = "f3358377e8233e7ed68f";
-    clientSecret = "29d6dcf8020e3a0d3449ce94a1537a23b9b75ad5";
+    Properties properties = new Properties();
+    InputStream configFileStream = getServletConfig().getServletContext().getResourceAsStream("/WEB-INF/github-plugin.properties");
     
-    logger = Logger.getLogger("GithubOauthServlet");
+    if (configFileStream != null) {
+      try {
+        properties.load(configFileStream);
+      } catch (IOException e) {
+        logger.error("The github-plugin properties file is missing.");
+        throw new ServletException("Could not read the github-plugin.properties file.", e);
+      }
+    } else {
+      throw new ServletException("Config file github-plugin.properties is missing.");
+    }
+  
+    clientId = properties.getProperty("client_id");
+    clientSecret = properties.getProperty("client_secret");
   }
   
   @Override
   public void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
     String requestPath = httpRequest.getPathInfo();
     
+    // http://hostname/oxygen-webapp/plugins-dispatcher/github-oauth/callback
     if (requestPath.matches(".*?\\/callback\\/?")) {
-      // http://localhost:8081/oxygen-webapp/plugins-dispatcher/github-oauth/callback
       try {
         handleGithubCallbackRequest(httpRequest, httpResponse);
       } catch (IOException e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
+        logger.error(e.getMessage());
       }
     }
   }
   
   /**
    * Handles the OAuth authentication flow
+   * 
+   * Small description of the OAuth authentication flow:
+   * 
+   * 1. The client makes a POST request at /github_credentials 
+   *    He receives a <code>client_id</code> and <code>state</code> which will be sent to github to start the oauth flow
+   * 
+   * 2. The client is redirected to /callback with the <code>state</code> sent back and a <code>code</code> variable
+   *    We send a POST request to github sending the <code>code</code> in exchange for an <code>access_token</code>
+   *    We redirect the client back to the original location
+   *    
+   * 3. The client makes a POST request at /github_credentials
+   *    This time we have an <code>access_token</code> to send so we send it
    */
   @Override
   public void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
       throws ServletException, IOException {
 
-    httpResponse.addHeader("Content-Type", "application/json");
     String requestPath = httpRequest.getPathInfo();
     
     if (requestPath.matches(".*?\\/github_credentials\\/?")) {
       try {
         handleGithubCredentialsRequest(httpRequest, httpResponse);
       } catch (IOException e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
+        logger.error(e.getMessage());
+      }
+    } else if (requestPath.matches(".*?\\/github_reset_access\\/?")) {
+      try {
+        handleGithubClearAccessRequest(httpRequest, httpResponse);
+      } catch (IOException e) {
+        logger.error(e.getMessage());
       }
     } else {
+      // The requested resource does not exist
       httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
   }
   
-  private final static String DIVIDER = "_r_t_ll_t_r_";
-  
   /**
-   * Sends the client_id to the client
+   * Clears the access token from the session
+   * (This method will be called when a 401 code is returned after calling a github action in the client)
    * 
+   * @param httpRequest The HTTP request object
+   * @param httpResponse The HTTP response object
+   * @throws IOException
+   */
+  private void handleGithubClearAccessRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+    HttpSession session = httpRequest.getSession();
+    session.removeAttribute("accessToken");
+    
+    httpResponse.sendError(HttpServletResponse.SC_OK);
+  }
+
+  /**
+   * Handles the github credentials request.
+   *
+   * @param httpRequest The HTTP request object
    * @param httpResponse The HTTP response object
    * @throws IOException
    */
   private void handleGithubCredentialsRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
 
+    httpResponse.addHeader("Content-Type", "application/json");
     HttpSession session = httpRequest.getSession();
+    
+    if (sendErrorIfAvailable(session, httpResponse)) {
+      return;
+    }
     if (sendAccessTokenIfAvailable(session, httpResponse)) {
       return;
     }
+    sendClientId(session, httpRequest, httpResponse);
+  }
+  
+  /**
+   * Sends the error to the client
+   * 
+   * @param session The HTTP session
+   * @param httpResponse The HTTP response object
+   * @return True if the error is available and has been sent, false otherwise
+   * @throws IOException
+   */
+  private boolean sendErrorIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
+    String error = (String) session.getAttribute("error"); 
     
+    if (error != null) {
+      httpResponse.getWriter().write("{\"error\":\"" + error + "\"}");
+      httpResponse.flushBuffer();
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  /**
+   * Sends the Github access_token to the client
+   * 
+   * @param httpResponse The HTTP response object
+   * @return True if the access_token is available and has been sent, false otherwise
+   * @throws IOException
+   */
+  private boolean sendAccessTokenIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
+    String accessToken = (String) session.getAttribute("accessToken");
+
+    if (accessToken != null) {
+      httpResponse.getWriter().write("{\"access_token\":\"" + accessToken + "\"}");
+      httpResponse.flushBuffer();
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  /**
+   * Returns the Github client_id to the client
+   * 
+   * @param session The current HTTP session
+   * @param httpRequest The HTTP request object
+   * @param httpResponse The HTTP request object
+   * @throws IOException 
+   */
+  private void sendClientId(HttpSession session, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
     HashMap<String, Object> requestBody = parseJSON(httpRequest.getInputStream());
 
     // The redirectTo (representing a URL) attribute will be needed when we want to redirect back to the application 
@@ -122,34 +216,18 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     String state = UUID.randomUUID().toString();
     session.setAttribute("state", state);
 
-    if (redirectTo == null || state == null || clientId == null) {
+    if (clientId == null) {
+      logger.error("Missing github configuration parameter <clientId>. Make sure the 'github-plugin.properties' file is available");
       httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     } else {
       try {
-        System.out.println("SENDING CLIENT_ID: " + clientId + " " + state);
+        logger.debug("SENDING CLIENT_ID");
         httpResponse.getWriter().write("{\"client_id\":\"" + clientId + "\",\"state\":\"" + state + "\"}");
+        httpResponse.flushBuffer();
       } catch (IOException e) {
-        httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        logger.error(e.getMessage());
+        httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       }
-    }
-    httpResponse.flushBuffer();
-  }
-  
-  /**
-   * Sends the Github access_token to the client
-   * 
-   * @param httpResponse The HTTP response object
-   * @throws IOException
-   */
-  private boolean sendAccessTokenIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
-    String accessToken = (String) session.getAttribute("accessToken");
-
-    if (accessToken != null) {
-      httpResponse.getWriter().write("{\"access_token\":\"" + accessToken + "\"}");
-      httpResponse.flushBuffer();
-      return true;
-    } else {
-      return false;
     }
   }
   
@@ -161,46 +239,56 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private void handleGithubCallbackRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    System.out.println("Handling github callback request.");
-
+    HttpSession session = httpRequest.getSession();
+    session.removeAttribute("error");
+    
     HashMap<String, String> urlParams = parseQueryString(httpRequest.getQueryString());
     
     String githubCode = urlParams.get("code");
     String githubState = urlParams.get("state");
     
-    System.out.println("githubCode:" + githubCode);
-    System.out.println("githubState: " + githubState);    
+    String githubError = urlParams.get("error");
+    String githubErrorDescription = urlParams.get("error_description");
+    String githubErrorUri = urlParams.get("error_uri");
     
-    HttpSession session = httpRequest.getSession();
-    System.out.println("Got the session");
+    logger.debug("githubCode:" + githubCode);
+    logger.debug("githubState: " + githubState);    
     
     String state = (String) session.getAttribute("state");
     String redirectTo = (String) session.getAttribute("redirectTo");
     
-    System.out.println("state: " + state);
-    System.out.println("redirectTo: " + redirectTo);
+    logger.debug("state: " + state);
+    logger.debug("redirectTo: " + redirectTo);
+    
+    if (githubError != null && githubErrorDescription != null && githubErrorUri != null) {
+      logger.error("GithubError: " + githubError);
+      logger.error("GithubErrorDescripion: " + githubErrorDescription);
+      logger.error("GithubErrorUri: " + githubErrorUri);
+
+      session.setAttribute("error", githubError);
+      httpResponse.sendRedirect(redirectTo);
+      return;
+    }
     
     // If the github state is different from our saved state, this request
-    // has been created by a third party so we stop it.
+    // has been created by a third party so we stop the flow.
     if (!githubState.equals(state) || redirectTo == null) {
-      System.out.println("unauthorized");
-      session.setAttribute("error", "{\"code\":403,\"message\":\"Unauthorized\"}");
+      logger.debug("Third Party");
     } else {
       try {
         if (githubCode != null) {
-          System.out.println("getting github access token");
+          logger.debug("getting github access token");
           String accessToken = getAccessTokenFromGithub(githubCode);
-          System.out.println("got github access token, saving it..");
+          logger.debug("got github access token, saving it..");
           session.setAttribute("accessToken", accessToken);
-          
-          session.removeAttribute("error");
+          httpResponse.sendRedirect(redirectTo);
         }
       } catch (IOException e) {
-        session.setAttribute("error", "{\"code\":500,\"message\":\"" + e.getMessage() + "\"}");
+        logger.error(e.getMessage());
+        session.setAttribute("error", "Internal Server Error (#HGCR)");
+        httpResponse.sendRedirect(redirectTo);
       }
     }
-    
-    httpResponse.sendRedirect(redirectTo);
   }
   
   /**
@@ -232,69 +320,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     
     return urlParams;
   }
-  
-  /**
-   * Gets the access token from github and returns it to the client
-   * 
-   * @param httpRequest The HTTP request object
-   * @param httpResponse The HTTP response object
-   * @throws IOException
-   */
-  private void handleGithubCallbackRequestBackup(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    
-    System.out.println("Handling github callback request.");
 
-    String query = httpRequest.getQueryString();
-    System.out.println(query);
-    
-    httpResponse.sendRedirect("");
-    
-    
-    HashMap<String, Object> requestBody = parseJSON(httpRequest.getInputStream());
-
-    String githubCode = (String) requestBody.get("code");
-    String githubState = ((String) requestBody.get("state")).split(DIVIDER)[0];
-
-    System.out.println("githubCode:" + githubCode);
-    System.out.println("githubState: " + githubState);
-    
-    HttpSession session = httpRequest.getSession();
-
-    System.out.println("Got the session");
-    
-    String sessionState = (String) session.getAttribute("sessionState");
-    System.out.println("sessionState: "+ sessionState);
-    
-    String state = ((String) session.getAttribute("sessionState")).split(DIVIDER)[0];
-    String redirectTo = (String) session.getAttribute("redirectTo");
-    
-    System.out.println("stete: " + state);
-    System.out.println("redirectTo: " + redirectTo);
-    
-    // If the github state is different from our saved state, this request
-    // has been created by a third party so we stop it.
-    if (!githubState.equals(state) || redirectTo == null) {
-      System.out.println("unauthorized");
-      httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return;
-    }
-    
-    try {
-      if (githubCode != null) {
-        System.out.println("getting github access token");
-        String accessToken = getAccessTokenFromGithub(githubCode);
-        System.out.println("got github access token, sending it..");
-        httpResponse.getWriter().write("{\"access_token\":\"" + accessToken + "\", \"redirect_to\":\"" + redirectTo + "\"}");
-      } else {
-        System.out.println("badrequest missing gihub code");
-        httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad request, missing github code");
-      }
-    } catch (IOException e) {
-      httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-    }
-    httpResponse.flushBuffer();
-  }
-  
   /**
    * Return an access token
    * 
@@ -306,7 +332,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     URL githubAccessTokenUrl = new URL("https://github.com/login/oauth/access_token");
     HttpURLConnection conn = (HttpURLConnection) githubAccessTokenUrl.openConnection();
     
-    System.out.println("Opened git access token conn");
+    logger.debug("Opened git access token conn");
 
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
