@@ -16,24 +16,6 @@
     height: 16px;
     vertical-align: middle;
 }
-
-.github-status {
-  height: 12px;
-  width: 12px;
-  vertical-align: top;
-  margin-left: 1px;
-}
-.github-status.github-status-none {
-    display: none;
-}
-.github-status.github-status-loading {
-  background-image: url('spinner.svg');
-}
-.github-status.github-status-success {
-  background-image: url('Checkmark_green.svg');
-}
-
-
 .github-input {
     width: 100%;
     padding: 0 3px;
@@ -64,7 +46,39 @@
     margin-top: -5px;
 }
 
+.github-login-dialog-error {
+    text-align: center;
+    background-color: #f2dede;
+    color: #b94a48;
+    border: 1px solid #eed3d7;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: 5px;
+    padding: 3px 3px 3px 5px;
+    max-width: 270px;
+    line-height: 1.2;
+}
 
-.github-icon-logout {
-    /*TODO*/
+#github-toolbar-button {
+	robotolight, Arial, Helvetica, sans-serif;
+	font-size: 1.05em;
+	font-weight: lighter;
+	background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: 50%;
+}
+
+#github-toolbar-button.loading {
+	content: '';
+	width: 26px;
+    height: 24px;   
+	background-image: url('spinner.svg');
+}
+
+#github-toolbar-button.success {
+	content: '';
+	width: 26px;
+    height: 24px;
+	background-image: url('Checkmark_green.svg');
 }

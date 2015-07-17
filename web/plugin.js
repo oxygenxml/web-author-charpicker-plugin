@@ -128,7 +128,7 @@
     this.iconWrapper = null;
 
     this.status = 'none';
-    this.statusElement = null;
+    this.githubToolbarButton = null;
     this.statusTimeout = null;
   };
   goog.inherits(CommitAction, sync.actions.AbstractAction);
@@ -142,21 +142,25 @@
     this.editor.getXmlContent(cb);
   };
 
+  /**
+   * Sets the toolbarButton
+   * @param {Element} toolbarButton The github toolbar button
+   */
+  CommitAction.prototype.setGithubToolbarButton = function (toolbarButton) {
+    this.githubToolbarButton = toolbarButton;
+  };
+
   /** @override */
   CommitAction.prototype.renderLargeIcon = function() {
-    this.statusElement = goog.dom.createDom('div', ['github-status', 'github-status-none']);
     this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper',
-      goog.dom.createDom('div', 'github-icon-octocat-large'),
-      this.statusElement);
+      goog.dom.createDom('div', 'github-icon-octocat-large'));
     return this.iconWrapper;
   };
 
   /** @override */
   CommitAction.prototype.renderSmallIcon = function() {
-    this.statusElement = goog.dom.createDom('div', ['github-status', 'github-status-none']);
     this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper',
-        goog.dom.createDom('div', 'github-icon-octocat-small'),
-        this.statusElement);
+        goog.dom.createDom('div', 'github-icon-octocat-small'));
     return this.iconWrapper;
   };
 
@@ -293,7 +297,7 @@
       this.editor.setDirty(false);
       this.setStatus('success');
       this.statusTimeout = setTimeout(
-        goog.bind(this.setStatus, this, 'none'), 4000);
+        goog.bind(this.setStatus, this, 'none'), 3200);
       errorReporter.showError('Commit status', 'Commit successful!');
     } else {
       this.setStatus('none');
@@ -324,8 +328,15 @@
    */
   CommitAction.prototype.setStatus = function(status) {
     clearTimeout(this.statusTimeout);
-    goog.dom.classlist.remove(this.statusElement, 'github-status-' + this.status);
-    goog.dom.classlist.add(this.statusElement, 'github-status-' + status);
+
+    if (status != 'none') {
+      this.githubToolbarButton.innerHTML = '';
+    } else {
+      this.githubToolbarButton.innerHTML = 'Github';
+    }
+
+    goog.dom.classlist.remove(this.githubToolbarButton, this.status);
+    goog.dom.classlist.add(this.githubToolbarButton, status);
     this.status = status;
   };
 
@@ -373,6 +384,15 @@
    */
   var GitHubLoginManager = function() {
     this.loginDialog = null;
+    this.errorMessage = null;
+  };
+
+  /**
+   * Sets the error message variable
+   * @param {String} message The error message
+   */
+  GitHubLoginManager.prototype.setErrorMessage = function (message) {
+    this.errorMessage = message;
   };
 
   /**
@@ -384,7 +404,11 @@
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
       var dialogHtml = '<div class="github-login-dialog">';
-      dialogHtml += '<div class="error"></div>';
+
+      if (this.errorMessage) {
+        dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
+      }
+
       dialogHtml += '<div><label class="github-input">User Name: <input name="user" type="text"></label></div>';
       dialogHtml += '<div><label class="github-input">Password: <input name="pass" type="password"></label></div>';
 
@@ -458,6 +482,9 @@
     }, this));
 
     dialog.show();
+
+    // Reset the error message to null, it will be set again if needed
+    this.setErrorMessage(null);
   };
 
   // Make sure we accept any kind of URLs.
@@ -529,6 +556,10 @@
       // Read the content using the GitHub API.
       repo.read(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, content) {
         if (err) {
+          if (err == 'not found') {
+            loginManager.setErrorMessage('The requested file was not found');
+          }
+
           // Try to authenticate again.
           loginManager.resetCredentials();
           loginManager.getCredentials(loadDocument);
@@ -540,13 +571,20 @@
         editor.load(loadingOptions);
 
         goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
+          var githubToolbarButton = goog.dom.createDom('div', {
+            id: 'github-toolbar-button'
+          }, 'Github');
+
+          var commitAction = new CommitAction(editor, github, fileLocation);
+          commitAction.setGithubToolbarButton(githubToolbarButton);
+
           // Add the github commit and logout actions to the main toolbar
-          var commitActionId = installCommitAction(editor, new CommitAction(editor, github, fileLocation));
+          var commitActionId = installCommitAction(editor, commitAction);
           var logOutActionId = installLogoutAction(editor, new LogOutAction());
 
           addToolbarToBuiltinToolbar(e.actionsConfiguration, {
             type: "list",
-            iconDom: 'Github',
+            iconDom: githubToolbarButton,
             name: "GitHub",
             children: [
               {id: commitActionId, type: "action"},
@@ -563,7 +601,7 @@
    *
    * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
    */
-  function getGithubClientIdOrToken(callback) { //here
+  function getGithubClientIdOrToken(callback) {
     var xhrRequest = new XMLHttpRequest();
 
     xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_credentials/', true);
