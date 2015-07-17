@@ -232,19 +232,31 @@
 
     // Create the branch if it does not exist.
     if (ctx.branch && ctx.branch !== this.branch) {
-      this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
-        var ok = !err;
-        if (err && err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
-          // The branch already exists, so we can commit on it.
-          ok = true;
-        }
-        if (ok) {
+      // Callback after the branch was created.
+      var branchCreated = goog.bind(function(err) {
+        if (!err) {
           this.branch = ctx.branch;
           ctx.branchExists = true;
           this.tryCommit(ctx, cb);
-        } else {
+        } else{
           cb(err);
         }
+      }, this);
+
+      this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
+        if (err) {
+          if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
+            // The branch already exists, so we can commit on it.
+            err = null;
+          } else if (err.error === 404) {
+            // Maybe this was a commit ref instead of a branch ref. Let's try.
+            this.repo.createRef({
+              "ref": "refs/heads/" + ctx.branch,
+              "sha": this.branch
+            }, branchCreated);
+          }
+        }
+        branchCreated(err);
       }, this));
     } else {
       ctx.branchExists = true;
