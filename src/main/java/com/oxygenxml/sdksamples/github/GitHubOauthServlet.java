@@ -269,20 +269,25 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       httpResponse.sendRedirect(redirectTo);
       return;
     }
+
+    if (githubState == null || githubCode == null) {
+      logger.warn("Third Party.");
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Hi, you must have come here by mistake!");
+      return;
+    }
     
     // If the github state is different from our saved state, this request
     // has been created by a third party so we stop the flow.
     if (!githubState.equals(state) || redirectTo == null) {
-      logger.debug("Third Party");
+      logger.warn("Third Party!");
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Hi, you must have come here by mistake!");
     } else {
       try {
-        if (githubCode != null) {
-          logger.debug("getting github access token");
-          String accessToken = getAccessTokenFromGithub(githubCode);
-          logger.debug("got github access token, saving it..");
-          session.setAttribute("accessToken", accessToken);
-          httpResponse.sendRedirect(redirectTo);
-        }
+        logger.debug("getting github access token");
+        String accessToken = getAccessTokenFromGithub(githubCode);
+        logger.debug("got github access token, saving it..");
+        session.setAttribute("accessToken", accessToken);
+        httpResponse.sendRedirect(redirectTo);
       } catch (IOException e) {
         logger.error(e.getMessage());
         session.setAttribute("error", "Internal Server Error (#HGCR)");
