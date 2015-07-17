@@ -300,20 +300,22 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   private HashMap<String, String> parseQueryString(String queryString) {
     HashMap<String, String> urlParams = new HashMap<String, String>();
     
-    String[] params = queryString.split("&");
-    
-    for (String param : params) {
-      String[] paramArr = param.split("=");
+    if (queryString != null) {
+      String[] params = queryString.split("&");
       
-      String name = null;
-      String value = "";
-      
-      try {
-        name = paramArr[0];
-        value = paramArr[1];
-      } finally {
-        if (name != null) {
-          urlParams.put(name, value);
+      for (String param : params) {
+        String[] paramArr = param.split("=");
+        
+        String name = null;
+        String value = "";
+        
+        try {
+          name = paramArr[0];
+          value = paramArr[1];
+        } finally {
+          if (name != null) {
+            urlParams.put(name, value);
+          }
         }
       }
     }
