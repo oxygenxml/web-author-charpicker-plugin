@@ -35,7 +35,7 @@
   var errorReporter = new GitHubErrorReporter();
 
   /**
-   * The Log out action
+   * The Log out action for Github
    *
    * @constructor
    */
@@ -546,9 +546,9 @@
   /**
    * Gets the github access token or client_id
    *
-   * @param {Function} callback The method to call on result
+   * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
    */
-  function getGithubClientIdOrToken(callback) {
+  function getGithubClientIdOrToken(callback) { //here
     var xhrRequest = new XMLHttpRequest();
 
     xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_credentials/', true);
@@ -584,29 +584,29 @@
     xhrRequest.send();
   }
 
-  // Returns an object representing the file location.
+  /**
+   * Returns an object representing the file location
+   * @param {string} url The url of the file.
+   * @returns {object} The file location descriptor
+   */
   function getFileLocation(url) {
     // Retrieve the repo details.
     var parser = document.createElement('a');
     parser.href = url.replace(/^[^:]*:/, 'http:');
     var pathSplit = parser.pathname.split("/");
-    // In some browsers, the pathname starts with a "/".
-    if (pathSplit[0] === "") {
-      pathSplit = pathSplit.slice(1);
-    }
     return {
-      user: pathSplit[0],
-      repo: pathSplit[1],
-      branch: pathSplit[2],
-      filePath: pathSplit.slice(3).join("/")
+      user: pathSplit[1],
+      repo: pathSplit[2],
+      branch: pathSplit[3],
+      filePath: pathSplit.slice(4).join("/")
     };
   }
 
   /**
    * Adds a toolbar to the builtin toolbar
    *
-   * @param actionsConfig
-   * @param toolbarToAdd
+   * @param {object} actionsConfig Configuration object
+   * @param {object} toolbarToAdd The description of the toolbar to add
    */
   function addToolbarToBuiltinToolbar(actionsConfig, toolbarToAdd) {
     var builtinToolbar = null;
@@ -625,7 +625,13 @@
     }
   }
 
-  // Installs the Commit action in the toolbar.
+  /**
+   * Installs the Commit action in the toolbar.
+   *
+   * @param {sync.api.Editor} editor The editor
+   * @param {sync.actions.AbstractAction} commitAction The commit-to-github action.
+   * @returns {string}
+   */
   function installCommitAction(editor, commitAction) {
     // Disable the Ctrl+S shortcut.
     var noopAction = new sync.actions.NoopAction('M1 S');
@@ -640,7 +646,12 @@
     return actionId;
   }
 
-  // Installs the logout action in the toolbar
+  /**
+   * Installs the logout acion in the toolnar
+   * @param {sync.api.Editor} editor The editor
+   * @param {sync.actions.AbstractAction} logoutAction The logout action
+   * @returns {string}
+   */
   function installLogoutAction(editor, logoutAction) {
     var actionId = 'Github/Logout';
 
@@ -648,12 +659,20 @@
     return actionId;
   }
 
-  // Normalize the github URL to point to the raw content.
+  /**
+   * Normalize the github URL to point to the raw content.
+   * @param {string} url The URL
+   * @returns {string} The normalized URL.
+   */
   function normalizeGitHubUrl(url) {
     return url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
   }
 
-  // Checks whether the url points to a github resource.
+  /**
+   * Checks whether the url points to a github resource
+   * @param {string} url The URL to check
+   * @returns {boolean} true if the url points to a github resource
+   */
   function isGitHubUrl(url) {
     return url.indexOf('github.com') != -1 || url.indexOf('raw.githubusercontent.com') != -1;
   }
