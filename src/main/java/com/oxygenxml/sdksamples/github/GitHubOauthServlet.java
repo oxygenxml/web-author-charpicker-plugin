@@ -180,9 +180,10 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    */
   private boolean sendAccessTokenIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
     String accessToken = (String) session.getAttribute("accessToken");
+    String state = (String) session.getAttribute("state");
 
     if (accessToken != null) {
-      httpResponse.getWriter().write("{\"access_token\":\"" + accessToken + "\"}");
+      httpResponse.getWriter().write("{\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
       return true;
     } else {

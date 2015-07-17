@@ -500,14 +500,16 @@
           loginManager.getCredentials(loadDocument);
         } else {
           // Got the access token, we can load the document
-          if (credentials.accessToken) {
+          if (credentials.error) {
+            errorReporter.showError('Github Error', 'Error description: "Github Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>');
+          } else if (credentials.accessToken) {
             localStorage.setItem('github.credentials', JSON.stringify({
               token: credentials.accessToken,
               auth: "oauth"
             }));
+
+            loginManager.setOauthProps(credentials.clientId, credentials.state);
             loadDocument(loginManager.createGitHub());
-          } else if (credentials.error) {
-            errorReporter.showError('Github Error', 'Error description: "Github Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>');
           } else {
             // Login with user and pass
             loginManager.setOauthProps(credentials.clientId, credentials.state);
@@ -544,6 +546,7 @@
 
           addToolbarToBuiltinToolbar(e.actionsConfiguration, {
             type: "list",
+            iconDom: 'Github',
             name: "GitHub",
             children: [
               {id: commitActionId, type: "action"},
@@ -606,6 +609,12 @@
     var parser = document.createElement('a');
     parser.href = url.replace(/^[^:]*:/, 'http:');
     var pathSplit = parser.pathname.split("/");
+
+    // In some browsers, the pathname starts with a "/".
+    if (pathSplit[0] === "") {
+      pathSplit = pathSplit.slice(1);
+    }
+
     return {
       user: pathSplit[0],
       repo: pathSplit[1],
