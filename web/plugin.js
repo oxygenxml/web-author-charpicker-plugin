@@ -247,20 +247,31 @@
         }
       }, this);
 
-      this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
+      // Function that returns the error object that occurred during branch creation.
+      var getBranchingError = function(err) {
         if (err) {
           if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
             // The branch already exists, so we can commit on it.
             err = null;
-          } else if (err.error === 404) {
+          }
+        }
+        return err;
+      };
+
+      this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
+        err = getBranchingError(err);
+        if (err && err.error === 404) {
             // Maybe this was a commit ref instead of a branch ref. Let's try.
             this.repo.createRef({
               "ref": "refs/heads/" + ctx.branch,
               "sha": this.branch
-            }, branchCreated);
-          }
+            }, function(err) {
+              err = getBranchingError(err);
+              branchCreated(err);
+            });
+        } else {
+          branchCreated(err);
         }
-        branchCreated(err);
       }, this));
     } else {
       ctx.branchExists = true;
