@@ -12,8 +12,12 @@
  <runtime>
   <librariesFolder name="lib"/>
  </runtime>
+ 
+ <extension type="URLHandler" 
+    class="com.oxygenxml.sdksamples.github.GithubURLStreamHandlerPluginExtension"/>
  <extension type="WebappServlet" 
     class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
  <extension type="WebappServlet" 
     class="com.oxygenxml.sdksamples.github.GitHubStaticContentServlet"/>
+    
 </plugin>

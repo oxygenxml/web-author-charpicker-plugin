@@ -109,12 +109,41 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       } catch (IOException e) {
         logger.error(e.getMessage());
       }
+    } else if (requestPath.matches(".*?\\/github_sync_token\\/?")) {
+      try {
+        handleGithubSyncTokenRequest(httpRequest, httpResponse);
+      } catch (IOException e) {
+        logger.error(e.getMessage());
+      }
     } else {
       // The requested resource does not exist
       httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
   }
   
+  /**
+   * Saves the token received from the client
+   * 
+   * @param httpRequest The HTTP request object
+   * @param httpResponse The HTTP response object
+   * @throws IOException
+   */
+  private void handleGithubSyncTokenRequest(HttpServletRequest httpRequest,
+      HttpServletResponse httpResponse) throws IOException {
+
+    HttpSession session = httpRequest.getSession();
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(httpRequest.getInputStream());
+    
+    String accessToken = (String) requestBody.get("accessToken");
+    
+    if (accessToken != null) {
+      session.setAttribute("token", accessToken);
+      GithubUrlStreamHandler.accessTokens.put(session.getId(), accessToken);
+    }
+    
+    httpResponse.sendError(HttpServletResponse.SC_OK);
+  }
+
   /**
    * Clears the access token from the session
    * (This method will be called when a 401 code is returned after calling a github action in the client)
@@ -183,6 +212,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     String state = (String) session.getAttribute("state");
 
     if (accessToken != null) {
+      GithubUrlStreamHandler.accessTokens.put(session.getId(), accessToken);
+      
       httpResponse.getWriter().write("{\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
       return true;
@@ -200,7 +231,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException 
    */
   private void sendClientId(HttpSession session, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    HashMap<String, Object> requestBody = parseJSON(httpRequest.getInputStream());
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(httpRequest.getInputStream());
 
     // The redirectTo (representing a URL) attribute will be needed when we want to redirect back to the application 
     String redirectTo = null;
@@ -356,28 +387,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     
     writer.close();
     
-    HashMap<String, Object> tokenInfo = parseJSON(conn.getInputStream());
+    HashMap<String, Object> tokenInfo = GithubUtil.parseJSON(conn.getInputStream());
     writer.close();
     return (String) tokenInfo.get("access_token");
-  }
-  
-  /**
-   * Parses a JSON string
-   * 
-   * @param requestInputStream
-   * @returns A map of information needed for the github oauth flow
-   */
-  private HashMap<String, Object> parseJSON(InputStream requestInputStream) {
-    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
-    
-    HashMap<String, Object> githubInfo = null;
-    try {
-      githubInfo = mapper.readValue(requestInputStream, typeRef);
-    } catch (Exception e) {
-      return null;
-    }
-    
-    return githubInfo;
   }
 }
