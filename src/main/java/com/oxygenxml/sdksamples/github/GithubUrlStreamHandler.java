@@ -19,8 +19,10 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
   protected URLConnection openConnectionInContext(String contextId, URL url,
       Proxy proxy) throws IOException {
     
+    String urlPathPart = url.getPath();
+    
     // The github url path structure is: /$owner/$repo/&branch/$path
-    String[] urlComponents = url.getPath().split("/");
+    String[] urlComponents = urlPathPart.split("/");
     
     String owner = urlComponents[1];
     String repo = urlComponents[2];
@@ -40,7 +42,9 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
     if (accessToken != null) {
       return new GithubUrlConnection(apiUrl.openConnection(), accessToken);
     } else {
-      throw new UserActionRequiredException(new WebappMessage(WebappMessage.MESSAGE_TYPE_ERROR, "Error", "Not authorized to access this content on Github", true));
+      // If the user is not logged in with github send any public file available
+      String githubRawUrl = "https://raw.githubusercontent.com" + urlPathPart;
+      return new URL(githubRawUrl).openConnection();
     }
   }
 }

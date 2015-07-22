@@ -120,6 +120,7 @@
   var CommitAction = function(editor, github, fileLocation) {
     this.editor = editor;
 
+    this.github = github;
     this.repo = github.getRepo(fileLocation.user, fileLocation.repo);
     this.branch = fileLocation.branch;
     this.filePath = fileLocation.filePath;
@@ -195,7 +196,7 @@
 
       var dialogHtml = '<div class="github-commit-dialog">';
       dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message"></textarea></label></div>';
-      dialogHtml += '<div><label>Create new branch (optional):<input class="github-input" name="branch" type="text"></label></div>';
+      dialogHtml += '<div><label>Commit on branch:<input class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
       dialogHtml += '</div>';
       var el = this.dialog.getElement();
       el.innerHTML = dialogHtml;
@@ -213,6 +214,8 @@
    */
   CommitAction.prototype.tryCommit = function(ctx, cb) {
     if (ctx.branchExists && ctx.hasOwnProperty('content')) {
+      // save it for the fork and commit button
+      this.ctx = ctx;
       this.repo.write(this.branch, this.filePath, ctx.content, ctx.message, function(err) {
         cb(err);
       });
@@ -312,7 +315,10 @@
       errorReporter.showError('Commit status', 'Commit successful!');
     } else {
       this.setStatus('none');
+
+      var commitFailed = false;
       var msg = 'Commit failed!';
+
       if (err.error == 401) {
         msg = 'Not authorized';
 
@@ -320,13 +326,40 @@
         clearGithubCredentials();
       } else if (err.error == 404) {
         // Not allowed to commit, or the repository does not exist.
-        msg = 'Commit not allowed';
+        if (this.ctx && this.ctx.branchExists) {
+
+          // TODO: create branch if not exists
+
+          commitFailed = true;
+          msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork and commit?');
+        }
       } else if (err.error == 422) {
         msg = JSON.parse(err.request.responseText).message;
       } else if (err.error === 409) {
         msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
       }
       errorReporter.showError('Commit Error', msg);
+      if (commitFailed) {
+        ForkAndCommitButton.onClick(goog.bind(function () {
+
+          this.repo.fork(goog.bind(function (_, result) {
+            var repoName = result.name;
+            var owner = result.owner.login;
+            var forkedRepo = this.github.getRepo(owner, repoName);
+
+            forkedRepo.write(this.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
+              if (!err) {
+                errorReporter.showError('Commit status', 'Commit to fork successful!');
+              } else {
+                errorReporter.showError('Commit status', err);
+              }
+            });
+          }, this));
+
+          errorReporter.errDialog.hide();
+          ForkAndCommitButton.removeListener();
+        }, this));
+      }
     }
     cb();
   };
@@ -369,6 +402,43 @@
   /** @override */
   CommitAction.prototype.getDescription = function() {
     return "Commit on GitHub";
+  };
+
+  /**
+   * Holds helper methods for creating and setting a listener for a button
+   * @type {{getHtml: Function, onClick: Function}}
+   */
+  var ForkAndCommitButton = {
+    /**
+     * Returns the html required to render the message and button
+     * @param {string} message The message to be displayed
+     * @param {string} buttonText The button text to be displayed
+     * @returns {string} The html required to render the message and button
+     */
+    getHtml: function (message, buttonText) {
+      return '<div class="github-forkandcommit-content">' + message +
+          '<br /><button id="github-fork-and-commit-button" class="github-fork-button" type="submit">' + buttonText + '</button>' +
+          '</div>';
+    },
+    /**
+     * Sets the on click listener for the button
+     * @param {Function} callback The method to call on click
+     */
+    onClick: function (callback) {
+      var forkAndCommitButton = document.getElementById('github-fork-and-commit-button');
+      if (forkAndCommitButton) {
+        goog.events.listen(forkAndCommitButton, 'click', callback);
+      }
+    },
+    /**
+     * Removes the listeners set on the button
+     */
+    removeListener: function () {
+      var forkAndCommitButton = document.getElementById('github-fork-and-commit-button');
+      if (forkAndCommitButton) {
+        goog.events.removeAll(forkAndCommitButton);
+      }
+    }
   };
 
   /**
@@ -531,12 +601,15 @@
     var github = loginManager.createGitHub();
 
     if (github) {
+
+      window.git = github;
+      window.fileLocation = fileLocation;
+
       loadDocument(github);
     } else {
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
         if (err) {
-          console.log('OAuth not available. ' + err.message);
-          // Clear the oauth props so we won't show the login with github button (The github oauth flow servlet is not available)
+          // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
           loginManager.setOauthProps(null);
           loginManager.resetCredentials();
 
@@ -643,8 +716,7 @@
           error: response.error
         });
       } else if (xhrRequest.readyState == 4) {
-        console.log('Error retrieving github credentials', xhrRequest.responseText);
-        callback({message: xhrRequest.responseText}, null);
+        callback({message: "OAuth client_id or access_token are nota available"}, null);
       }
     };
 

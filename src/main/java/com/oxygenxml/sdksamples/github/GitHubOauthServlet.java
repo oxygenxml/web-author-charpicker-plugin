@@ -15,9 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 
@@ -29,11 +26,11 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   /** 
    * The Github clientId
    */
-  private String clientId;
+  private String clientId = null;
   /**
    * The Github clientSecret
    */
-  private String clientSecret;
+  private String clientSecret = null;
   
   @Override
   public String getPath() {
@@ -50,21 +47,26 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     if (configFileStream != null) {
       try {
         properties.load(configFileStream);
+        
+        clientId = properties.getProperty("client_id");
+        clientSecret = properties.getProperty("client_secret");
       } catch (IOException e) {
-        logger.error("The github-plugin properties file is missing.");
-        throw new ServletException("Could not read the github-plugin.properties file.", e);
+        logger.warn("Could not read the github-plugin.properties file. OAuth authentication disabled.");
       }
     } else {
-      throw new ServletException("Config file github-plugin.properties is missing.");
+      logger.warn("Config file github-plugin.properties is missing from WEB-INF. OAuth authentication disabled.");
     }
-  
-    clientId = properties.getProperty("client_id");
-    clientSecret = properties.getProperty("client_secret");
   }
   
   @Override
   public void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
     String requestPath = httpRequest.getPathInfo();
+    
+    // If the clinetId is null the OAuth flow is not available
+    if (clientId == null || clientSecret == null) {
+      httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
     
     // http://hostname/oxygen-webapp/plugins-dispatcher/github-oauth/callback
     if (requestPath.matches(".*?\\/callback\\/?")) {
@@ -95,6 +97,12 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   public void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
       throws ServletException, IOException {
 
+    // If the clinetId is null the OAuth flow is not available
+    if (clientId == null || clientSecret == null) {
+      httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+    
     String requestPath = httpRequest.getPathInfo();
     
     if (requestPath.matches(".*?\\/github_credentials\\/?")) {
@@ -167,7 +175,6 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private void handleGithubCredentialsRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-
     httpResponse.addHeader("Content-Type", "application/json");
     HttpSession session = httpRequest.getSession();
     
@@ -389,7 +396,6 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     writer.close();
     
     HashMap<String, Object> tokenInfo = GithubUtil.parseJSON(conn.getInputStream());
-    writer.close();
     return (String) tokenInfo.get("access_token");
   }
 }
