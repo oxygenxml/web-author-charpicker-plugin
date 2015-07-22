@@ -203,6 +203,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   /**
    * Sends the Github access_token to the client
    * 
+   * #param session The HTTP session 
    * @param httpResponse The HTTP response object
    * @return True if the access_token is available and has been sent, false otherwise
    * @throws IOException
@@ -331,7 +332,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   /**
    * Returns a hashmap of the url query params
    * 
-   * @param queryString
+   * @param queryString The url query string to parse "key=value&key=value"
    * @return A hashmap of the url query params
    */
   private HashMap<String, String> parseQueryString(String queryString) {

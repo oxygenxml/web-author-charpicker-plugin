@@ -11,16 +11,16 @@ public class GithubUtil {
   /**
    * Parses a JSON string
    * 
-   * @param requestInputStream
+   * @param inputStream The inputStream to parse
    * @returns A map of information needed for the github oauth flow
    */
-  public static HashMap<String, Object> parseJSON(InputStream requestInputStream) {
+  public static HashMap<String, Object> parseJSON(InputStream inputStream) {
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
     
     HashMap<String, Object> githubInfo = null;
     try {
-      githubInfo = mapper.readValue(requestInputStream, typeRef);
+      githubInfo = mapper.readValue(inputStream, typeRef);
     } catch (Exception e) {
       return null;
     }
