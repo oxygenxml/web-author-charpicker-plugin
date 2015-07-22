@@ -77,10 +77,10 @@
    *
    * @override
    */
-  LogOutAction.prototype.actionPerformed = function(cb) {
+  LogOutAction.prototype.actionPerformed = function() {
     this.dialog = this.getDialog();
 
-    this.dialog.onSelect(goog.bind(function (actionName, e) {
+    this.dialog.onSelect(goog.bind(function (actionName) {
       if (actionName == 'yes') {
         clearGithubCredentials();
         window.location.reload();
@@ -423,7 +423,7 @@
       dialogHtml += '<div><label class="github-input">User Name: <input name="user" type="text"></label></div>';
       dialogHtml += '<div><label class="github-input">Password: <input name="pass" type="password"></label></div>';
 
-      if (this.oauthProps.oauthUrl) {
+      if (this.oauthProps && this.oauthProps.oauthUrl) {
         dialogHtml += '<div class="github-login-center-aligned">or</div>';
         dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with Github</span></a>';
       }
@@ -441,8 +441,7 @@
    * @param {String=} state The Github state property
    */
   GitHubLoginManager.prototype.setOauthProps = function (clientId, state) {
-    // To commit changes we need the scope 'public_repo'
-    var scopes = 'public_repo';
+    var scopes = 'public_repo,repo';
     if (clientId && state) {
       this.oauthProps = {
         clientId: clientId,
@@ -507,6 +506,7 @@
       return;
     }
 
+    e.stopPropagation();
     e.preventDefault();
 
     // load the css by now because we will show a styled "Login with Github" button
@@ -520,6 +520,11 @@
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
     if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
       localStorage.removeItem('github.credentials');
+    }
+
+    // Send the access token to the server to synchronize
+    if (localStorageCredentials && localStorageCredentials.token) {
+      syncTokenWithServer(localStorageCredentials.token);
     }
 
     var loginManager = new GitHubLoginManager();
@@ -560,7 +565,7 @@
     /**
      * Loads the document
      *
-     * @param {Object} github
+     * @param {Object} github The github api object
      */
     function loadDocument(github) {
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
@@ -605,7 +610,17 @@
         });
       }, this));
     }
-  });
+  }, true);
+
+  /**
+   * Sends the token to the server to synchronize
+   * @param {String} accessToken The Github access token
+   */
+  function syncTokenWithServer(accessToken) {
+    var xhrRequest = new XMLHttpRequest();
+    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_sync_token/', true);
+    xhrRequest.send(JSON.stringify({accessToken: accessToken}));
+  }
 
   /**
    * Gets the github access token or client_id
@@ -730,12 +745,17 @@
   }
 
   /**
-   * Normalize the github URL to point to the raw content.
+   * Changes to github url to a "github protocol" url
    * @param {string} url The URL
    * @returns {string} The normalized URL.
    */
   function normalizeGitHubUrl(url) {
-    return url.replace("blob/", "").replace("github.com", "raw.githubusercontent.com");
+    return url.replace("https", "github")
+        .replace("http", "github")
+        .replace("blob/", "")
+        .replace("www.github.com", "getFileContent")
+        .replace("github.com", "getFileContent")
+        .replace("raw.githubusercontent.com", "getFileContent");
   }
 
   /**
