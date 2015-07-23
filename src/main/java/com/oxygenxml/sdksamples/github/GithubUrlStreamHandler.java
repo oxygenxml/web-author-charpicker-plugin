@@ -7,9 +7,7 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import ro.sync.ecss.extensions.api.webapp.WebappMessage;
 import ro.sync.ecss.extensions.api.webapp.plugin.URLStreamHandlerWithContext;
-import ro.sync.ecss.extensions.api.webapp.plugin.UserActionRequiredException;
 
 public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
   

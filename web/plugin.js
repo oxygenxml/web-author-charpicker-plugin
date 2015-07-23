@@ -330,7 +330,7 @@
       this.setStatus('success');
       this.statusTimeout = setTimeout(
         goog.bind(this.setStatus, this, 'none'), 3200);
-      errorReporter.showError('Commit status', 'Commit successful!');
+      errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>');
     } else {
       this.setStatus('none');
 
