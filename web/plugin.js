@@ -214,8 +214,6 @@
    */
   CommitAction.prototype.tryCommit = function(ctx, cb) {
     if (ctx.branchExists && ctx.hasOwnProperty('content')) {
-      // save it for the fork and commit button
-      this.ctx = ctx;
       this.repo.write(this.branch, this.filePath, ctx.content, ctx.message, function(err) {
         cb(err);
       });
@@ -239,46 +237,63 @@
 
     // Create the branch if it does not exist.
     if (ctx.branch && ctx.branch !== this.branch) {
-      // Callback after the branch was created.
-      var branchCreated = goog.bind(function(err) {
-        if (!err) {
-          this.branch = ctx.branch;
-          ctx.branchExists = true;
-          this.tryCommit(ctx, cb);
-        } else{
-          cb(err);
-        }
-      }, this);
-
-      // Function that returns the error object that occurred during branch creation.
-      var getBranchingError = function(err) {
-        if (err) {
-          if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
-            // The branch already exists, so we can commit on it.
-            err = null;
-          }
-        }
-        return err;
-      };
-
-      this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
-        err = getBranchingError(err);
-        if (err && err.error === 404) {
-            // Maybe this was a commit ref instead of a branch ref. Let's try.
-            this.repo.createRef({
-              "ref": "refs/heads/" + ctx.branch,
-              "sha": this.branch
-            }, function(err) {
-              err = getBranchingError(err);
-              branchCreated(err);
-            });
-        } else {
-          branchCreated(err);
-        }
-      }, this));
+      ctx.branchExists = false;
+      this.createBranch_(ctx, cb);
     } else {
       ctx.branchExists = true;
     }
+  };
+
+  /**
+   * Creates a new branch
+   * @param {object} ctx The context of the commit
+   * @param {function()} cb The method to callon result
+   * @private
+   */
+  CommitAction.prototype.createBranch_ = function (ctx, cb) {
+    // Callback after the branch was created.
+    var branchCreated = goog.bind(function(err) {
+      if (!err) {
+        this.branch = ctx.branch;
+        ctx.branchExists = true;
+        this.tryCommit(ctx, cb);
+      } else{
+        ctx.branchExists = false;
+        cb(err);
+      }
+    }, this);
+
+    this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
+      err = this.getBranchingError_(err);
+      if (err && err.error === 404) {
+        // Maybe this was a commit ref instead of a branch ref. Let's try.
+        this.repo.createRef({
+          "ref": "refs/heads/" + ctx.branch,
+          "sha": this.branch
+        }, goog.bind(function(err) {
+          err = this.getBranchingError_(err);
+          branchCreated(err);
+        }, this));
+      } else {
+        branchCreated(err);
+      }
+    }, this));
+  };
+
+  /**
+   * Function that returns the error object that occurred during branch creation.
+   * @param {object<{err: number, request: object}>} err
+   * @returns {object} The error object or null
+   * @private
+   */
+  CommitAction.prototype.getBranchingError_ = function(err) {
+    if (err) {
+      if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
+        // The branch already exists, so we can commit on it.
+        err = null;
+      }
+    }
+    return err;
   };
 
   /**
@@ -295,6 +310,9 @@
         message: el.querySelector('[name="message"]').value,
         branch: el.querySelector('[name="branch"]').value
       };
+      // save ctx it for the fork and commit button
+      this.ctx = ctx;
+
       this.performCommit(ctx, cb)
     }
     return ctx;
@@ -316,7 +334,7 @@
     } else {
       this.setStatus('none');
 
-      var commitFailed = false;
+      var commitNotAllowed = false;
       var msg = 'Commit failed!';
 
       if (err.error == 401) {
@@ -326,34 +344,55 @@
         clearGithubCredentials();
       } else if (err.error == 404) {
         // Not allowed to commit, or the repository does not exist.
-        if (this.ctx && this.ctx.branchExists) {
-
-          // TODO: create branch if not exists
-
-          commitFailed = true;
-          msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork and commit?');
-        }
+        commitNotAllowed = true;
+        msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork and commit?');
       } else if (err.error == 422) {
         msg = JSON.parse(err.request.responseText).message;
       } else if (err.error === 409) {
         msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
       }
       errorReporter.showError('Commit Error', msg);
-      if (commitFailed) {
-        ForkAndCommitButton.onClick(goog.bind(function () {
 
+      if (commitNotAllowed) {
+        ForkAndCommitButton.onClick(goog.bind(function () {
           this.repo.fork(goog.bind(function (_, result) {
             var repoName = result.name;
             var owner = result.owner.login;
             var forkedRepo = this.github.getRepo(owner, repoName);
 
-            forkedRepo.write(this.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
-              if (!err) {
-                errorReporter.showError('Commit status', 'Commit to fork successful!');
-              } else {
-                errorReporter.showError('Commit status', err);
+            if (this.ctx && this.ctx.branchExists) {
+              commitToBranch.call(this);
+            } else {
+              forkedRepo.branch(this.branch, this.ctx.branch, goog.bind(function(err) {
+                err = this.getBranchingError_(err);
+                if (err && err.error === 404) {
+                  // Maybe this was a commit ref instead of a branch ref. Let's try.
+                  forkedRepo.createRef({
+                    "ref": "refs/heads/" + ctx.branch,
+                    "sha": this.branch
+                  }, goog.bind(function(err) {
+                    err = this.getBranchingError_(err);
+                    commitToBranch.call(this, err);
+                  }, this));
+                } else {
+                  commitToBranch.call(this);
+                }
+              }, this));
+            }
+
+            function commitToBranch(err) {
+              if (err) {
+                errorReporter.showError('Commit status', 'Could not commit to fork!');
               }
-            });
+
+              forkedRepo.write(this.ctx.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
+                if (!err) {
+                  errorReporter.showError('Commit status', 'Commit to fork successful!');
+                } else {
+                  errorReporter.showError('Commit status', err);
+                }
+              });
+            }
           }, this));
 
           errorReporter.errDialog.hide();
