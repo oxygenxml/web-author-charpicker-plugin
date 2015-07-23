@@ -542,6 +542,7 @@
       // --------
 
       this.branch = function(oldBranch,newBranch,cb) {
+        debugger;
         if(arguments.length === 2 && typeof arguments[1] === "function") {
           cb = newBranch;
           newBranch = oldBranch;
