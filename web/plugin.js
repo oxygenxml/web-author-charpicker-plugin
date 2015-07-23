@@ -168,7 +168,7 @@
 
   /** @override */
   CommitAction.prototype.getDisplayName = function() {
-    return "Commit on Github";
+    return "Commit on GitHub";
   };
 
     /** @override */
@@ -484,7 +484,7 @@
    * Loads the github-specific CSS.
    */
   function loadCss() {
-    var url = "../plugins-dispatcher/github-resources/web/static/github.css";
+    var url = "../plugins-resources/github-static/github.css";
     if (document.createStyleSheet) {
       document.createStyleSheet(url);
     } else {

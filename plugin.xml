@@ -17,7 +17,5 @@
     class="com.oxygenxml.sdksamples.github.GithubURLStreamHandlerPluginExtension"/>
  <extension type="WebappServlet" 
     class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
- <extension type="WebappServlet" 
-    class="com.oxygenxml.sdksamples.github.GitHubStaticContentServlet"/>
-    
+ <extension type="WebappStaticResourcesFolder" path="web/static/" href="github-static">
 </plugin>
