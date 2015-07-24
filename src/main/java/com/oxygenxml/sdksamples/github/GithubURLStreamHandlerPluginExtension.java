@@ -14,7 +14,7 @@ public class GithubURLStreamHandlerPluginExtension implements URLStreamHandlerPl
     boolean isWebapp = Platform.WEBAPP.equals(PluginWorkspaceProvider.getPluginWorkspace().getPlatform());
     URLStreamHandler handler = null;
     
-    if (isWebapp && "github".equals(protocol)) {
+    if (isWebapp && protocol.contains("github")) {
       handler = new GithubUrlStreamHandler();
     }
     
