@@ -24,6 +24,7 @@ public class GithubUrlConnection extends FilterURLConnection {
   
   @Override
   public InputStream getInputStream() throws IOException {
+    // The response from github comes in a json like: {"content":"BASE64ecnodedContent",otherProps}
     HashMap<String, Object> result = GithubUtil.parseJSON(delegateConnection.getInputStream());
     
     String base64Content = (String) result.get("content");
