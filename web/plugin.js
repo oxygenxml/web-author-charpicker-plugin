@@ -525,7 +525,7 @@
       this.loginDialog = workspace.createDialog();
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
-      var dialogHtml = '<div class="github-login-dialog">';
+      var dialogHtml = '<div>';
 
       if (this.errorMessage) {
         dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
@@ -693,6 +693,9 @@
           loginManager.getCredentials(loadDocument);
           return;
         }
+
+        // Set the URL chooser
+        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, url));
 
         // Load the retrieved content in the editor.
         loadingOptions.content = content;
