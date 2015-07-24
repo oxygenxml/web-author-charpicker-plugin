@@ -386,11 +386,13 @@
               }
 
               forkedRepo.write(this.ctx.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
-                if (!err) {
-                  errorReporter.showError('Commit status', 'Commit to fork successful!');
+                var msg = 'Commit to fork successful!';
+                if (err.error = 404) {
+                  msg = "Repository not found"
                 } else {
-                  errorReporter.showError('Commit status', err);
+                  msg = 'Error';
                 }
+                errorReporter.showError('Commit status', msg);
               });
             }
           }, this));
