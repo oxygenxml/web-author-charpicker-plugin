@@ -33,6 +33,11 @@
 #github-oauth-button:hover {
     background-color: #6f6f6f;
 }
+
+.github-login-dialog {
+    text-align: right;
+}
+
 .github-oauth-text {
     margin-left: 5px;
 }

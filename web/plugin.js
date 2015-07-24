@@ -525,7 +525,7 @@
       this.loginDialog = workspace.createDialog();
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
-      var dialogHtml = '<div>';
+      var dialogHtml = '<div class="github-login-dialog">';
 
       if (this.errorMessage) {
         dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
