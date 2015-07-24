@@ -273,8 +273,12 @@
           if (err) {
             return cb(err);
           }
-          
-          cb(null, res.object.sha);
+
+          if (res instanceof Array) {
+            cb({error: 500});
+          } else {
+            cb(null, res.object.sha);
+          }
         });
       };
 
@@ -542,7 +546,6 @@
       // --------
 
       this.branch = function(oldBranch,newBranch,cb) {
-        debugger;
         if(arguments.length === 2 && typeof arguments[1] === "function") {
           cb = newBranch;
           newBranch = oldBranch;

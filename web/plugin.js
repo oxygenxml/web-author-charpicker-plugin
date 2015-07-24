@@ -519,7 +519,7 @@
    * Creates the login dialog.
    */
   GitHubLoginManager.prototype.getLoginDialog = function() {
-    if (!this.loginDialog) {
+    if (!this.loginDialog || this.errorMessage) {
       this.loginDialog = workspace.createDialog();
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
@@ -640,10 +640,6 @@
     var github = loginManager.createGitHub();
 
     if (github) {
-
-      window.git = github;
-      window.fileLocation = fileLocation;
-
       loadDocument(github);
     } else {
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
@@ -684,7 +680,9 @@
       // Read the content using the GitHub API.
       repo.read(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, content) {
         if (err) {
-          if (err == 'not found') {
+          if (err.error == 401) {
+            loginManager.setErrorMessage('Wrong username or password');
+          } else if (err == 'not found') {
             loginManager.setErrorMessage('The requested file was not found');
           }
 
