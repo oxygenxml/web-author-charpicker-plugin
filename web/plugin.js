@@ -695,7 +695,24 @@
         }
 
         // Set the URL chooser
-        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, url));
+        var urlObj = new sync.util.Url(url);
+        var pathPart = urlObj.getPathName().split('/');
+
+        var owner = pathPart[1];
+        var repo = pathPart[2];
+        var branch;
+
+        if (urlObj.getDomain() == 'github.com') {
+          branch = pathPart[4];
+        } else {
+          branch = pathPart[3];
+        }
+
+        // urlRoot looks like this: /owner/repo/branch
+        var  urlRoot = '/' + owner + '/' + repo + '/' + branch;
+
+        // the loadingOptions.url looks like this: github://getFileContent/owner/repo/branch/path
+        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(urlRoot, loadingOptions.url));
 
         // Load the retrieved content in the editor.
         loadingOptions.content = content;

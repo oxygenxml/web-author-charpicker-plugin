@@ -36,13 +36,6 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
     URL apiUrl = new URL(githubApiUrlString);
     
     String accessToken = accessTokens.get(contextId);
-
-    if (accessToken != null) {
-      return new GithubUrlConnection(apiUrl.openConnection(), accessToken);
-    } else {
-      // If the user is not logged in with github send any public file available
-      String githubRawUrl = "https://raw.githubusercontent.com" + urlPathPart;
-      return new URL(githubRawUrl).openConnection();
-    }
+    return new GithubUrlConnection(apiUrl.openConnection(), accessToken);
   }
 }

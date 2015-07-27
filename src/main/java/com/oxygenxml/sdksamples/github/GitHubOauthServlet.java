@@ -140,7 +140,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       HttpServletResponse httpResponse) throws IOException {
 
     HttpSession session = httpRequest.getSession();
-    HashMap<String, Object> requestBody = GithubUtil.parseJSON(httpRequest.getInputStream());
+    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
     
     String accessToken = (String) requestBody.get("accessToken");
     
@@ -239,7 +240,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException 
    */
   private void sendClientId(HttpSession session, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    HashMap<String, Object> requestBody = GithubUtil.parseJSON(httpRequest.getInputStream());
+    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
 
     // The redirectTo (representing a URL) attribute will be needed when we want to redirect back to the application 
     String redirectTo = null;
@@ -395,7 +397,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     
     writer.close();
     
-    HashMap<String, Object> tokenInfo = GithubUtil.parseJSON(conn.getInputStream());
+    String githubResponseBody = GithubUtil.inputStreamToString(conn.getInputStream());
+    HashMap<String, Object> tokenInfo = GithubUtil.parseJSON(githubResponseBody);
     return (String) tokenInfo.get("access_token");
   }
 }
