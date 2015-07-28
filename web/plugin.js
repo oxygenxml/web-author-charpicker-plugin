@@ -345,7 +345,7 @@
       } else if (err.error == 404) {
         // Not allowed to commit, or the repository does not exist.
         commitNotAllowed = true;
-        msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork and commit?');
+        msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork & Commit');
       } else if (err.error == 422) {
         msg = JSON.parse(err.request.responseText).message;
       } else if (err.error === 409) {
@@ -387,9 +387,9 @@
 
               forkedRepo.write(this.ctx.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
                 var msg = 'Commit to fork successful!';
-                if (err.error = 404) {
+                if (err && err.error == 404) {
                   msg = "Repository not found"
-                } else {
+                } else if (err) {
                   msg = 'Error';
                 }
                 errorReporter.showError('Commit status', msg);
@@ -531,8 +531,8 @@
         dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
       }
 
-      dialogHtml += '<div><label class="github-input">User Name: <input name="user" type="text"></label></div>';
-      dialogHtml += '<div><label class="github-input">Password: <input name="pass" type="password"></label></div>';
+      dialogHtml += '<div><label class="github-input">User Name: <input autofocus="autofocus" tabindex="0" name="user" type="text"></label></div>';
+      dialogHtml += '<div><label class="github-input">Password: <input tabindex="0" name="pass" type="password"></label></div>';
 
       if (this.oauthProps && this.oauthProps.oauthUrl) {
         dialogHtml += '<div class="github-login-center-aligned">or</div>';
