@@ -11,6 +11,10 @@ import ro.sync.ecss.extensions.api.webapp.plugin.URLStreamHandlerWithContext;
 
 public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
   
+  /**
+   * A map of <sessionId, access_token>
+   * Used to hold the access_token for each session
+   * */
   public static final Map<String, String> accessTokens = new HashMap<String, String>();
   
   @Override
