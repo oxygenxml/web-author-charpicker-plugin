@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +51,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         
         clientId = properties.getProperty("client_id");
         clientSecret = properties.getProperty("client_secret");
+        
+        ServletContext servletContext = getServletConfig().getServletContext();
+        servletContext.addListener(HttpSessionObserver.class);
       } catch (IOException e) {
         logger.warn("Could not read the github-plugin.properties file. OAuth authentication disabled.");
       }
