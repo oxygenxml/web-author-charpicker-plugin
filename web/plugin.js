@@ -351,7 +351,7 @@
       if (err.error == 404) {
         // Not allowed to commit, or the repository does not exist.
         commitNotAllowed = true;
-        msg = "No commit access. Do you want to fork & commit?";
+        msg = "No commit access. Do you want to fork and commit?";
 
         errorReporter.showError('Commit Error', msg, true);
       } else {
