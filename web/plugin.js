@@ -11,9 +11,10 @@
    * Shows an error dialog.
    * @param {string} title The title of the dialog.
    * @param {string} bodyHtml The HTML content of the dialog.
+   * @param {boolean} isYesNoDialog True if the error dialog should have a yes no button configuration
    */
-  GitHubErrorReporter.prototype.showError = function(title, bodyHtml) {
-    var dialog = this.getErrorDialog();
+  GitHubErrorReporter.prototype.showError = function(title, bodyHtml, isYesNoDialog) {
+    var dialog = this.getErrorDialog(isYesNoDialog);
     dialog.setTitle(title);
     dialog.getElement().innerHTML = bodyHtml;
     dialog.show();
@@ -24,12 +25,22 @@
    *
    * @return {sync.api.Dialog} The error message dialog.
    */
-  GitHubErrorReporter.prototype.getErrorDialog = function() {
+  GitHubErrorReporter.prototype.getErrorDialog = function(yesNo) {
+    var buttonConfiguration = yesNo ? sync.api.Dialog.ButtonConfiguration.YES_NO :
+                                      sync.api.Dialog.ButtonConfiguration.OK;
     if (!this.errDialog) {
       this.errDialog = workspace.createDialog();
-      this.errDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
     }
+    this.errDialog.setButtonConfiguration(buttonConfiguration);
     return this.errDialog;
+  };
+
+  /**
+   * Sets the listener for when the user clicks on the yes button of the dialog
+   * @param {function} onYesPressed The method to be called when the user clicks on the dialog yes button
+   */
+  GitHubErrorReporter.prototype.onYesPressed = function (onYesPressed) {
+    this.forkAndCommitListener = this.getErrorDialog(true).dialog.listen(goog.ui.Dialog.EventType.SELECT, onYesPressed);
   };
 
   var errorReporter = new GitHubErrorReporter();
@@ -337,74 +348,96 @@
       var commitNotAllowed = false;
       var msg = 'Commit failed!';
 
-      if (err.error == 401) {
-        msg = 'Not authorized';
-
-        // Clear the github credentials to make sure the login dialog is shown when the page is refreshed
-        clearGithubCredentials();
-      } else if (err.error == 404) {
+      if (err.error == 404) {
         // Not allowed to commit, or the repository does not exist.
         commitNotAllowed = true;
-        msg = ForkAndCommitButton.getHtml('No commit access.', 'Fork & Commit');
-      } else if (err.error == 422) {
-        msg = JSON.parse(err.request.responseText).message;
-      } else if (err.error === 409) {
-        msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
+        msg = "No commit access. Do you want to fork & commit?";
+
+        errorReporter.showError('Commit Error', msg, true);
+      } else {
+        if (err.error == 401) {
+          msg = 'Not authorized';
+
+          // Clear the github credentials to make sure the login dialog is shown when the page is refreshed
+          clearGithubCredentials();
+        } else if (err.error == 422) {
+          msg = JSON.parse(err.request.responseText).message;
+        } else if (err.error === 409) {
+          msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
+        }
+
+        errorReporter.showError('Commit Error', msg);
       }
-      errorReporter.showError('Commit Error', msg);
 
       if (commitNotAllowed) {
-        ForkAndCommitButton.onClick(goog.bind(function () {
-          this.repo.fork(goog.bind(function (_, result) {
-            var repoName = result.name;
-            var owner = result.owner.login;
-            var forkedRepo = this.github.getRepo(owner, repoName);
-
-            if (this.ctx && this.ctx.branchExists) {
-              commitToBranch.call(this);
-            } else {
-              forkedRepo.branch(this.branch, this.ctx.branch, goog.bind(function(err) {
-                err = this.getBranchingError_(err);
-                if (err && err.error === 404) {
-                  // Maybe this was a commit ref instead of a branch ref. Let's try.
-                  forkedRepo.createRef({
-                    "ref": "refs/heads/" + ctx.branch,
-                    "sha": this.branch
-                  }, goog.bind(function(err) {
-                    err = this.getBranchingError_(err);
-                    commitToBranch.call(this, err);
-                  }, this));
-                } else {
-                  commitToBranch.call(this);
-                }
-              }, this));
-            }
-
-            function commitToBranch(err) {
-              if (err) {
-                errorReporter.showError('Commit status', 'Could not commit to fork!');
-              }
-
-              forkedRepo.write(this.ctx.branch, this.filePath, this.ctx.content, this.ctx.message, function(err) {
-                var msg = 'Commit to fork successful!';
-                if (err && err.error == 404) {
-                  msg = "Repository not found"
-                } else if (err) {
-                  msg = 'Error';
-                }
-                errorReporter.showError('Commit status', msg);
-              });
-            }
-          }, this));
-
-          errorReporter.errDialog.hide();
-          ForkAndCommitButton.removeListener();
-        }, this));
+        errorReporter.onYesPressed(goog.bind(this.forkAndCommit, this));
       }
     }
     cb();
   };
 
+  /**
+   * Called to fork the, current, github working repository and commit the working document to the fork
+   * @param {goog.ui.Dialog.Event} event The triggering event
+   */
+  CommitAction.prototype.forkAndCommit = function (event) {
+    var self = this;
+
+    goog.events.unlistenByKey(errorReporter.forkAndCommitListener);
+    if (event.key == 'yes') {
+      // Set to show the spinning loading
+      self.setStatus('loading');
+
+      self.repo.fork(function (_, result) {
+        var repoName = result.name;
+        var owner = result.owner.login;
+        var forkedRepo = self.github.getRepo(owner, repoName);
+
+        if (self.ctx && self.ctx.branchExists) {
+          commitToBranch();
+        } else {
+          forkedRepo.branch(self.branch, self.ctx.branch, function(err) {
+            err = self.getBranchingError_(err);
+            if (err && err.error === 404) {
+              // Maybe this was a commit ref instead of a branch ref. Let's try.
+              forkedRepo.createRef({
+                "ref": "refs/heads/" + ctx.branch,
+                "sha": self.branch
+              }, function(err) {
+                err = self.getBranchingError_(err);
+                commitToBranch(err);
+              });
+            } else {
+              commitToBranch();
+            }
+          });
+        }
+
+        function commitToBranch(err) {
+          if (err) {
+            self.setStatus('none');
+            errorReporter.showError('Commit status', 'Could not commit to fork!');
+          }
+
+          forkedRepo.write(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err) {
+            var msg;
+            if (err && err.error == 404) {
+              msg = "Repository not found"
+            } else if (err) {
+              msg = 'Error';
+            } else {
+              msg = 'Commit to fork successful!';
+              self.setStatus('success');
+              self.statusTimeout = setTimeout(
+                  goog.bind(self.setStatus, self, 'none'), 3200);
+            }
+
+            errorReporter.showError('Commit status', msg);
+          });
+        }
+      });
+    }
+  };
 
   /**
    * Set the status of the GitHub icon.
@@ -443,43 +476,6 @@
   /** @override */
   CommitAction.prototype.getDescription = function() {
     return "Commit on GitHub";
-  };
-
-  /**
-   * Holds helper methods for creating and setting a listener for a button
-   * @type {{getHtml: Function, onClick: Function}}
-   */
-  var ForkAndCommitButton = {
-    /**
-     * Returns the html required to render the message and button
-     * @param {string} message The message to be displayed
-     * @param {string} buttonText The button text to be displayed
-     * @returns {string} The html required to render the message and button
-     */
-    getHtml: function (message, buttonText) {
-      return '<div class="github-forkandcommit-content">' + message +
-          '<br /><button id="github-fork-and-commit-button" class="github-fork-button" type="submit">' + buttonText + '</button>' +
-          '</div>';
-    },
-    /**
-     * Sets the on click listener for the button
-     * @param {Function} callback The method to call on click
-     */
-    onClick: function (callback) {
-      var forkAndCommitButton = document.getElementById('github-fork-and-commit-button');
-      if (forkAndCommitButton) {
-        goog.events.listen(forkAndCommitButton, 'click', callback);
-      }
-    },
-    /**
-     * Removes the listeners set on the button
-     */
-    removeListener: function () {
-      var forkAndCommitButton = document.getElementById('github-fork-and-commit-button');
-      if (forkAndCommitButton) {
-        goog.events.removeAll(forkAndCommitButton);
-      }
-    }
   };
 
   /**
