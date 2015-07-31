@@ -690,25 +690,14 @@
           return;
         }
 
-        // Set the URL chooser
-        var urlObj = new sync.util.Url(url);
-        var pathPart = urlObj.getPathName().split('/');
+        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, url, function (href, success, failure) {
+          href = normalizeGitHubUrl(href);
 
-        var owner = pathPart[1];
-        var repo = pathPart[2];
-        var branch;
-
-        if (urlObj.getDomain() == 'github.com') {
-          branch = pathPart[4];
-        } else {
-          branch = pathPart[3];
-        }
-
-        // urlRoot looks like this: /owner/repo/branch
-        var  urlRoot = '/' + owner + '/' + repo + '/' + branch;
-
-        // the loadingOptions.url looks like this: github://getFileContent/owner/repo/branch/path
-        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(urlRoot, loadingOptions.url));
+          sync.rest.callRestAsyncWithHandling(RESTFileBrowser.retrieveFiles, {
+            url: encodeURIComponent(href),
+            $callback: success
+          }, failure);
+        }));
 
         // Load the retrieved content in the editor.
         loadingOptions.content = content;
@@ -879,7 +868,8 @@
   function normalizeGitHubUrl(url) {
     return url.replace("https", "github")
         .replace("http", "github")
-        .replace("blob/", "")
+        .replace("/tree/", "/blob/")
+        .replace("/blob/", "/")
         .replace("www.github.com", "getFileContent")
         .replace("github.com", "getFileContent")
         .replace("raw.githubusercontent.com", "getFileContent");
