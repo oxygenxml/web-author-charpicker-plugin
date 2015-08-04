@@ -17,6 +17,7 @@ public class GithubUtil {
    * Parses a JSON string
    * 
    * @param githubJson The Github json result to parse
+   * @return An object representing the response from github
    */
   public static GithubApiResult parseGithubResult(String githubJson) {
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
@@ -34,6 +35,7 @@ public class GithubUtil {
    * Parses a JSON string which is a list
    * 
    * @param githubJson The Github json to parse
+   * @return A list of objects representing the response from github
    */
   public static List<GithubApiResult> parseGithubListResult(String githubJson) {
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
