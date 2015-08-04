@@ -13,6 +13,12 @@ import org.jboss.resteasy.util.Base64;
 import ro.sync.ecss.extensions.api.webapp.plugin.FilterURLConnection;
 import ro.sync.net.protocol.FileBrowsingConnection;
 
+/**
+ * Used to handle requests for urls like: github://method/params.
+ * 
+ * @author gabriel_titerlea
+ *
+ */
 public class GithubUrlConnection extends FilterURLConnection implements FileBrowsingConnection {
 
   /**

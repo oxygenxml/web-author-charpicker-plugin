@@ -9,6 +9,12 @@ import java.util.Map;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.URLStreamHandlerWithContext;
 
+/**
+ * Used for opening proper GithubUrlConnections, making sure they have an access token
+ * 
+ * @author gabriel_titerlea
+ *
+ */
 public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
   
   /**

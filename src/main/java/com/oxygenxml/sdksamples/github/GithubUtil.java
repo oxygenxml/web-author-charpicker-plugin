@@ -12,6 +12,12 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+/**
+ * Holds utility methods for the GitHub plugin
+ * 
+ * @author gabriel_titerlea
+ *
+ */
 public class GithubUtil {
   /**
    * Parses a JSON string
@@ -50,7 +56,7 @@ public class GithubUtil {
   }
   
   /**
-   * Transforms an InputStrea to a String
+   * Transforms an InputStream to a String
    * @param inputStream The inputStream to transform
    * @return A String representation of the inputStream
    */
