@@ -405,7 +405,10 @@
                 "sha": self.branch
               }, function(err) {
                 err = self.getBranchingError_(err);
-                commitToBranch(err);
+                if (err) {
+                  self.setStatus('none');
+                  errorReporter.showError('Commit status', 'Could not commit to fork!');
+                }
               });
             } else {
               commitToBranch();
@@ -413,17 +416,14 @@
           });
         }
 
-        function commitToBranch(err) {
-          if (err) {
-            self.setStatus('none');
-            errorReporter.showError('Commit status', 'Could not commit to fork!');
-          }
-
+        function commitToBranch() {
           forkedRepo.write(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err) {
             var msg;
             if (err && err.error == 404) {
+              self.setStatus('none');
               msg = "Repository not found"
             } else if (err) {
+              self.setStatus('none');
               msg = 'Error';
             } else {
               msg = 'Commit to fork successful!';
