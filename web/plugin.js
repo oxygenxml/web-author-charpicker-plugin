@@ -397,6 +397,9 @@
           commitToBranch();
         } else {
           forkedRepo.branch(self.branch, self.ctx.branch, function(err) {
+            var message = 'Could not commit to fork!';
+            var ok = true;
+
             err = self.getBranchingError_(err);
             if (err && err.error === 404) {
               // Maybe this was a commit ref instead of a branch ref. Let's try.
@@ -407,11 +410,23 @@
                 err = self.getBranchingError_(err);
                 if (err) {
                   self.setStatus('none');
-                  errorReporter.showError('Commit status', 'Could not commit to fork!');
+                  errorReporter.showError('Commit status', message);
+                } else {
+                  commitToBranch();
                 }
               });
+            } else if (err && err.error === 422) {
+              message = 'Invalid branch name';
+              ok = false;
+            } else if (err) {
+              ok = false;
             } else {
               commitToBranch();
+            }
+
+            if (!ok) {
+              self.setStatus('none');
+              errorReporter.showError('Commit status', message);
             }
           });
         }
