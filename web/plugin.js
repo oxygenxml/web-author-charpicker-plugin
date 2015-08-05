@@ -532,20 +532,13 @@
    * Creates the login dialog.
    */
   GitHubLoginManager.prototype.getLoginDialog = function() {
-    if (!this.loginDialog || this.errorMessage) {
-      if (this.loginDialog) {
-        this.loginDialog.dialog.exitDocument();
-      }
-
+    if (!this.loginDialog) {
       this.loginDialog = workspace.createDialog();
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
       var dialogHtml = '<div class="github-login-dialog">';
 
-      if (this.errorMessage) {
-        dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
-      }
-
+      dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
       dialogHtml += '<div><label class="github-input">User Name: <input autofocus="autofocus" tabindex="0" name="user" type="text"></label></div>';
       dialogHtml += '<div><label class="github-input">Password: <input tabindex="0" name="pass" type="password"></label></div>';
 
@@ -557,6 +550,15 @@
       this.loginDialog.getElement().innerHTML = dialogHtml;
       this.loginDialog.setTitle("GitHub Login");
     }
+
+    var errorMessageElement = this.loginDialog.getElement().querySelector('.github-login-dialog-error');
+    if (this.errorMessage) {
+      errorMessageElement.innerHTML = this.errorMessage;
+      errorMessageElement.style.display = 'block';
+    } else {
+      errorMessageElement.style.display = 'none';
+    }
+
     return this.loginDialog;
   };
 
