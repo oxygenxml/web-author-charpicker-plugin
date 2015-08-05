@@ -711,14 +711,7 @@
           return;
         }
 
-        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, url, function (href, success, failure) {
-          href = normalizeGitHubUrl(href);
-
-          sync.rest.callRestAsyncWithHandling(RESTFileBrowser.retrieveFiles, {
-            url: encodeURIComponent(href),
-            $callback: success
-          }, failure);
-        }));
+        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, loadingOptions.url));
 
         // Load the retrieved content in the editor.
         loadingOptions.content = content;
