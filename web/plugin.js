@@ -533,6 +533,10 @@
    */
   GitHubLoginManager.prototype.getLoginDialog = function() {
     if (!this.loginDialog || this.errorMessage) {
+      if (this.loginDialog) {
+        this.loginDialog.dialog.exitDocument();
+      }
+
       this.loginDialog = workspace.createDialog();
       this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
 
