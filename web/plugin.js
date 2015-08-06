@@ -465,7 +465,7 @@
     if (status != 'none') {
       this.githubToolbarButton.innerHTML = '';
     } else {
-      this.githubToolbarButton.innerHTML = 'Github';
+      this.githubToolbarButton.innerHTML = 'GitHub';
     }
 
     goog.dom.classlist.remove(this.githubToolbarButton, this.status);
@@ -720,7 +720,7 @@
         goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
           var githubToolbarButton = goog.dom.createDom('div', {
             id: 'github-toolbar-button'
-          }, 'Github');
+          }, 'GitHub');
 
           var commitAction = new CommitAction(editor, github, fileLocation);
           commitAction.setGithubToolbarButton(githubToolbarButton);

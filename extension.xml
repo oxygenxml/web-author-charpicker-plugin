@@ -22,12 +22,12 @@ example `https://github.com/ctalau-oxygen/flowers/blob/master/flowers.ditamap`.<
     <div>
         <h2>Commit</h2>
         <div>
-        When you open a GitHub file, a *Commit to GitHub* button appears on the toolbar. When you press that
-button, you will be asked to:</div>
+        When you open a GitHub file, a *GitHub* button appears on the toolbar. When you press that
+button, you can choose whether to "Commit on GitHub" or "Logout"</div>
+        <div>When you press Commit on GitHub a dialog will appear where you will have to:</div>div>
         <ul>
-            <li>authenticate</li>
             <li>provide the commit message</li>
-            <li>(optional) the name of a new branch on which this commit goes.</li>
+            <li>(optional) the name of the (new) branch on which this commit goes.</li>
         </ul>
     </div>
     </body>
