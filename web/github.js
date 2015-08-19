@@ -104,8 +104,7 @@
           }
 
           results.push.apply(results, res);
-
-          var links = (xhr.getResponseHeader('link') || '').split(/\s*,\s*/g),
+           var links = (xhr.getResponseHeader('link') || '').split(/\s*,\s*/g),
               next = _.find(links, function(link) { return /rel="next"/.test(link); });
 
           if (next) {
@@ -242,6 +241,53 @@
         'sha': null
       };
 
+      // Perform a commit on the given head {sha, type, url}
+      // The commit will fail if its not a fast forward commit
+      // -------
+
+      this.commitToHead = function (branch, path, content, message, cb) {
+        that.createCommit(branch, path, content, message, function (err, commit) {
+          if (err) {return cb(err);}
+          that.updateCommit(commit, branch, cb);
+        });
+      };
+
+      // Creates a commit on the head of a given branch
+      // ------
+
+      this.createCommit = function (branch, path, content, message, cb) {
+        that.getHead(branch, function (err, head) {
+          _request('GET', head.url, null, function (err, response) {
+            if (err) {return cb(err);}
+            var SHA_BASE_TREE = response.tree.sha;
+
+            that.postBlob(content, function (err, blobSha) {
+              if (err) {return cb(err);}
+              that.updateTree(SHA_BASE_TREE, path, blobSha, function (err, treeSha) {
+                if (err) {return cb(err);}
+                that.commit(head.sha, treeSha, message, function (err, commitSha) {
+                  if (err) {return cb(err);}
+                  cb(null, {blobSha: blobSha, sha: commitSha, branch: branch});
+                });
+              });
+            });
+          });
+        });
+      };
+
+      // Updates a given commit to head
+      // ------
+
+      this.updateCommit = function (commit, branch, cb) {
+        that.updateHead(branch, commit.sha, function (err, newHead) {
+          if (err) {
+            err.sha = commit.blobSha;
+            return cb(err);
+          }
+
+          cb(null, {sha: commit.blobSha, head: newHead.object, branch: branch});
+        });
+      };
 
       // Delete a repo
       // --------
@@ -468,25 +514,30 @@
       // -------
 
       this.commit = function(parent, tree, message, cb) {
-        var user = new Github.User();
-        user.show(null, function(err, userData){
+        var data = {
+          "message": message,
+          "parents": [
+            parent
+          ],
+          "tree": tree
+        };
+        _request("POST", repoPath + "/git/commits", data, function(err, res) {
           if (err) return cb(err);
-          var data = {
-            "message": message,
-            "author": {
-              "name": options.user,
-              "email": userData.email
-            },
-            "parents": [
-              parent
-            ],
-            "tree": tree
-          };
-          _request("POST", repoPath + "/git/commits", data, function(err, res) {
-            if (err) return cb(err);
-            currentTree.sha = res.sha; // update latest commit
-            cb(null, res.sha);
-          });
+          currentTree.sha = res.sha; // update latest commit
+          cb(null, res.sha);
+        });
+      };
+
+      // Gets the head of the given branch {sha, type, url, branch}
+      // -------
+
+      this.getHead = function (branch, cb) {
+        // Get a reference to HEAD of branch
+        _request('GET', repoPath + '/git/refs/heads/' + branch, null, function (err, response) {
+          if (err) {return cb(err);}
+
+          // Adding the branch to the return value, it will be needed for updating this head
+          cb(null, response.object);
         });
       };
 
@@ -494,9 +545,7 @@
       // -------
 
       this.updateHead = function(head, commit, cb) {
-        _request("PATCH", repoPath + "/git/refs/heads/" + head, { "sha": commit }, function(err) {
-          cb(err);
-        });
+        _request("PATCH", repoPath + "/git/refs/heads/" + head, { "sha": commit }, cb);
       };
 
       // Show repository information
@@ -612,6 +661,18 @@
           if (err) return cb(err);
           cb(null, obj);
         }, true);
+      };
+
+      // Get file at given path
+      // -------
+
+      this.getContents = function(branch, path, cb) {
+        _request("GET", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + branch : ""), null, function(err, obj) {
+          if (err && err.error === 404) return cb("not found", null, null);
+
+          if (err) return cb(err);
+          cb(null, obj);
+        });
       };
 
 

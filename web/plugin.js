@@ -11,10 +11,10 @@
    * Shows an error dialog.
    * @param {string} title The title of the dialog.
    * @param {string} bodyHtml The HTML content of the dialog.
-   * @param {boolean} isYesNoDialog True if the error dialog should have a yes no button configuration
+   * @param {string|object[]} buttonConfiguration The button configuration
    */
-  GitHubErrorReporter.prototype.showError = function(title, bodyHtml, isYesNoDialog) {
-    var dialog = this.getErrorDialog(isYesNoDialog);
+  GitHubErrorReporter.prototype.showError = function(title, bodyHtml, buttonConfiguration) {
+    var dialog = this.getErrorDialog(buttonConfiguration);
     dialog.setTitle(title);
     dialog.getElement().innerHTML = bodyHtml;
     dialog.show();
@@ -23,10 +23,11 @@
   /**
    * Create and return the commit error dialog.
    *
+   * @param {Object} buttonConfiguration The button configuration
    * @return {sync.api.Dialog} The error message dialog.
    */
-  GitHubErrorReporter.prototype.getErrorDialog = function(yesNo) {
-    var buttonConfiguration = yesNo ? sync.api.Dialog.ButtonConfiguration.YES_NO :
+  GitHubErrorReporter.prototype.getErrorDialog = function(buttonConfiguration) {
+    buttonConfiguration = buttonConfiguration ? buttonConfiguration :
                                       sync.api.Dialog.ButtonConfiguration.OK;
     if (!this.errDialog) {
       this.errDialog = workspace.createDialog();
@@ -37,10 +38,13 @@
 
   /**
    * Sets the listener for when the user clicks on the yes button of the dialog
-   * @param {function} onYesPressed The method to be called when the user clicks on the dialog yes button
+   * @param {function} onSubmit The method to be called when the user clicks on the dialog yes button
    */
-  GitHubErrorReporter.prototype.onYesPressed = function (onYesPressed) {
-    this.forkAndCommitListener = this.getErrorDialog(true).dialog.listen(goog.ui.Dialog.EventType.SELECT, onYesPressed);
+  GitHubErrorReporter.prototype.onSubmit = function (onSubmit) {
+    var submitListener = this.errDialog.dialog.listen(goog.ui.Dialog.EventType.SELECT, function (event) {
+      onSubmit(event);
+      goog.events.unlistenByKey(submitListener);
+    });
   };
 
   var errorReporter = new GitHubErrorReporter();
@@ -203,15 +207,18 @@
   CommitAction.prototype.getDialog = function() {
     if (!this.dialog) {
       this.dialog = workspace.createDialog();
-      this.dialog.setTitle('Commit on GitHub');
-
-      var dialogHtml = '<div class="github-commit-dialog">';
-      dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message"></textarea></label></div>';
-      dialogHtml += '<div><label>Commit on branch:<input class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
-      dialogHtml += '</div>';
-      var el = this.dialog.getElement();
-      el.innerHTML = dialogHtml;
     }
+
+    // Update the innerHTML every time because it depends on this.branch which might change
+    this.dialog.setTitle('Commit on GitHub');
+
+    var dialogHtml = '<div class="github-commit-dialog">';
+    dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label></div>';
+    dialogHtml += '<div><label>Commit on branch:<input class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
+    dialogHtml += '</div>';
+    var el = this.dialog.getElement();
+    el.innerHTML = dialogHtml;
+
     return this.dialog;
   };
 
@@ -224,11 +231,92 @@
    * error and/or success values.
    */
   CommitAction.prototype.tryCommit = function(ctx, cb) {
+    var self = this;
     if (ctx.branchExists && ctx.hasOwnProperty('content')) {
-      this.repo.write(this.branch, this.filePath, ctx.content, ctx.message, function(err) {
-        cb(err);
-      });
+
+      // If this is a new branch or the document branch
+      if (!ctx.branchAlreadyExists) {
+        this.getLatestSha_(ctx.branch, self.repo, function (err, latestSha) {
+          if (err) {return cb(err);}
+          if (latestSha === documentSha) {
+            self.repo.commitToHead(ctx.branch, self.filePath, ctx.content, ctx.message, function(err, commit) {
+              if (!err) {
+                // Have committed, we save the document sha and head for the next commits
+                // The document is now on the committed branch
+                documentSha = commit.sha;
+                documentHead = commit.head;
+                self.branch = commit.branch;
+              }
+              cb(err);
+            });
+          } else {
+            self.startCommit_(self.repo, ctx, cb);
+          }
+        });
+      } else {
+        // Committing on a different branch is an action which the user has to confirm
+        // Getting the head so we can show the user a diff, so he can make an informed decision
+        self.startCommit_(self.repo, ctx, cb);
+      }
     }
+  };
+
+  /**
+   * Starts a commit defined by the given context
+   * @param {Github.Repository} repo The repo to commit on
+   * @param {{branch: string, message: string, content: string}} ctx The commit context
+   * @param {function} cb The method to call on result
+   * @private
+   */
+  CommitAction.prototype.startCommit_ = function (repo, ctx, cb) {
+    var self = this;
+    repo.getHead(ctx.branch, function (err, head) {
+      if (err) {return cb(err);}
+      repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
+        repo.compare(head.sha, commit.sha, function (err, diff) {
+          if (err) {return cb(err);}
+          cb({error: 409, message: 'The commit may have conflicts', diff: diff, commit: commit});
+        });
+      });
+    });
+  };
+
+  /**
+   * Finalizes a commit (updates the document to the new head of the given commit)
+   * @param {Github.Repository} repo The repository on which this commit was pushed
+   * @param {object} err The commit error
+   * @param {{sha: string, head: object, branch: string}} commitResult The commitResult
+   * @private
+   */
+  CommitAction.prototype.finalizeCommit_ = function (repo, err, commitResult) {
+    if (!err) {
+      // Have committed, we save the document sha and head for the next commits
+      // The document is now on the commited branch
+      documentSha = commitResult.sha;
+      documentHead = commitResult.head;
+      this.branch = commitResult.branch;
+      this.repo = repo;
+
+      this.setStatus('none');
+      errorReporter.showError('Commit status', 'Commit successful on branch '+ commitResult.branch);
+    } else {
+      this.setStatus('none');
+      errorReporter.showError('Commit status', 'Commit failed');
+    }
+  };
+
+  /**
+   * Gets the latest sha for the current file
+   * @param {string} branch The branch on which we'll make the request
+   * @param {Github.Repository} repo The repository on which to check
+   * @param {function} cb The method to call on result
+   * @private
+   */
+  CommitAction.prototype.getLatestSha_ = function (branch, repo, cb) {
+    repo.getContents(branch, this.filePath, function (err, file) {
+      if (err) {return cb(err);}
+      cb(null, file.sha)
+    });
   };
 
   /**
@@ -238,6 +326,7 @@
    * @param {object} ctx The context of the commit.
    */
   CommitAction.prototype.performCommit = function(ctx, cb) {
+    var self = this;
     this.setStatus('loading');
 
     // Obtain the content of the current file.
@@ -249,7 +338,16 @@
     // Create the branch if it does not exist.
     if (ctx.branch && ctx.branch !== this.branch) {
       ctx.branchExists = false;
-      this.createBranch_(ctx, cb);
+      this.createBranch_(self.repo, ctx, function (err) {
+        if (!err) {
+          self.branch = ctx.branch;
+          ctx.branchExists = true;
+          self.tryCommit(ctx, cb);
+        } else{
+          ctx.branchExists = false;
+          cb(err);
+        }
+      });
     } else {
       ctx.branchExists = true;
     }
@@ -257,36 +355,25 @@
 
   /**
    * Creates a new branch
+   * @param {Github.Repository} repo The repository on which to create a new branch
    * @param {object} ctx The context of the commit
-   * @param {function()} cb The method to callon result
+   * @param {function(object)} cb The method to call on result
    * @private
    */
-  CommitAction.prototype.createBranch_ = function (ctx, cb) {
-    // Callback after the branch was created.
-    var branchCreated = goog.bind(function(err) {
-      if (!err) {
-        this.branch = ctx.branch;
-        ctx.branchExists = true;
-        this.tryCommit(ctx, cb);
-      } else{
-        ctx.branchExists = false;
-        cb(err);
-      }
-    }, this);
-
-    this.repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
-      err = this.getBranchingError_(err);
+  CommitAction.prototype.createBranch_ = function (repo, ctx, cb) {
+    repo.branch(this.branch, ctx.branch, goog.bind(function(err) {
+      err = this.getBranchingError_(err, ctx);
       if (err && err.error === 404) {
         // Maybe this was a commit ref instead of a branch ref. Let's try.
-        this.repo.createRef({
+        repo.createRef({
           "ref": "refs/heads/" + ctx.branch,
           "sha": this.branch
         }, goog.bind(function(err) {
-          err = this.getBranchingError_(err);
-          branchCreated(err);
+          err = this.getBranchingError_(err, ctx);
+          cb(err);
         }, this));
       } else {
-        branchCreated(err);
+        cb(err);
       }
     }, this));
   };
@@ -294,14 +381,16 @@
   /**
    * Function that returns the error object that occurred during branch creation.
    * @param {object<{err: number, request: object}>} err
+   * @param {object} ctx The context of the commit
    * @returns {object} The error object or null
    * @private
    */
-  CommitAction.prototype.getBranchingError_ = function(err) {
+  CommitAction.prototype.getBranchingError_ = function(err, ctx) {
     if (err) {
       if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
         // The branch already exists, so we can commit on it.
         err = null;
+        ctx.branchAlreadyExists = true;
       }
     }
     return err;
@@ -316,7 +405,7 @@
   CommitAction.prototype.detailsProvided = function(cb, key) {
     var ctx = null;
     if (key == 'ok') {
-      var el = this.getDialog().getElement();
+      var el = this.dialog.getElement();
       ctx = {
         message: el.querySelector('[name="message"]').value,
         branch: el.querySelector('[name="branch"]').value
@@ -343,47 +432,87 @@
         goog.bind(this.setStatus, this, 'none'), 3200);
       errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>');
     } else {
-      this.setStatus('none');
-
-      var commitNotAllowed = false;
-      var msg = 'Commit failed!';
-
-      if (err.error == 404) {
-        // Not allowed to commit, or the repository does not exist.
-        commitNotAllowed = true;
-        msg = "No commit access. Do you want to fork and commit?";
-
-        errorReporter.showError('Commit Error', msg, true);
-      } else {
-        if (err.error == 401) {
-          msg = 'Not authorized';
-
-          // Clear the github credentials to make sure the login dialog is shown when the page is refreshed
-          clearGithubCredentials();
-        } else if (err.error == 422) {
-          msg = JSON.parse(err.request.responseText).message;
-        } else if (err.error === 409) {
-          msg = 'Conflict: ' + JSON.parse(err.request.responseText).message;
-        }
-
-        errorReporter.showError('Commit Error', msg);
-      }
-
-      if (commitNotAllowed) {
-        errorReporter.onYesPressed(goog.bind(this.forkAndCommit, this));
-      }
+      this.handleErrors(err);
     }
     cb();
   };
 
   /**
-   * Called to fork the, current, github working repository and commit the working document to the fork
+   * Final destination for errors
+   * @param {object} err The error to handle
+   * @param {Github.Repository} repo The repository on which the error occured
+   */
+  CommitAction.prototype.handleErrors = function (err, repo) {
+    this.setStatus('none');
+
+    var msg = 'Commit failed!';
+
+    if (err.error == 404) {
+      // Not allowed to commit, or the repository does not exist.
+      msg = "No commit access. Do you want to fork and commit?";
+
+      errorReporter.showError('Commit Error', msg, sync.api.Dialog.ButtonConfiguration.YES_NO);
+      errorReporter.onSubmit(goog.bind(this.forkAndCommit, this));
+      return;
+    } else if (err.error == 409) {
+      // Show link to the diff here
+      errorReporter.showError('Commit Status', '<div style="text-align:center;"><a target="_blank" href = "' + err.diff.permalink_url + '">' + err.message + '</a></div>',
+          [{key: 'createFork', caption: 'Fork and merge later'}, {key: 'commitAnyway', caption: 'Commit anyway'}, {key: 'cancel', caption: 'Cancel'}]);
+      errorReporter.onSubmit(goog.bind(this.handleCommitIsNotAFastForward, this, err.commit, repo));
+      return;
+    } else if (err.error == 401) {
+      msg = 'Not authorized';
+
+      // Clear the github credentials to make sure the login dialog is shown when the page is refreshed
+      clearGithubCredentials();
+    } else if (err.error == 422) {
+      var response = JSON.parse(err.request.responseText);
+      msg = response.message;
+    }
+
+    errorReporter.showError('Commit Error', msg);
+  };
+
+  /**
+   * Handle the situation when a user commits to a repository and someone else has committed in the meantime as well
+   * @param {{blobSha: string, sha: string, branch: string}} commit The commit which failed and the user can choose
+   *        what to do with it
+   * @param {object} opt_repo The repo on which to commit
+   * @param {goog.ui.Dialog.Event} event The triggering event
+   */
+  CommitAction.prototype.handleCommitIsNotAFastForward = function (commit, opt_repo, event) {
+    var self = this;
+
+    var repo = opt_repo ? opt_repo : self.repo;
+
+    switch (event.key) {
+    case 'createFork':
+      // Set to show the spinning loading
+      self.setStatus('loading');
+      self.ctx.branch = 'oxygen-webapp-' + Date.now();
+      self.createBranch_(repo, self.ctx, function (err) {
+        if (!err) {
+          repo.updateCommit(commit, self.ctx.branch, goog.bind(self.finalizeCommit_, self, repo));
+        } else {
+          self.setStatus('none');
+          errorReporter.showError('Commit status', 'Could not create new branch');
+        }
+      });
+      break;
+    case 'commitAnyway':
+      self.setStatus('loading');
+      repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo));
+      break;
+    }
+  };
+
+  /**
+   * Called to fork the current github working repository and commit the working document to the fork
    * @param {goog.ui.Dialog.Event} event The triggering event
    */
   CommitAction.prototype.forkAndCommit = function (event) {
     var self = this;
 
-    goog.events.unlistenByKey(errorReporter.forkAndCommitListener);
     if (event.key == 'yes') {
       // Set to show the spinning loading
       self.setStatus('loading');
@@ -394,25 +523,25 @@
         var forkedRepo = self.github.getRepo(owner, repoName);
 
         if (self.ctx && self.ctx.branchExists) {
-          commitToBranch();
+          self.commitToForkedRepo_(forkedRepo);
         } else {
           forkedRepo.branch(self.branch, self.ctx.branch, function(err) {
             var message = 'Could not commit to fork!';
             var ok = true;
 
-            err = self.getBranchingError_(err);
+            err = self.getBranchingError_(err, self.ctx);
             if (err && err.error === 404) {
               // Maybe this was a commit ref instead of a branch ref. Let's try.
               forkedRepo.createRef({
                 "ref": "refs/heads/" + ctx.branch,
                 "sha": self.branch
               }, function(err) {
-                err = self.getBranchingError_(err);
+                err = self.getBranchingError_(err, self.ctx);
                 if (err) {
                   self.setStatus('none');
                   errorReporter.showError('Commit status', message);
                 } else {
-                  commitToBranch();
+                  self.commitToForkedRepo_(forkedRepo);
                 }
               });
             } else if (err && err.error === 422) {
@@ -421,7 +550,7 @@
             } else if (err) {
               ok = false;
             } else {
-              commitToBranch();
+              self.commitToForkedRepo_(forkedRepo);
             }
 
             if (!ok) {
@@ -430,28 +559,51 @@
             }
           });
         }
-
-        function commitToBranch() {
-          forkedRepo.write(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err) {
-            var msg;
-            if (err && err.error == 404) {
-              self.setStatus('none');
-              msg = "Repository not found"
-            } else if (err) {
-              self.setStatus('none');
-              msg = 'Error';
-            } else {
-              msg = 'Commit to fork successful!';
-              self.setStatus('success');
-              self.statusTimeout = setTimeout(
-                  goog.bind(self.setStatus, self, 'none'), 3200);
-            }
-
-            errorReporter.showError('Commit status', msg);
-          });
-        }
       });
     }
+  };
+
+  /**
+   * Writes the current file to the chosen branch
+   * @param {Github.Repository} repo The repo to write on
+   * @private
+   */
+  CommitAction.prototype.commitToForkedRepo_ = function (repo) {
+    var self = this;
+    self.getLatestSha_(self.ctx.branch, repo, function (err, latestSha) {
+      if (err) {return cb(err);}
+      if (latestSha === documentSha) {
+        repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err, commit) {
+          var msg;
+          if (err && err.error == 404) {
+            self.setStatus('none');
+            msg = "Repository not found"
+          } else if (err) {
+            self.setStatus('none');
+            msg = 'Error';
+          } else {
+            documentSha = commit.sha;
+            documentHead = commit.head;
+            // Set our working branch to the new branch (The opened document is now on the new branch)
+            self.branch = commit.branch;
+
+            // The active repo is the forked repo
+            self.repo = repo;
+
+            msg = 'Commit successful on branch ' + self.ctx.branch;
+            self.setStatus('success');
+            self.statusTimeout = setTimeout(
+                goog.bind(self.setStatus, self, 'none'), 3200);
+          }
+
+          errorReporter.showError('Commit status', msg);
+        });
+      } else {
+        self.startCommit_(repo, self.ctx, function (err, commit) {
+          self.handleErrors(err, repo);
+        });
+      }
+    });
   };
 
   /**
@@ -585,7 +737,13 @@
    */
   GitHubLoginManager.prototype.createGitHub = function() {
     var githubCredentials = localStorage.getItem('github.credentials');
-    return githubCredentials && new Github(JSON.parse(githubCredentials));
+    if (githubCredentials) {
+      var github = new Github(JSON.parse(githubCredentials));
+      window.github = github;
+    }
+    return github;
+
+    // return githubCredentials && new Github(JSON.parse(githubCredentials));
   };
 
   /**
@@ -625,6 +783,21 @@
     this.setErrorMessage(null);
   };
 
+  /**
+   * The github sha of the opened document
+   */
+  var documentSha;
+
+  /**
+   * The github reference to the latest commit for the opened document
+   */
+  var documentHead;
+
+  /**
+   * An object describing the location of the opened document (filePath, branch. user, repo)
+   */
+  var fileLocation;
+
   // Make sure we accept any kind of URLs.
   goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function(e) {
 
@@ -642,7 +815,7 @@
 
     var loadingOptions = e.options;
     loadingOptions.url = normalizeGitHubUrl(url);
-    var fileLocation = getFileLocation(loadingOptions.url);
+    fileLocation = getFileLocation(loadingOptions.url);
 
     // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
@@ -659,6 +832,7 @@
     var github = loginManager.createGitHub();
 
     if (github) {
+      window.repo = github.getRepo('ggbt', 'SyncUtil');  // TODO: delete this
       loadDocument(github);
     } else {
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
@@ -697,7 +871,7 @@
     function loadDocument(github) {
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
       // Read the content using the GitHub API.
-      repo.read(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, content) {
+      repo.getContents(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, file) {
         if (err) {
           if (err.error == 401) {
             loginManager.setErrorMessage('Wrong username or password');
@@ -711,34 +885,45 @@
           return;
         }
 
-        workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, loadingOptions.url));
+        documentSha = file.sha;
+        var fileContent = goog.crypt.base64.decodeString(file.content);
 
-        // Load the retrieved content in the editor.
-        loadingOptions.content = content;
-        editor.load(loadingOptions);
+        repo.getHead(fileLocation.branch, function (err, head) {
+          if (!err) {
+            // Saving the current head for later - when we might need to get a diff between commits
+            documentHead = head;
+          }
 
-        goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
-          var githubToolbarButton = goog.dom.createDom('div', {
-            id: 'github-toolbar-button'
-          }, 'GitHub');
+          workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, loadingOptions.url));
 
-          var commitAction = new CommitAction(editor, github, fileLocation);
-          commitAction.setGithubToolbarButton(githubToolbarButton);
+          // Load the retrieved content in the editor.
+          loadingOptions.content = fileContent;
+          editor.load(loadingOptions);
 
-          // Add the github commit and logout actions to the main toolbar
-          var commitActionId = installCommitAction(editor, commitAction);
-          var logOutActionId = installLogoutAction(editor, new LogOutAction());
+          goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
+            var githubToolbarButton = goog.dom.createDom('div', {
+              id: 'github-toolbar-button'
+            }, 'GitHub');
 
-          addToolbarToBuiltinToolbar(e.actionsConfiguration, {
-            type: "list",
-            iconDom: githubToolbarButton,
-            name: "GitHub",
-            children: [
-              {id: commitActionId, type: "action"},
-              {id: logOutActionId, type: "action"}
-            ]
+            var commitAction = new CommitAction(editor, github, fileLocation);
+            commitAction.setGithubToolbarButton(githubToolbarButton);
+
+            // Add the github commit and logout actions to the main toolbar
+            var commitActionId = installCommitAction(editor, commitAction);
+            var logOutActionId = installLogoutAction(editor, new LogOutAction());
+
+            addToolbarToBuiltinToolbar(e.actionsConfiguration, {
+              type: "list",
+              iconDom: githubToolbarButton,
+              name: "GitHub",
+              children: [
+                {id: commitActionId, type: "action"},
+                {id: logOutActionId, type: "action"}
+              ]
+            });
           });
         });
+
       }, this));
     }
   }, true);
