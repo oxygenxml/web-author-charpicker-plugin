@@ -46,6 +46,6 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
     URL apiUrl = new URL(githubApiUrlString);
     
     String accessToken = accessTokens.get(contextId);
-    return new GithubUrlConnection(apiUrl.openConnection(), accessToken);
+    return new GithubUrlConnection(apiUrl.openConnection(), accessToken, urlPathPart);
   }
 }

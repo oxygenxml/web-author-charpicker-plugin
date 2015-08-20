@@ -22,27 +22,39 @@ import ro.sync.net.protocol.FileBrowsingConnection;
 public class GithubUrlConnection extends FilterURLConnection implements FileBrowsingConnection {
 
   /**
+   * The path of the opened url
+   */
+  private String urlPathPart;
+  
+  /**
    * Constructor
    * @param delegateConnection The underlying url connection
    * @param accessToken The github access token
    */
-  public GithubUrlConnection(URLConnection delegateConnection, String accessToken) {
+  public GithubUrlConnection(URLConnection delegateConnection, String accessToken, String urlPathPart) {
     super(delegateConnection);
     if (accessToken != null) {
       delegateConnection.setRequestProperty("Authorization", "token " + accessToken);
     }
+    this.urlPathPart = urlPathPart;
   }
   
   @Override
   public InputStream getInputStream() throws IOException {
-    // The response from github comes in a json like: {"content":"BASE64ecnodedContent",otherProps}
-    String githubJsonResult = GithubUtil.inputStreamToString(delegateConnection.getInputStream());
+    String githubJsonResult;
+    try {
+      // The response from github comes in a json like: // {"content":"BASE64ecnodedContent",otherProps}
+      githubJsonResult = GithubUtil.inputStreamToString(delegateConnection.getInputStream());
+    } catch (IOException e) {
+      throw new IOException("404 Not Found for: " + urlPathPart);
+    }
     HashMap<String, Object> result = GithubUtil.parseJSON(githubJsonResult);
-    
+
     String base64Content = (String) result.get("content");
     byte[] decodedContent = Base64.decode(base64Content);
-    
+
     return new ByteArrayInputStream(decodedContent);
+
   }
   
   @Override
