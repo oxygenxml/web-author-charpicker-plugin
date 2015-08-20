@@ -599,7 +599,7 @@
           errorReporter.showError('Commit status', msg);
         });
       } else {
-        self.startCommit_(repo, self.ctx, function (err, commit) {
+        self.startCommit_(repo, self.ctx, function (err) {
           self.handleErrors(err, repo);
         });
       }

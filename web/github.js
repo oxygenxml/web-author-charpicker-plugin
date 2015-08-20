@@ -253,6 +253,7 @@
       };
 
       // Creates a commit on the head of a given branch
+      // (used when you want to make a commit, show a diff to the user and afterwards, continue the commit)
       // ------
 
       this.createCommit = function (branch, path, content, message, cb) {
