@@ -297,7 +297,7 @@
       this.branch = commitResult.branch;
       this.repo = repo;
 
-      this.setStatus('none');
+      this.setStatus('success');
       errorReporter.showError('Commit status', 'Commit successful on branch '+ commitResult.branch);
     } else {
       this.setStatus('none');
@@ -428,8 +428,6 @@
     if (!err) {
       this.editor.setDirty(false);
       this.setStatus('success');
-      this.statusTimeout = setTimeout(
-        goog.bind(this.setStatus, this, 'none'), 3200);
       errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>');
     } else {
       this.handleErrors(err);
@@ -592,8 +590,6 @@
 
             msg = 'Commit successful on branch ' + self.ctx.branch;
             self.setStatus('success');
-            self.statusTimeout = setTimeout(
-                goog.bind(self.setStatus, self, 'none'), 3200);
           }
 
           errorReporter.showError('Commit status', msg);
@@ -623,6 +619,11 @@
     goog.dom.classlist.remove(this.githubToolbarButton, this.status);
     goog.dom.classlist.add(this.githubToolbarButton, status);
     this.status = status;
+
+    if (status == 'success') {
+      this.statusTimeout = setTimeout(
+          goog.bind(this.setStatus, this, 'none'), 3200);
+    }
   };
 
   /**
