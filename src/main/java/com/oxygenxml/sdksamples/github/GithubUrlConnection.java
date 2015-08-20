@@ -12,6 +12,7 @@ import org.jboss.resteasy.util.Base64;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.FilterURLConnection;
 import ro.sync.net.protocol.FileBrowsingConnection;
+import ro.sync.net.protocol.FolderEntryDescriptor;
 
 /**
  * Used to handle requests for urls like: github://method/params.
@@ -58,8 +59,8 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
   }
   
   @Override
-  public List<String> listFiles() throws IOException {
-    List<String> filesList = new ArrayList<String>();
+  public List<FolderEntryDescriptor> listFolder() throws IOException {
+    List<FolderEntryDescriptor> filesList = new ArrayList<FolderEntryDescriptor>();
     
     String githubJsonResult = GithubUtil.inputStreamToString(delegateConnection.getInputStream());
     
@@ -74,14 +75,14 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
           dirChar = "/";
         }
         
-        filesList.add(result.name + dirChar);
+        filesList.add(new FolderEntryDescriptor(result.name + dirChar));
       }
     } else {
       // The result is a file and its content is Base64 encoded in the content property
       GithubApiResult githubResult = GithubUtil.parseGithubResult(githubJsonResult);
       
       byte[] decodedContent = Base64.decode(githubResult.content);
-      filesList.add(new String(decodedContent));
+      filesList.add(new FolderEntryDescriptor(new String(decodedContent)));
     }
     
     return filesList;
