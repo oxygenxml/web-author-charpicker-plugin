@@ -895,7 +895,9 @@
             documentHead = head;
           }
 
-          workspace.setUrlChooser(new sync.api.FileBrowsingDialog(null, loadingOptions.url));
+          workspace.setUrlChooser(new sync.api.FileBrowsingDialog({
+            initialUrl: loadingOptions.url
+          }));
 
           // Load the retrieved content in the editor.
           loadingOptions.content = fileContent;
