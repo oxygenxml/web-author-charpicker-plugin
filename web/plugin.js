@@ -789,13 +789,7 @@
    */
   GitHubLoginManager.prototype.createGitHub = function() {
     var githubCredentials = localStorage.getItem('github.credentials');
-    if (githubCredentials) {
-      var github = new Github(JSON.parse(githubCredentials));
-      window.github = github;
-    }
-    return github;
-
-    // return githubCredentials && new Github(JSON.parse(githubCredentials));
+    return githubCredentials && new Github(JSON.parse(githubCredentials));
   };
 
   /**
@@ -884,7 +878,6 @@
     var github = loginManager.createGitHub();
 
     if (github) {
-      window.repo = github.getRepo('ggbt', 'SyncUtil');  // TODO: delete this
       loadDocument(github);
     } else {
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
@@ -1053,7 +1046,7 @@
       user: pathSplit[0],
       repo: pathSplit[1],
       branch: pathSplit[2],
-      filePath: pathSplit.slice(3).join("/")
+      filePath: decodeURI(decodeURI(pathSplit.slice(3).join("/")))
     };
   }
 
