@@ -84,17 +84,69 @@
 	background-image: url('Checkmark_green.svg');
 }
 
-.github-forkandcommit-content {
-    text-align: center;
-    font-family: robotolight, Arial, Helvetica, sans-serif;
+#gh-commit-diag-content {
+    max-width: 450px;
+    line-height: 1.15em;
 }
-.github-fork-button {
-    margin: 0 8px;
-    display: inline-block;
-    background-color: #f3f3f3;
-    border: 1px solid #b3b3b3;
+
+.gh-commit-diag-choice {
+    padding: 5px 0;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
     border-radius: 4px;
+    margin: 8px 0;
+    overflow: hidden;
+    cursor: pointer;
 }
-.github-fork-button:hover {
-    background-color: #d6d6d6;
+
+.gh-commit-diag-choice:hover {
+    border-color: #c7c7c7;
+}
+
+.gh-commit-diag-choice:active {
+    border-color: #b4b4b4;
+}
+
+.gh-commit-diag-choice.gh-default-choice {
+    border: 1px solid #204d74;
+}
+
+.gh-commit-diag-choice.gh-default-choice:hover {
+    border: 1px solid #296999;
+}
+
+.gh-commit-diag-choice.gh-default-choice:active {
+     border: 1px solid #204d74;
+ }
+
+.gh-commit-diag-icon {
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: block;
+    width: 30px;
+    height: 1.2em;
+    float: left;
+    background-position-x: 50%;
+}
+
+.gh-commit-fresh {
+    background-image: url('git-branch.svg');
+}
+
+.gh-commit-overwrite {
+    background-image: url('git-commit.svg');
+}
+
+.gh-commit-cancel {
+    background-image: url('x.svg');
+}
+
+.gh-commit-diag-title {
+    font-size: 1.1em;
+    text-decoration: underline;
+    margin-bottom: 8px;
+}
+
+.gh-commit-diag-descripion {
+    padding: 0 5px;
 }

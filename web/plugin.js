@@ -21,14 +21,19 @@
   };
 
   /**
+   * Hides the error dialog
+   */
+  GitHubErrorReporter.prototype.hide = function () {
+    this.errDialog.hide();
+  };
+
+  /**
    * Create and return the commit error dialog.
    *
    * @param {Object} buttonConfiguration The button configuration
    * @return {sync.api.Dialog} The error message dialog.
    */
   GitHubErrorReporter.prototype.getErrorDialog = function(buttonConfiguration) {
-    buttonConfiguration = buttonConfiguration ? buttonConfiguration :
-                                      sync.api.Dialog.ButtonConfiguration.OK;
     if (!this.errDialog) {
       this.errDialog = workspace.createDialog();
     }
@@ -298,10 +303,10 @@
       this.repo = repo;
 
       this.setStatus('success');
-      errorReporter.showError('Commit status', 'Commit successful on branch '+ commitResult.branch);
+      errorReporter.showError('Commit status', 'Commit successful on branch '+ commitResult.branch, sync.api.Dialog.ButtonConfiguration.OK);
     } else {
       this.setStatus('none');
-      errorReporter.showError('Commit status', 'Commit failed');
+      errorReporter.showError('Commit status', 'Commit failed', sync.api.Dialog.ButtonConfiguration.OK);
     }
   };
 
@@ -428,7 +433,7 @@
     if (!err) {
       this.editor.setDirty(false);
       this.setStatus('success');
-      errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>');
+      errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
     } else {
       this.handleErrors(err);
     }
@@ -447,16 +452,39 @@
 
     if (err.error == 404) {
       // Not allowed to commit, or the repository does not exist.
-      msg = "You do not have rights to commit in the current repository. Do you want to commit on your own copy of this repository?";
+      msg = "You do not have rights to commit in the current repository. <br/>Do you want to commit on your own copy of this repository?";
 
       errorReporter.showError('Commit Error', msg, sync.api.Dialog.ButtonConfiguration.YES_NO);
       errorReporter.onSubmit(goog.bind(this.forkAndCommit, this));
       return;
     } else if (err.error == 409) {
-      // Show link to the diff here
-      errorReporter.showError('Commit Status', '<div style="text-align:center;"><a target="_blank" href = "' + err.diff.permalink_url + '">' + err.message + '</a></div>',
-          [{key: 'createFork', caption: 'Commit on a fresh branch'}, {key: 'commitAnyway', caption: 'Commit anyway'}, {key: 'cancel', caption: 'Cancel'}]);
-      errorReporter.onSubmit(goog.bind(this.handleCommitIsNotAFastForward, this, err.commit, repo));
+      var commitDialog =
+          '<div id="gh-commit-diag-content">' +
+            '<div>The commit may have conflicts. Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, pick one of the following:</div>' +
+            '<div id="createFork" class="gh-commit-diag-choice gh-default-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
+              '<div class="gh-commit-diag-title">Commit on a fresh branch</div>' +
+              '<div class="gh-commit-diag-descripion">Create a branch containing your version of the document. Later on, you can merge back the branch, after you solve the conflicts.</div>' +
+            '</div>' +
+            '<div id="commitAnyway" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
+              '<div class="gh-commit-diag-title">Commit anyway</div>' +
+              '<div class="gh-commit-diag-descripion">This document was modified since you opened it. Click this button to overwrite any change made by anyone else.</div>' +
+            '</div>' +
+            '<div id="cancel" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-cancel"></span>' +
+              '<div class="gh-commit-diag-title">Cancel</div>' +
+              '<div class="gh-commit-diag-descripion">Cancel the current commit operation. Your changes won\'t be committed to the repository.</div>' +
+            '</div>' +
+          '</div>';
+
+      errorReporter.showError('Commit Status', commitDialog);
+
+      var choices = document.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
+      for (var i = 0; i < choices.length; i++) {
+        choices[i].addEventListener('click', goog.bind(this.handleCommitIsNotAFastForward, this, err.commit, choices[i].getAttribute('id'), repo));
+      }
+
       return;
     } else if (err.error == 401) {
       msg = 'Not authorized';
@@ -468,24 +496,24 @@
       msg = response.message;
     }
 
-    errorReporter.showError('Commit Error', msg);
+    errorReporter.showError('Commit Error', msg, sync.api.Dialog.ButtonConfiguration.OK);
   };
 
   /**
    * Handle the situation when a user commits to a repository and someone else has committed in the meantime as well
    * @param {{blobSha: string, sha: string, branch: string}} commit The commit which failed and the user can choose
    *        what to do with it
+   * @param {string} elementId The id of the clicked element
    * @param {object} opt_repo The repo on which to commit
    * @param {goog.ui.Dialog.Event} event The triggering event
    */
-  CommitAction.prototype.handleCommitIsNotAFastForward = function (commit, opt_repo, event) {
+  CommitAction.prototype.handleCommitIsNotAFastForward = function (commit, elementId, opt_repo, event) {
     var self = this;
-
     var repo = opt_repo ? opt_repo : self.repo;
 
-    switch (event.key) {
+    switch (elementId) {
     case 'createFork':
-      // Set to show the spinning loading
+      errorReporter.hide();
       self.setStatus('loading');
       self.ctx.branch = 'oxygen-webapp-' + Date.now();
       self.createBranch_(repo, self.ctx, function (err) {
@@ -493,13 +521,17 @@
           repo.updateCommit(commit, self.ctx.branch, goog.bind(self.finalizeCommit_, self, repo));
         } else {
           self.setStatus('none');
-          errorReporter.showError('Commit status', 'Could not create new branch');
+          errorReporter.showError('Commit status', 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
         }
       });
       break;
     case 'commitAnyway':
+      errorReporter.hide();
       self.setStatus('loading');
       repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo));
+      break;
+    case 'cancel':
+      errorReporter.hide();
       break;
     }
   };
@@ -537,7 +569,7 @@
                 err = self.getBranchingError_(err, self.ctx);
                 if (err) {
                   self.setStatus('none');
-                  errorReporter.showError('Commit status', message);
+                  errorReporter.showError('Commit status', message, sync.api.Dialog.ButtonConfiguration.OK);
                 } else {
                   self.commitToForkedRepo_(forkedRepo);
                 }
@@ -553,7 +585,7 @@
 
             if (!ok) {
               self.setStatus('none');
-              errorReporter.showError('Commit status', message);
+              errorReporter.showError('Commit status', message, sync.api.Dialog.ButtonConfiguration.OK);
             }
           });
         }
@@ -592,7 +624,7 @@
             self.setStatus('success');
           }
 
-          errorReporter.showError('Commit status', msg);
+          errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
         });
       } else {
         self.startCommit_(repo, self.ctx, function (err) {
@@ -697,7 +729,7 @@
 
       if (this.oauthProps && this.oauthProps.oauthUrl) {
         dialogHtml += '<div class="github-login-center-aligned">or</div>';
-        dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with Github</span></a>';
+        dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
       }
 
       this.loginDialog.getElement().innerHTML = dialogHtml;
@@ -846,7 +878,7 @@
         } else {
           // Got the access token, we can load the document
           if (credentials.error) {
-            errorReporter.showError('Github Error', 'Error description: "Github Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>');
+            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
           } else if (credentials.accessToken) {
             localStorage.setItem('github.credentials', JSON.stringify({
               token: credentials.accessToken,
@@ -896,7 +928,7 @@
           }
 
           workspace.setUrlChooser(new sync.api.FileBrowsingDialog({
-            initialUrl: loadingOptions.url
+              initialUrl: loadingOptions.url
           }));
 
           // Load the retrieved content in the editor.
