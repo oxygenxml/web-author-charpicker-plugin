@@ -294,6 +294,7 @@
    * @private
    */
   CommitAction.prototype.finalizeCommit_ = function (repo, err, commitResult) {
+    var self = this;
     if (!err) {
       // Have committed, we save the document sha and head for the next commits
       // The document is now on the commited branch
@@ -302,8 +303,16 @@
       this.branch = commitResult.branch;
       this.repo = repo;
 
-      this.setStatus('success');
-      errorReporter.showError('Commit status', 'Commit successful on branch '+ commitResult.branch, sync.api.Dialog.ButtonConfiguration.OK);
+      Github.apiRequest('GET', commitResult.head.url, null, function (err, response) {
+        var msg;
+        if (err) {
+          msg = 'Commit successful on branch ' + commitResult.branch;
+        } else {
+          msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + commitResult.branch + '</a>';
+        }
+        self.setStatus('success');
+        errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
+      });
     } else {
       this.setStatus('none');
       errorReporter.showError('Commit status', 'Commit failed', sync.api.Dialog.ButtonConfiguration.OK);
@@ -553,7 +562,7 @@
         var forkedRepo = self.github.getRepo(owner, repoName);
 
         if (self.ctx && self.ctx.branchExists) {
-          self.commitToForkedRepo_(forkedRepo);
+          self.commitToForkedRepo_(forkedRepo, self.handleErrors);
         } else {
           forkedRepo.branch(self.branch, self.ctx.branch, function(err) {
             var message = 'Could not commit to fork!';
@@ -571,7 +580,7 @@
                   self.setStatus('none');
                   errorReporter.showError('Commit status', message, sync.api.Dialog.ButtonConfiguration.OK);
                 } else {
-                  self.commitToForkedRepo_(forkedRepo);
+                  self.commitToForkedRepo_(forkedRepo, self.handleErrors);
                 }
               });
             } else if (err && err.error === 422) {
@@ -580,7 +589,7 @@
             } else if (err) {
               ok = false;
             } else {
-              self.commitToForkedRepo_(forkedRepo);
+              self.commitToForkedRepo_(forkedRepo, self.handleErrors);
             }
 
             if (!ok) {
@@ -620,8 +629,18 @@
             // The active repo is the forked repo
             self.repo = repo;
 
-            msg = 'Commit successful on branch ' + self.ctx.branch;
-            self.setStatus('success');
+            Github.apiRequest('GET', commit.head.url, null, function (err, response) {
+              var msg;
+              if (err) {
+                msg = 'Commit successful on branch ' + self.ctx.branch;
+              } else {
+                msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + self.ctx.branch + '</a>';
+              }
+              self.setStatus('success');
+              errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
+            });
+
+            return;
           }
 
           errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);

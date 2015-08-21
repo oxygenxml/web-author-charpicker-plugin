@@ -91,6 +91,8 @@
       }
     }
 
+    Github.apiRequest = _request;
+
     function _requestAllPages(path, cb) {
       var results = [];
       (function iterate() {
