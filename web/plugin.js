@@ -919,6 +919,7 @@
         }
 
         documentSha = file.sha;
+
         var fileContent = sync.util.decodeB64(file.content);
 
         repo.getHead(fileLocation.branch, function (err, head) {
