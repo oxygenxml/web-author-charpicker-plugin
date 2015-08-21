@@ -275,7 +275,7 @@
       repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
         repo.compare(head.sha, commit.sha, function (err, diff) {
           if (err) {return cb(err);}
-          cb({error: 409, message: 'The commit may have conflicts', diff: diff, commit: commit});
+          cb({error: 409, message: 'The file you want to commit has been edited since you opened it.', diff: diff, commit: commit});
         });
       });
     });
@@ -447,7 +447,7 @@
 
     if (err.error == 404) {
       // Not allowed to commit, or the repository does not exist.
-      msg = "No commit access. Do you want to fork and commit?";
+      msg = "You do not have rights to commit in the current repository. Do you want to commit on your own copy of this repository?";
 
       errorReporter.showError('Commit Error', msg, sync.api.Dialog.ButtonConfiguration.YES_NO);
       errorReporter.onSubmit(goog.bind(this.forkAndCommit, this));
@@ -455,7 +455,7 @@
     } else if (err.error == 409) {
       // Show link to the diff here
       errorReporter.showError('Commit Status', '<div style="text-align:center;"><a target="_blank" href = "' + err.diff.permalink_url + '">' + err.message + '</a></div>',
-          [{key: 'createFork', caption: 'Fork and merge later'}, {key: 'commitAnyway', caption: 'Commit anyway'}, {key: 'cancel', caption: 'Cancel'}]);
+          [{key: 'createFork', caption: 'Commit on a fresh branch'}, {key: 'commitAnyway', caption: 'Commit anyway'}, {key: 'cancel', caption: 'Cancel'}]);
       errorReporter.onSubmit(goog.bind(this.handleCommitIsNotAFastForward, this, err.commit, repo));
       return;
     } else if (err.error == 401) {
@@ -887,7 +887,7 @@
         }
 
         documentSha = file.sha;
-        var fileContent = goog.crypt.base64.decodeString(file.content);
+        var fileContent = sync.util.decodeB64(file.content);
 
         repo.getHead(fileLocation.branch, function (err, head) {
           if (!err) {
