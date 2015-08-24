@@ -1031,7 +1031,7 @@
       user: pathSplit[0],
       repo: pathSplit[1],
       branch: pathSplit[2],
-      filePath: decodeURI(decodeURI(pathSplit.slice(3).join("/")))
+      filePath: decodeURI(pathSplit.slice(3).join("/"))
     };
   }
 
