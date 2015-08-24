@@ -249,7 +249,6 @@
                 // Have committed, we save the document sha and head for the next commits
                 // The document is now on the committed branch
                 documentSha = commit.sha;
-                documentHead = commit.head;
                 self.branch = commit.branch;
               }
               cb(err);
@@ -289,26 +288,26 @@
   /**
    * Finalizes a commit (updates the document to the new head of the given commit)
    * @param {Github.Repository} repo The repository on which this commit was pushed
+   * @param {string} branch The branch this commit was on
    * @param {object} err The commit error
    * @param {{sha: string, head: object, branch: string}} commitResult The commitResult
    * @private
    */
-  CommitAction.prototype.finalizeCommit_ = function (repo, err, commitResult) {
+  CommitAction.prototype.finalizeCommit_ = function (repo, branch, err, commitResult) {
     var self = this;
     if (!err) {
       // Have committed, we save the document sha and head for the next commits
       // The document is now on the commited branch
       documentSha = commitResult.sha;
-      documentHead = commitResult.head;
-      this.branch = commitResult.branch;
+      this.branch = branch;
       this.repo = repo;
 
       Github.apiRequest('GET', commitResult.head.url, null, function (err, response) {
         var msg;
         if (err) {
-          msg = 'Commit successful on branch ' + commitResult.branch;
+          msg = 'Commit successful on branch ' + branch;
         } else {
-          msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + commitResult.branch + '</a>';
+          msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + branch + '</a>';
         }
         self.setStatus('success');
         errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
@@ -478,7 +477,7 @@
             '<div id="commitAnyway" class="gh-commit-diag-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
               '<div class="gh-commit-diag-title">Commit anyway</div>' +
-              '<div class="gh-commit-diag-descripion">This document was modified since you opened it. Click this button to overwrite any change made by anyone else.</div>' +
+              '<div class="gh-commit-diag-descripion">If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.</div>' +
             '</div>' +
             '<div id="cancel" class="gh-commit-diag-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-cancel"></span>' +
@@ -527,7 +526,7 @@
       self.ctx.branch = 'oxygen-webapp-' + Date.now();
       self.createBranch_(repo, self.ctx, function (err) {
         if (!err) {
-          repo.updateCommit(commit, self.ctx.branch, goog.bind(self.finalizeCommit_, self, repo));
+          repo.updateCommit(commit, self.ctx.branch, goog.bind(self.finalizeCommit_, self, repo, self.ctx.branch));
         } else {
           self.setStatus('none');
           errorReporter.showError('Commit status', 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
@@ -537,7 +536,7 @@
     case 'commitAnyway':
       errorReporter.hide();
       self.setStatus('loading');
-      repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo));
+      repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo, self.branch));
       break;
     case 'cancel':
       errorReporter.hide();
@@ -622,7 +621,6 @@
             msg = 'Error';
           } else {
             documentSha = commit.sha;
-            documentHead = commit.head;
             // Set our working branch to the new branch (The opened document is now on the new branch)
             self.branch = commit.branch;
 
@@ -835,11 +833,6 @@
   var documentSha;
 
   /**
-   * The github reference to the latest commit for the opened document
-   */
-  var documentHead;
-
-  /**
    * An object describing the location of the opened document (filePath, branch. user, repo)
    */
   var fileLocation;
@@ -934,44 +927,36 @@
 
         var fileContent = sync.util.decodeB64(file.content);
 
-        repo.getHead(fileLocation.branch, function (err, head) {
-          if (!err) {
-            // Saving the current head for later - when we might need to get a diff between commits
-            documentHead = head;
-          }
+        workspace.setUrlChooser(new sync.api.FileBrowsingDialog({
+          initialUrl: loadingOptions.url
+        }));
 
-          workspace.setUrlChooser(new sync.api.FileBrowsingDialog({
-              initialUrl: loadingOptions.url
-          }));
+        // Load the retrieved content in the editor.
+        loadingOptions.content = fileContent;
+        editor.load(loadingOptions);
 
-          // Load the retrieved content in the editor.
-          loadingOptions.content = fileContent;
-          editor.load(loadingOptions);
+        goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
+          var githubToolbarButton = goog.dom.createDom('div', {
+            id: 'github-toolbar-button'
+          }, 'GitHub');
 
-          goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
-            var githubToolbarButton = goog.dom.createDom('div', {
-              id: 'github-toolbar-button'
-            }, 'GitHub');
+          var commitAction = new CommitAction(editor, github, fileLocation);
+          commitAction.setGithubToolbarButton(githubToolbarButton);
 
-            var commitAction = new CommitAction(editor, github, fileLocation);
-            commitAction.setGithubToolbarButton(githubToolbarButton);
+          // Add the github commit and logout actions to the main toolbar
+          var commitActionId = installCommitAction(editor, commitAction);
+          var logOutActionId = installLogoutAction(editor, new LogOutAction());
 
-            // Add the github commit and logout actions to the main toolbar
-            var commitActionId = installCommitAction(editor, commitAction);
-            var logOutActionId = installLogoutAction(editor, new LogOutAction());
-
-            addToolbarToBuiltinToolbar(e.actionsConfiguration, {
-              type: "list",
-              iconDom: githubToolbarButton,
-              name: "GitHub",
-              children: [
-                {id: commitActionId, type: "action"},
-                {id: logOutActionId, type: "action"}
-              ]
-            });
+          addToolbarToBuiltinToolbar(e.actionsConfiguration, {
+            type: "list",
+            iconDom: githubToolbarButton,
+            name: "GitHub",
+            children: [
+              {id: commitActionId, type: "action"},
+              {id: logOutActionId, type: "action"}
+            ]
           });
         });
-
       }, this));
     }
   }, true);

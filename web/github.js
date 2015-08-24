@@ -266,7 +266,8 @@
                 if (err) {return cb(err);}
                 that.commit(head.sha, treeSha, message, function (err, commitSha) {
                   if (err) {return cb(err);}
-                  cb(null, {blobSha: blobSha, sha: commitSha, branch: branch});
+                  // The blobSha is the sha of the committed file itself.
+                  cb(null, {blobSha: blobSha, sha: commitSha});
                 });
               });
             });
@@ -279,12 +280,8 @@
 
       this.updateCommit = function (commit, branch, cb) {
         that.updateHead(branch, commit.sha, function (err, newHead) {
-          if (err) {
-            err.sha = commit.blobSha;
-            return cb(err);
-          }
-
-          cb(null, {sha: commit.blobSha, head: newHead.object, branch: branch});
+          if (err) {return cb(err);}
+          cb(null, {sha: commit.blobSha, head: newHead.object});
         });
       };
 
@@ -535,7 +532,6 @@
         _request('GET', repoPath + '/git/refs/heads/' + branch, null, function (err, response) {
           if (err) {return cb(err);}
 
-          // Adding the branch to the return value, it will be needed for updating this head
           cb(null, response.object);
         });
       };
