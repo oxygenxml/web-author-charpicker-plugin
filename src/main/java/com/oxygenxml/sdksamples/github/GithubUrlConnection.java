@@ -13,6 +13,7 @@ import org.jboss.resteasy.util.Base64;
 import ro.sync.ecss.extensions.api.webapp.plugin.FilterURLConnection;
 import ro.sync.net.protocol.FileBrowsingConnection;
 import ro.sync.net.protocol.FolderEntryDescriptor;
+import ro.sync.util.URLUtil;
 
 /**
  * Used to handle requests for urls like: github://method/params.
@@ -75,7 +76,7 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
           dirChar = "/";
         }
         
-        filesList.add(new FolderEntryDescriptor(result.name + dirChar));
+        filesList.add(new FolderEntryDescriptor(URLUtil.encodeURIComponent(result.name) + dirChar));
       }
     } else {
       // The result is a file and its content is Base64 encoded in the content property
