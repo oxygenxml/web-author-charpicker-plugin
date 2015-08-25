@@ -7,6 +7,8 @@
     this.errDialog = null;
   };
 
+  var COMMIT_STATUS_TITLE = 'Commit Status';
+
   /**
    * Shows an error dialog.
    * @param {string} title The title of the dialog.
@@ -310,11 +312,11 @@
           msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + branch + '</a>';
         }
         self.setStatus('success');
-        errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
+        errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
       });
     } else {
       this.setStatus('none');
-      errorReporter.showError('Commit status', 'Commit failed', sync.api.Dialog.ButtonConfiguration.OK);
+      errorReporter.showError(COMMIT_STATUS_TITLE, 'Commit failed', sync.api.Dialog.ButtonConfiguration.OK);
     }
   };
 
@@ -441,7 +443,7 @@
     if (!err) {
       this.editor.setDirty(false);
       this.setStatus('success');
-      errorReporter.showError('Commit status', '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+      errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
     } else {
       this.handleErrors(err);
     }
@@ -486,7 +488,7 @@
             '</div>' +
           '</div>';
 
-      errorReporter.showError('Commit Status', commitDialog);
+      errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog);
 
       var choices = document.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
       for (var i = 0; i < choices.length; i++) {
@@ -529,7 +531,7 @@
           repo.updateCommit(commit, self.ctx.branch, goog.bind(self.finalizeCommit_, self, repo, self.ctx.branch));
         } else {
           self.setStatus('none');
-          errorReporter.showError('Commit status', 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
+          errorReporter.showError(COMMIT_STATUS_TITLE, 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
         }
       });
       break;
@@ -577,7 +579,7 @@
                 err = self.getBranchingError_(err, self.ctx);
                 if (err) {
                   self.setStatus('none');
-                  errorReporter.showError('Commit status', message, sync.api.Dialog.ButtonConfiguration.OK);
+                  errorReporter.showError(COMMIT_STATUS_TITLE, message, sync.api.Dialog.ButtonConfiguration.OK);
                 } else {
                   self.commitToForkedRepo_(forkedRepo, self.handleErrors);
                 }
@@ -593,7 +595,7 @@
 
             if (!ok) {
               self.setStatus('none');
-              errorReporter.showError('Commit status', message, sync.api.Dialog.ButtonConfiguration.OK);
+              errorReporter.showError(COMMIT_STATUS_TITLE, message, sync.api.Dialog.ButtonConfiguration.OK);
             }
           });
         }
@@ -635,13 +637,13 @@
                 msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + self.ctx.branch + '</a>';
               }
               self.setStatus('success');
-              errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
+              errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
             });
 
             return;
           }
 
-          errorReporter.showError('Commit status', msg, sync.api.Dialog.ButtonConfiguration.OK);
+          errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
         });
       } else {
         self.startCommit_(repo, self.ctx, function (err) {
