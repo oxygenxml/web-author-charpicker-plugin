@@ -7,7 +7,7 @@
     this.errDialog = null;
   };
 
-  var COMMIT_STATUS_TITLE = 'Commit Status';
+  var COMMIT_STATUS_TITLE = 'Commit status';
 
   /**
    * Shows an error dialog.
