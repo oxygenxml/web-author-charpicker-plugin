@@ -312,7 +312,7 @@
           msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + branch + '</a>';
         }
         self.setStatus('success');
-        errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
+        errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
       });
     } else {
       this.setStatus('none');
@@ -637,7 +637,7 @@
                 msg = 'Commit successful on branch <a target="_blank" href="' + response.html_url + '">' + self.ctx.branch + '</a>';
               }
               self.setStatus('success');
-              errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
+              errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
             });
 
             return;
