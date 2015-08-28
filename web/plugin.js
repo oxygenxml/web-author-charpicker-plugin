@@ -425,6 +425,12 @@
         message: el.querySelector('[name="message"]').value,
         branch: el.querySelector('[name="branch"]').value
       };
+
+      // A branch must be provided!
+      if (!ctx.branch) {
+        ctx.branch = this.branch;
+      }
+
       // save ctx it for the fork and commit button
       this.ctx = ctx;
 
