@@ -1034,12 +1034,11 @@
     if (pathSplit[0] === "") {
       pathSplit = pathSplit.slice(1);
     }
-
     return {
       user: pathSplit[0],
       repo: pathSplit[1],
       branch: pathSplit[2],
-      filePath: decodeURI(pathSplit.slice(3).join("/"))
+      filePath: pathSplit.slice(3).map(decodeURIComponent).join("/")
     };
   }
 
