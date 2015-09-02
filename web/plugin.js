@@ -43,17 +43,6 @@
     return this.errDialog;
   };
 
-  /**
-   * Sets the listener for when the user clicks on the yes button of the dialog
-   * @param {function} onSubmit The method to be called when the user clicks on the dialog yes button
-   */
-  GitHubErrorReporter.prototype.onSubmit = function (onSubmit) {
-    var submitListener = this.errDialog.dialog.listen(goog.ui.Dialog.EventType.SELECT, function (event) {
-      onSubmit(event);
-      goog.events.unlistenByKey(submitListener);
-    });
-  };
-
   var errorReporter = new GitHubErrorReporter();
 
   /**
@@ -471,7 +460,11 @@
       msg = "You do not have rights to commit in the current repository. <br/>Do you want to commit on your own copy of this repository?";
 
       errorReporter.showError('Commit Error', msg, sync.api.Dialog.ButtonConfiguration.YES_NO);
-      errorReporter.onSubmit(goog.bind(this.forkAndCommit, this));
+
+      var self = this;
+      errorReporter.errDialog.dialog.listenOnce(goog.ui.Dialog.EventType.SELECT, function (e) {
+        self.forkAndCommit(e);
+      });
       return;
     } else if (err.error == 409) {
       var commitDialog =
