@@ -240,7 +240,7 @@
                 // Have committed, we save the document sha and head for the next commits
                 // The document is now on the committed branch
                 documentSha = commit.sha;
-                self.branch = commit.branch;
+                self.branch = ctx.branch;
               }
               cb(err);
             });
@@ -302,6 +302,9 @@
         }
         self.setStatus('success');
         errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
+
+        goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
+            goog.bind(self.handleReloadOnNewBranch, self));
       });
     } else {
       this.setStatus('none');
@@ -439,10 +442,37 @@
       this.editor.setDirty(false);
       this.setStatus('success');
       errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+      goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT, goog.bind(this.handleReloadOnNewBranch, this));
     } else {
       this.handleErrors(err);
     }
     cb();
+  };
+
+  /**
+   * Navigates to the url of this document on the new branch, created/updated by the latest commit
+   *
+   * @param {event} e The triggering event
+   */
+  CommitAction.prototype.handleReloadOnNewBranch = function (e) {
+    if (this.branch != fileLocation.branch || (documentOwner != fileLocation.user)) {
+      /*
+      * currentURl looks like this: http://github.com/owner/repo/branch/blob/path/to/file
+      * We will replace owner with documentOwner and branch with this.branch
+      * */
+
+      var currentUrl = decodeURIComponent(sync.util.getURLParameter('url'));
+      var urlParts = currentUrl.split('/' + fileLocation.branch + '/');
+
+      var urlSplit = urlParts[0].split('/' + fileLocation.user + '/');
+      var firstPart = urlSplit[0] + '/' + documentOwner + '/' + urlSplit[1];
+
+      var newUrl = firstPart + '/' + this.branch + '/' + urlParts[1];
+      var webappUrl = sync.util.serializeQueryString(newUrl, sync.util.getOpenLinkUrlParams());
+
+      this.editor.setDirty(false);
+      window.open(webappUrl, "_self");
+    }
   };
 
   /**
@@ -558,11 +588,11 @@
 
       self.repo.fork(function (_, result) {
         var repoName = result.name;
-        var owner = result.owner.login;
-        var forkedRepo = self.github.getRepo(owner, repoName);
+        documentOwner = result.owner.login;
+        var forkedRepo = self.github.getRepo(documentOwner, repoName);
 
         if (self.ctx && self.ctx.branchExists) {
-          self.commitToForkedRepo_(forkedRepo, self.handleErrors);
+          self.commitToForkedRepo_(forkedRepo);
         } else {
           forkedRepo.branch(self.branch, self.ctx.branch, function(err) {
             var message = 'Could not commit to fork!';
@@ -580,7 +610,7 @@
                   self.setStatus('none');
                   errorReporter.showError(COMMIT_STATUS_TITLE, message, sync.api.Dialog.ButtonConfiguration.OK);
                 } else {
-                  self.commitToForkedRepo_(forkedRepo, self.handleErrors);
+                  self.commitToForkedRepo_(forkedRepo);
                 }
               });
             } else if (err && err.error === 422) {
@@ -589,7 +619,7 @@
             } else if (err) {
               ok = false;
             } else {
-              self.commitToForkedRepo_(forkedRepo, self.handleErrors);
+              self.commitToForkedRepo_(forkedRepo);
             }
 
             if (!ok) {
@@ -623,7 +653,7 @@
           } else {
             documentSha = commit.sha;
             // Set our working branch to the new branch (The opened document is now on the new branch)
-            self.branch = commit.branch;
+            self.branch = self.ctx.branch;
 
             // The active repo is the forked repo
             self.repo = repo;
@@ -637,6 +667,9 @@
               }
               self.setStatus('success');
               errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
+
+              goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
+                  goog.bind(self.handleReloadOnNewBranch, self));
             });
 
             return;
@@ -834,6 +867,11 @@
   var documentSha;
 
   /**
+   * The owner of the document
+   */
+  var documentOwner;
+
+  /**
    * An object describing the location of the opened document (filePath, branch. user, repo)
    */
   var fileLocation;
@@ -908,6 +946,8 @@
      * @param {Object} github The github api object
      */
     function loadDocument(github) {
+      documentOwner = fileLocation.user;
+
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
       // Read the content using the GitHub API.
       repo.getContents(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, file) {
@@ -993,7 +1033,7 @@
           error: response.error
         });
       } else if (xhrRequest.readyState == 4) {
-        callback({message: "OAuth client_id or access_token are nota available"}, null);
+        callback({message: "OAuth client_id or access_token are not available"}, null);
       }
     };
 
