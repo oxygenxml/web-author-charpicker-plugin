@@ -888,21 +888,21 @@
     e.stopPropagation();
     e.preventDefault();
 
-    // load the css by now because we will show a styled "Login with Github" button
-    loadCss();
+    var normalizedUrl = normalizeGitHubUrl(url);
 
     var loadingOptions = e.options;
-    loadingOptions.url = normalizeGitHubUrl(url);
-    fileLocation = getFileLocation(loadingOptions.url);
+    loadingOptions.url = normalizedUrl;
+
+    fileLocation = getFileLocation(normalizedUrl);
 
     // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
     if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
       localStorage.removeItem('github.credentials');
     }
-
-    // Send the access token to the server to synchronize
-    if (localStorageCredentials && localStorageCredentials.token) {
+    
+		// Send the access token to the server to synchronize
+		if (localStorageCredentials && localStorageCredentials.token) {
       syncTokenWithServer(localStorageCredentials.token);
     }
 
@@ -1155,4 +1155,125 @@
   function isGitHubUrl(url) {
     return url.indexOf('github.com') != -1 || url.indexOf('raw.githubusercontent.com') != -1;
   }
+
+
+  goog.provide('GithubConnectionConfigurator');
+
+  /**
+   * Handles the github connection configuration.
+   * @constructor
+   */
+  GithubConnectionConfigurator = function() {
+    sync.api.FileBrowsingDialog.FileRepositoryConnectionConfigurator.call(this);
+    this.configDialog = null;
+  };
+  goog.inherits(GithubConnectionConfigurator,
+      sync.api.FileBrowsingDialog.FileRepositoryConnectionConfigurator);
+
+  /**
+   *  Handle the connection configurations.
+   *
+   * @param currentUrl the file browser's current url.
+   * @param fileName the current file name.
+   * @param callback callback method to call with the new options.
+   */
+  GithubConnectionConfigurator.prototype.configureConnection = function(currentUrl, fileName, callback) {
+    this.showConfigDialog();
+
+    this.configDialog.onSelect(goog.bind(function (key) {
+      if (key == 'ok') {
+        var url = document.getElementById('github-settings-url').value;
+        var normalizedUrl = normalizeGitHubUrl(url);
+        callback({
+          initialUrl: normalizedUrl
+        });
+      }
+    }, this));
+  };
+
+  /**
+   * Display the connection configuration dialog.
+   */
+  GithubConnectionConfigurator.prototype.showConfigDialog = function() {
+    // create the dialog if it is null.
+    if(this.configDialog == null) {
+      this.configDialog = workspace.createDialog();
+      this.configDialog.getElement().innerHTML =
+          '<div style="text-align:left">' +
+          '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
+          '<div><input id="github-settings-url" type="text"/></div>' +
+          '<div>Format:</div>' +
+          '<div style="line-height: 1em;">' +
+            '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
+          '</div>' +
+          '<div>Example:</div>' +
+          '<div style="line-height: 1em;font-size: 0.9em;">' +
+            '<div>https://github.com/oxygenxml/userguide/tree/master/</div>' +
+            '<div>https://github.com/oxygenxml/userguide/blob/OXYGEN_BRANCH_17_0/DITA/README.txt</div>' +
+            '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/installation-options.dita</div>' +
+          '</div>' +
+          '</div>';
+      this.configDialog.setTitle('Credentials might me required');
+      this.configDialog.show();
+    }
+
+    document.getElementById('github-settings-url').value = '';
+    this.configDialog.show();
+  };
+
+
+  /**
+   * Register all the needed listeners.
+   */
+  registerFileBrowserListeners = function (fileBrowser) {
+    // handle the user action required event.
+    var eventTarget = fileBrowser.getEventTarget();
+    goog.events.listen(eventTarget,
+        sync.api.FileBrowsingDialog.EventTypes.USER_ACTION_REQUIRED,
+        function () {
+          var loginManager = new GitHubLoginManager();
+          getGithubClientIdOrToken(function (err, credentials) {
+            if (err) {
+              // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
+              loginManager.setOauthProps(null);
+              loginManager.resetCredentials();
+
+              //loginManager.getCredentials(loadDocument);
+            } else {
+              // Got the access token, we can load the document
+              if (credentials.error) {
+                errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
+              } else if (credentials.accessToken) {
+                localStorage.setItem('github.credentials', JSON.stringify({
+                  token: credentials.accessToken,
+                  auth: "oauth"
+                }));
+                loginManager.setOauthProps(credentials.clientId, credentials.state);
+
+                fileBrowser.refresh();
+              } else {
+                // Login with user and pass
+                loginManager.setOauthProps(credentials.clientId, credentials.state);
+                loginManager.getCredentials(function (github) {
+                });
+              }
+            }
+          });
+        });
+  };
+
+  // load the css by now because we will show a styled "Login with Github" button
+  loadCss();
+
+  // create the connection configurator.
+  var connectionConfigurator = new GithubConnectionConfigurator();
+  var fileBrowser = new sync.api.FileBrowsingDialog({
+    fileRepositoryConnectionConfigurator: connectionConfigurator
+  });
+
+  // register all the listeners on the file browser.
+  registerFileBrowserListeners(fileBrowser);
+
+  workspace.getActionsManager().registerOpenAction(
+      new sync.actions.OpenAction(fileBrowser));
 }());
