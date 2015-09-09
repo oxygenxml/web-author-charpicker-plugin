@@ -895,50 +895,8 @@
 
     fileLocation = getFileLocation(normalizedUrl);
 
-    // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
-    var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
-    if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
-      localStorage.removeItem('github.credentials');
-    }
-    
-		// Send the access token to the server to synchronize
-		if (localStorageCredentials && localStorageCredentials.token) {
-      syncTokenWithServer(localStorageCredentials.token);
-    }
+    authenticateUser(loadDocument);
 
-    var loginManager = new GitHubLoginManager();
-    var github = loginManager.createGitHub();
-
-    if (github) {
-      loadDocument(github);
-    } else {
-      getGithubClientIdOrToken(goog.bind(function (err, credentials) {
-        if (err) {
-          // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-          loginManager.setOauthProps(null);
-          loginManager.resetCredentials();
-
-          loginManager.getCredentials(loadDocument);
-        } else {
-          // Got the access token, we can load the document
-          if (credentials.error) {
-            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
-          } else if (credentials.accessToken) {
-            localStorage.setItem('github.credentials', JSON.stringify({
-              token: credentials.accessToken,
-              auth: "oauth"
-            }));
-
-            loginManager.setOauthProps(credentials.clientId, credentials.state);
-            loadDocument(loginManager.createGitHub());
-          } else {
-            // Login with user and pass
-            loginManager.setOauthProps(credentials.clientId, credentials.state);
-            loginManager.getCredentials(loadDocument);
-          }
-        }
-      }, this));
-    }
 
     /**
      * Loads the document
@@ -1153,7 +1111,9 @@
    * @returns {boolean} true if the url points to a github resource
    */
   function isGitHubUrl(url) {
-    return url.indexOf('github.com') != -1 || url.indexOf('raw.githubusercontent.com') != -1;
+    return url.indexOf('github.com') != -1 ||
+        url.indexOf('raw.githubusercontent.com') != -1 ||
+        url.indexOf('github://') != -1;
   }
 
 
@@ -1203,6 +1163,54 @@
     }, this));
   };
 
+  // TODO: document and clean code.
+  authenticateUser = function(callback) {
+    // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
+    var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
+    if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
+      localStorage.removeItem('github.credentials');
+    }
+
+    // Send the access token to the server to synchronize
+    if (localStorageCredentials && localStorageCredentials.token) {
+      syncTokenWithServer(localStorageCredentials.token);
+    }
+
+    var loginManager = new GitHubLoginManager();
+    var github = loginManager.createGitHub();
+
+    if (github) {
+      callback(github);
+    } else {
+      getGithubClientIdOrToken(function (err, credentials) {
+        if (err) {
+          // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
+          loginManager.setOauthProps(null);
+          loginManager.resetCredentials();
+
+          loginManager.getCredentials(loadDocument);
+        } else {
+          // Got the access token, we can load the document
+          if (credentials.error) {
+            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
+          } else if (credentials.accessToken) {
+            localStorage.setItem('github.credentials', JSON.stringify({
+              token: credentials.accessToken,
+              auth: "oauth"
+            }));
+
+            loginManager.setOauthProps(credentials.clientId, credentials.state);
+            callback(loginManager.createGitHub());
+          } else {
+            // Login with user and pass
+            loginManager.setOauthProps(credentials.clientId, credentials.state);
+            loginManager.getCredentials(callback);
+          }
+        }
+      });
+    }
+  };
+
   /**
    * Display the connection configuration dialog.
    */
@@ -1230,7 +1238,6 @@
     }
 
     var settings = JSON.parse(localStorage.getItem('github.settings'));
-    console.log('settings :', settings)
     if(settings && settings.url) {
       document.getElementById('github-settings-url').value = settings.url;
     } else {
@@ -1249,34 +1256,8 @@
     goog.events.listen(eventTarget,
         sync.api.FileBrowsingDialog.EventTypes.USER_ACTION_REQUIRED,
         function () {
-          var loginManager = new GitHubLoginManager();
-          getGithubClientIdOrToken(function (err, credentials) {
-            if (err) {
-              // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-              loginManager.setOauthProps(null);
-              loginManager.resetCredentials();
-
-              //loginManager.getCredentials(loadDocument);
-            } else {
-              // Got the access token, we can load the document
-              if (credentials.error) {
-                errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
-              } else if (credentials.accessToken) {
-                localStorage.setItem('github.credentials', JSON.stringify({
-                  token: credentials.accessToken,
-                  auth: "oauth"
-                }));
-                loginManager.setOauthProps(credentials.clientId, credentials.state);
-
-                fileBrowser.refresh();
-              } else {
-                // Login with user and pass
-                loginManager.setOauthProps(credentials.clientId, credentials.state);
-                loginManager.getCredentials(function (github) {
-                });
-              }
-            }
-          });
+          // authenticate the user.
+          authenticateUser(fileBrowser.refresh);
         });
   };
 
