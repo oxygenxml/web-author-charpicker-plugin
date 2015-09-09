@@ -1183,7 +1183,11 @@
     this.configDialog.onSelect(goog.bind(function (key) {
       if (key == 'ok') {
         var url = document.getElementById('github-settings-url').value;
-        // add '/' if it is a folder's url.
+        // save the settings in the local storage.
+        localStorage.setItem('github.settings', JSON.stringify({
+          url: url
+        }));
+        // add a '/' if it is a folder's url.
         var trimmedUrl = url.substring(url.indexOf('github.com/') + 'github.com/'.length);
         var urlElements = trimmedUrl.split('/');
         var marker = (urlElements.length > 2) && urlElements[2];
@@ -1225,7 +1229,13 @@
       this.configDialog.show();
     }
 
-    document.getElementById('github-settings-url').value = '';
+    var settings = JSON.parse(localStorage.getItem('github.settings'));
+    console.log('settings :', settings)
+    if(settings && settings.url) {
+      document.getElementById('github-settings-url').value = settings.url;
+    } else {
+      document.getElementById('github-settings-url').value = '';
+    }
     this.configDialog.show();
   };
 
