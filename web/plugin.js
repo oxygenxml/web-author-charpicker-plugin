@@ -1183,6 +1183,14 @@
     this.configDialog.onSelect(goog.bind(function (key) {
       if (key == 'ok') {
         var url = document.getElementById('github-settings-url').value;
+        // add '/' if it is a folder's url.
+        var trimmedUrl = url.substring(url.indexOf('github.com/') + 'github.com/'.length);
+        var urlElements = trimmedUrl.split('/');
+        var marker = (urlElements.length > 2) && urlElements[2];
+        if(marker == 'tree') {
+          url = url + '/';
+        }
+
         var normalizedUrl = normalizeGitHubUrl(url);
         callback({
           initialUrl: normalizedUrl
@@ -1201,19 +1209,19 @@
       this.configDialog.getElement().innerHTML =
           '<div style="text-align:left">' +
           '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
-          '<div><input id="github-settings-url" type="text"/></div>' +
+          '<div><input id="github-settings-url" type="text" style="width: 100%; line-height: 1.5em;" autofocus="autofocus"/></div>' +
           '<div>Format:</div>' +
-          '<div style="line-height: 1em;">' +
+          '<div style="line-height: 1em; font-size: 0.9em;">' +
             '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
           '</div>' +
           '<div>Example:</div>' +
-          '<div style="line-height: 1em;font-size: 0.9em;">' +
+          '<div style="line-height: 1em; font-size: 0.9em;">' +
             '<div>https://github.com/oxygenxml/userguide/tree/master/</div>' +
             '<div>https://github.com/oxygenxml/userguide/blob/OXYGEN_BRANCH_17_0/DITA/README.txt</div>' +
             '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/installation-options.dita</div>' +
           '</div>' +
           '</div>';
-      this.configDialog.setTitle('Credentials might me required');
+			this.configDialog.setTitle('Configure Github');
       this.configDialog.show();
     }
 
