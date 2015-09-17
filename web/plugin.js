@@ -1281,8 +1281,10 @@
   // register all the listeners on the file browser.
   registerFileBrowserListeners(fileBrowser);
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
+
   githubOpenAction.setLargeIcon(
   	'../plugin-resources/github-static/GitHub-Mark-120px-plus.png');
+  githubOpenAction.setDescription('Open a document from your GitHub repository');
   
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
