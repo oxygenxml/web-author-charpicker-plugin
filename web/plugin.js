@@ -1177,10 +1177,11 @@
    * Handles the github connection configuration.
    * @constructor
    */
-  GithubConnectionConfigurator = function() {
+  var GithubConnectionConfigurator = function() {
     sync.api.FileBrowsingDialog.FileRepositoryConnectionConfigurator.call(this);
     this.configDialog = null;
   };
+
   goog.inherits(GithubConnectionConfigurator,
       sync.api.FileBrowsingDialog.FileRepositoryConnectionConfigurator);
 
