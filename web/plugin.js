@@ -890,7 +890,7 @@
           this.setOauthProps(null);
           this.resetCredentials();
 
-          this.getCredentials(loadDocument);
+          this.getCredentials(callback);
         } else {
           // Got the access token, we can load the document
           if (credentials.error) {
@@ -937,6 +937,9 @@
     if (!isGitHubUrl(url)) {
       return;
     }
+
+    // load the css by now because we will show a styled "Login with Github" button
+    loadCss();
 
     e.stopPropagation();
     e.preventDefault();
@@ -1258,7 +1261,7 @@
   /**
    * Register all the needed listeners.
    */
-  registerFileBrowserListeners = function (fileBrowser) {
+  var registerFileBrowserListeners = function (fileBrowser) {
     // handle the user action required event.
     var eventTarget = fileBrowser.getEventTarget();
     goog.events.listen(eventTarget,
@@ -1269,9 +1272,6 @@
           loginManager.authenticateUser(goog.bind(fileBrowser.refresh,fileBrowser));
         });
   };
-
-  // load the css by now because we will show a styled "Login with Github" button
-  loadCss();
 
   // create the connection configurator.
   var connectionConfigurator = new GithubConnectionConfigurator();
