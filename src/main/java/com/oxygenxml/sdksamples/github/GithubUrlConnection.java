@@ -95,7 +95,7 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
         filesList.add(new FolderEntryDescriptor(new String(decodedContent)));
       }
     } catch (IOException e) {
-      if (e.getMessage().startsWith("404 Not Found")) {
+      if (e.getMessage().startsWith("404 Not Found") || e.getMessage().startsWith("403 Forbidden")) {
         // if the user is not authorized
         throw new UserActionRequiredException(new WebappMessage(
             WebappMessage.MESSAGE_TYPE_CUSTOM, "Authentication required",
