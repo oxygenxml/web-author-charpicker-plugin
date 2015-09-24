@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ro.sync.ecss.extensions.OptionsStorageImpl;
+// import ro.sync.ecss.extensions.OptionsStorageImpl;
 import ro.sync.servlet.admin.PluginConfigExtension;
 
 /**
@@ -50,8 +50,8 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    * Returns the current options in JSON format
    */
   private void serveTheCurrentOptions() {
-    OptionsStorageImpl optionsStorage = new OptionsStorageImpl();
-    optionsStorage.setOptionsDoctypePrefix("");
+    //OptionsStorageImpl optionsStorage = new OptionsStorageImpl();
+    //optionsStorage.setOptionsDoctypePrefix("");
   }
   
   @Override
