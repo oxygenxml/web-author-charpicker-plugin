@@ -43,6 +43,12 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
     
     String githubApiUrlString = "https://api.github.com/repos/" + 
                                 owner + "/" + repo + "/contents" + path + "?ref=" + branch;
+    
+    // To increase the rate limit of the github api we must send the client secret and client id with each request
+    if (GitHubOauthServlet.clientId != null && GitHubOauthServlet.clientSecret != null) {
+      githubApiUrlString += "&client_id=" + GitHubOauthServlet.clientId + "&client_secret=" + GitHubOauthServlet.clientSecret;
+    }
+    
     URL apiUrl = new URL(githubApiUrlString);
     
     String accessToken = accessTokens.get(contextId);

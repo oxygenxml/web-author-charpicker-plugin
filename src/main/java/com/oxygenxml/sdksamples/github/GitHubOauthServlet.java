@@ -27,11 +27,11 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   /** 
    * The Github clientId
    */
-  private String clientId = null;
+  static String clientId = null;
   /**
    * The Github clientSecret
    */
-  private String clientSecret = null;
+  static String clientSecret = null;
   
   @Override
   public String getPath() {
