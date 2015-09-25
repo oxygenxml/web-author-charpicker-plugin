@@ -3,9 +3,11 @@ package com.oxygenxml.sdksamples.github;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 // import ro.sync.ecss.extensions.OptionsStorageImpl;
 import ro.sync.servlet.admin.PluginConfigExtension;
@@ -26,6 +28,16 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   @Override
   public String getPath() {
     return "github-config";
+  }
+  
+  @Override
+  public void init() throws ServletException {
+    super.init();
+  }
+  
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
   }
   
   @Override
