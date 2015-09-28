@@ -930,8 +930,7 @@
   var fileLocation;
 
   // Make sure we accept any kind of URLs.
-  goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function(e) {
-
+  goog.events.listenOnce(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function(e) {
     var url = e.options.url;
     var editor = e.editor;
     if (!isGitHubUrl(url)) {
@@ -941,7 +940,6 @@
     // load the css by now because we will show a styled "Login with Github" button
     loadCss();
 
-    e.stopPropagation();
     e.preventDefault();
 
     var normalizedUrl = normalizeGitHubUrl(url);
