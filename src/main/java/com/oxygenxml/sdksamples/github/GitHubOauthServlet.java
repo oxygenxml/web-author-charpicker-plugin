@@ -55,10 +55,10 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         ServletContext servletContext = getServletConfig().getServletContext();
         servletContext.addListener(HttpSessionObserver.class);
       } catch (IOException e) {
-        logger.warn("Could not read the github-plugin.properties file. OAuth authentication disabled.");
+        logger.warn("Could not read the github-plugin.properties file. The user must set the client_id and client_secret from the admin page.");
       }
     } else {
-      logger.warn("Config file github-plugin.properties is missing from WEB-INF. OAuth authentication disabled.");
+      logger.warn("Config file github-plugin.properties is missing from WEB-INF. The user must set the client_id and client_secret from the admin page.");
     }
   }
   
