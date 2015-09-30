@@ -18,4 +18,6 @@
  <extension type="WebappServlet" 
     class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
  <extension type="WebappStaticResourcesFolder" path="web/static/" href="github-static"/>
+ <extension type="WebappServlet" role="config"
+    class="com.oxygenxml.sdksamples.github.GithubPluginConfigExtension"/>
 </plugin>

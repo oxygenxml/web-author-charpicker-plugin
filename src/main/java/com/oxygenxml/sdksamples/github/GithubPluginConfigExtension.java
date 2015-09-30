@@ -32,41 +32,13 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    */
   private final String CLIENT_SECRET = "client_secret";
   
-  /**
-   * Sets the options form which will be sent to the client and the default options
-   */
-  public GithubPluginConfigExtension() {
-    this.setOptionsForm(
-        "<div style='font-family:robotolight, Arial, Helvetica, sans-serif;font-size:0.85em;font-weight: lighter'>"
-          + "<form style='text-align:left;line-height: 1.7em;'>"
-            + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
-              + "client_id: "
-              + "<input name='client_id' type='text' style='float:right'/>"
-            + "</label>"
-            + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
-              + "client_secret:"
-              + "<input name='client_secret' type='text' style='float:right'/>"
-            + "</label>"
-          + "</form>"
-          
-          + "<div style='background-color: lightyellow;border: 1px solid #dadab4;padding:0 5px 0 5px'>"
-            + "<p>The github plugin requires a client_id and client_secret to use OAuth authentication.</p>"
-            + "<p>To obtain a client_id and client_secret go to your github <a target='_blank' href='https://github.com/settings/developers'>developer applications page</a> and register a new application.</p>"
-            + "<p>The Authorization callback URL must be set to: {webapp-context}/plugins-dispatcher/github-oauth/callback. example:<br/><span style='text-decoration:underline'>http://domain/oxygen-webapp/plugins-dispatcher/github-oauth/callback</p>"
-          + "</div>"
-        + "</div>"
-        
-        + "<script>console.log('Coming from server!');</script>"
-    );
-  }
-  
   @Override
   public void init() throws ServletException {
     super.init();
  
     Map<String, String> defaultOptions = new HashMap<String, String>();
     defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);
-    defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientId);
+    defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
     setDefaultOptions(defaultOptions);
     
     // If the options are set by the user in the admin page they will be returned from getOption.
@@ -82,6 +54,31 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   @Override
   public String getPath() {
     return "github-config";
+  }
+  
+  @Override
+  public String getOptionsForm() {
+    return "<div style='font-family:robotolight, Arial, Helvetica, sans-serif;font-size:0.85em;font-weight: lighter'>"
+            + "<form style='text-align:left;line-height: 1.7em;'>"
+              + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
+                + "client_id: "
+                + "<input name='client_id' type='text' style='float:right' value='" + GitHubOauthServlet.clientId + "'/>"
+              + "</label>"
+              + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
+                + "client_secret:"
+                + "<input name='client_secret' type='text' style='float:right' value='" + GitHubOauthServlet.clientSecret +"'/>"
+              + "</label>"
+            + "</form>"
+            
+            + "<div style='background-color: lightyellow;border: 1px solid #dadab4;padding:0 5px 0 5px'>"
+              + "<p>The github plugin requires a client_id and client_secret to use OAuth authentication.</p>"
+              + "<p>To obtain a client_id and client_secret go to your github <a target='_blank' href='https://github.com/settings/developers'>developer applications page</a> and register a new application.</p>"
+              + "<p>The Authorization callback URL must be set to: {webapp-context}/plugins-dispatcher/github-oauth/callback. example:<br/><span style='text-decoration:underline'>http://domain/oxygen-webapp/plugins-dispatcher/github-oauth/callback</p>"
+            + "</div>"
+          + "</div>"
+          
+          // Load the logic for this config page
+          + "<script src='../plugin-resources/github-static/github-config.js'></script>";
   }
   
   /**
@@ -176,10 +173,15 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    GitHubOauthServlet.clientId = getDefaultOptions().get("client_id");
-    GitHubOauthServlet.clientSecret = getDefaultOptions().get("client_secret");
+    String clientId = getDefaultOptions().get(CLIENT_ID);
+    String clientSecret = getDefaultOptions().get(CLIENT_SECRET);
     
-    // Call super method to delete the options on the file system as well and respond to the client.
-    super.doDelete(req, resp);
+    setOption(CLIENT_ID, clientId);
+    setOption(CLIENT_SECRET, clientSecret);
+    saveOptions();
+    
+    resp.setStatus(HttpServletResponse.SC_OK);
+    resp.getWriter().write("{\"client_id\":\"" + clientId + "\",\"client_secret\":\"" + clientSecret + "\"}");
+    resp.getWriter().flush();
   }
 }
