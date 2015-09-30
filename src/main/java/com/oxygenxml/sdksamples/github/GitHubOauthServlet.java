@@ -206,6 +206,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     if (error != null) {
       httpResponse.getWriter().write("{\"error\":\"" + error + "\"}");
       httpResponse.flushBuffer();
+      
+      // If we don't remove the error attribute now, the client could end up being blocked without being able to login until his/her session expires.
+      session.removeAttribute("error");
       return true;
     } else {
       return false;
