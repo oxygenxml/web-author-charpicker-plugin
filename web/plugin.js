@@ -894,7 +894,11 @@
         } else {
           // Got the access token, we can load the document
           if (credentials.error) {
-            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' + credentials.error + '"<br />Please contact <a href="mailto:support@oxygenxml.com">support@oxygenxml.com</a>', sync.api.Dialog.ButtonConfiguration.OK);
+            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' +
+                credentials.error, sync.api.Dialog.ButtonConfiguration.OK);
+            // When an oauth flow error occurs we shoul remove any saved credentials so we can get new ones
+            // (This error occurs when the wrong clientId and clientSecret are set)
+            localStorage.removeItem('github.credentials');
           } else if (credentials.accessToken) {
             localStorage.setItem('github.credentials', JSON.stringify({
               token: credentials.accessToken,
