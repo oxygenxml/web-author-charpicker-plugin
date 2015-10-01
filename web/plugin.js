@@ -963,6 +963,23 @@
      * @param {Object} github The github api object
      */
     function loadDocument(github) {
+      var urlAuthor = sync.util.getURLParameter('author');
+      if (!urlAuthor) {
+        var user = github.getUser();
+        user.show(null, function (err, author) {
+          if (!err && author.login) {
+            loadingOptions.userName = author.login;
+            // set the user info in the top right panel
+            workspace.setUserInfo(loadingOptions.userName);
+          }
+          loadDocument_(github);
+        });
+      } else {
+        loadDocument_(github);
+      }
+    }
+
+    function loadDocument_(github) {
       documentOwner = fileLocation.user;
 
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
