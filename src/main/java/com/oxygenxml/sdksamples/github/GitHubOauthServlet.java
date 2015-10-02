@@ -356,7 +356,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         String accessToken = getAccessTokenFromGithub(githubCode);
         
         if (accessToken == null) {
-          session.setAttribute("error", "Internal Server Error (Github Plugin is not configured properly, check client_id and client_secret)");
+          session.setAttribute("error", "Internal Server Error (Github Plugin is not configured properly)");
           httpResponse.sendRedirect(redirectTo);
           return;
         }
