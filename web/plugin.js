@@ -941,9 +941,6 @@
       return;
     }
 
-    // load the css by now because we will show a styled "Login with Github" button
-    loadCss();
-
     e.preventDefault();
 
     var normalizedUrl = normalizeGitHubUrl(url);
@@ -1276,6 +1273,8 @@
     this.configDialog.show();
   };
 
+  // load the css by now because we will show a styled "Login with Github" button
+  loadCss();
 
   /**
    * Register all the needed listeners.
