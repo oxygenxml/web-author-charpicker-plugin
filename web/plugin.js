@@ -867,8 +867,9 @@
    *
    * @param callback method to be called after the user was logged in.
    *  It receives authentication information as a parameter.
+   * @param {boolean=} reset Set to true if we want to get a new access token
    */
-  GitHubLoginManager.prototype.authenticateUser = function(callback) {
+  GitHubLoginManager.prototype.authenticateUser = function(callback, reset) {
     // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
     if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
@@ -881,7 +882,7 @@
     }
 
     var github = this.createGitHub();
-    if (github) {
+    if (github && !reset) {
       callback(github);
     } else {
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
@@ -914,7 +915,7 @@
             this.getCredentials(callback);
           }
         }
-      }, this));
+      }, this), reset);
     }
   };
 
@@ -984,7 +985,9 @@
       repo.getContents(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, file) {
         if (err) {
           if (err.error == 401) {
-            loginManager.setErrorMessage('Wrong username or password');
+            localStorage.removeItem('github.credentials');
+            loginManager.authenticateUser(loadDocument, true);
+            return;
           } else if (err == 'not found') {
             loginManager.setErrorMessage('The requested file was not found');
           }
@@ -1047,8 +1050,9 @@
    * Gets the github access token or client_id
    *
    * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
+   * @param {boolean=} reset If true, will trigger a new OAuth flow for getting a new access token (called with true when the access token expires)
    */
-  function getGithubClientIdOrToken(callback) {
+  function getGithubClientIdOrToken(callback, reset) {
     var xhrRequest = new XMLHttpRequest();
 
     xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_credentials/', true);
@@ -1069,7 +1073,7 @@
     };
 
     // Send the current url. It will be needed to redirect back to this page
-    xhrRequest.send(JSON.stringify({redirectTo: window.location.href}));
+    xhrRequest.send(JSON.stringify({redirectTo: window.location.href, reset: reset}));
   }
 
   /**

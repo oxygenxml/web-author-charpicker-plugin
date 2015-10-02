@@ -162,7 +162,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     String accessToken = (String) requestBody.get("accessToken");
     
     if (accessToken != null) {
-      session.setAttribute("token", accessToken);
+      session.setAttribute("accessToken", accessToken);
       GithubUrlStreamHandler.accessTokens.put(session.getId(), accessToken);
     }
     
@@ -192,16 +192,27 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private void handleGithubCredentialsRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    httpResponse.addHeader("Content-Type", "application/json");
-    HttpSession session = httpRequest.getSession();
+    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
     
+    HttpSession session = httpRequest.getSession();
+
+    // reset will be true if the access token has expired so we will reset everything to null to start the OAuth flow again
+    Boolean reset = (Boolean) requestBody.get("reset");
+    if (reset != null && reset == true) {
+      session.removeAttribute("error");
+      session.removeAttribute("accessToken");
+      session.removeAttribute("state");
+    }
+    
+    httpResponse.addHeader("Content-Type", "application/json");
     if (sendErrorIfAvailable(session, httpResponse)) {
       return;
     }
     if (sendAccessTokenIfAvailable(session, httpResponse)) {
       return;
     }
-    sendClientId(session, httpRequest, httpResponse);
+    sendClientId(session, requestBody, httpResponse);
   }
   
   /**
@@ -251,17 +262,14 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   }
   
   /**
-   * Returns the Github client_id to the client
+   * Returns the Github client_id to the client.
    * 
    * @param session The current HTTP session
-   * @param httpRequest The HTTP request object
+   * @param requestBody A map of the JSON parsed request body
    * @param httpResponse The HTTP request object
    * @throws IOException 
    */
-  private void sendClientId(HttpSession session, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
-    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
-
+  private void sendClientId(HttpSession session, HashMap<String, Object> requestBody, HttpServletResponse httpResponse) throws IOException {
     // The redirectTo (representing a URL) attribute will be needed when we want to redirect back to the application 
     String redirectTo = null;
     try {
