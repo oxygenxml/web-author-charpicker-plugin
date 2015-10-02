@@ -3,6 +3,8 @@ package com.oxygenxml.sdksamples.github;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -52,8 +54,18 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         clientId = properties.getProperty("client_id");
         clientSecret = properties.getProperty("client_secret");
         
-        ServletContext servletContext = getServletConfig().getServletContext();
-        servletContext.addListener(HttpSessionObserver.class);
+        try {
+          // We call addListener with reflection in case this servlet will run on a container with a servlet-api < 3.0
+          ServletContext servletContext = getServletConfig().getServletContext();
+          Method method = ServletContext.class.getMethod("addListener", java.lang.Class.class);
+          method.setAccessible(true);
+          method.invoke(servletContext, HttpSessionObserver.class);
+        } catch (NoSuchMethodException e) {
+        } catch (SecurityException e) {
+        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException e) {
+        } catch (InvocationTargetException e) {
+        }
       } catch (IOException e) {
         logger.warn("Could not read the github-plugin.properties file. The user must set the client_id and client_secret from the admin page.");
       }
