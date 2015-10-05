@@ -1309,6 +1309,7 @@
   	'../plugin-resources/github-static/GitHub-Mark-120px-plus.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
+  githubOpenAction.setActionName('GitHub');
   
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
