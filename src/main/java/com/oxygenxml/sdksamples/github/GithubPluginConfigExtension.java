@@ -1,6 +1,5 @@
 package com.oxygenxml.sdksamples.github;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,10 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ro.sync.servlet.admin.PluginConfigExtension;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension;
 
 /**
  * Plugin extension used to handle the configuration of this plugin.
@@ -56,6 +52,37 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     return "github-config";
   }
   
+  /**
+   * Overriding to make sure the GithubOauthServlet properties are updated as well.
+   */
+  @Override
+  public void doDelete(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    super.doDelete(req, resp);
+    GitHubOauthServlet.clientId = getDefaultOptions().get(CLIENT_ID);
+    GitHubOauthServlet.clientSecret = getDefaultOptions().get(CLIENT_SECRET);
+  }
+  
+  /**
+   * Overriding to make sure that the client_id and client_secret are updated in the GithubOauthServlet as well
+   */
+  @Override
+  protected void setOption(String key, String value) {
+    super.setOption(key, value);
+
+    if (CLIENT_ID.equals(key)) {
+      GitHubOauthServlet.clientId = value;
+    }
+    
+    if (CLIENT_SECRET.equals(key)) {
+      GitHubOauthServlet.clientSecret = value;
+    }
+  }
+  
+  /**
+   * @see ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension#getOptionsForm.
+   * @return @return The options form representing an html form with associated javascript/css which handles the saving of the new options.
+   */
   @Override
   public String getOptionsForm() {
     return "<div style='font-family:robotolight, Arial, Helvetica, sans-serif;font-size:0.85em;font-weight: lighter'>"
@@ -82,106 +109,11 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   }
   
   /**
-   * Sets an option and makes sure that the client_id and client_secret is updated in the GithubOauthServlet as well
+   * @see ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension#getOptionsJson.
+   * @return A JSON representation of the current options.
    */
   @Override
-  protected void setOption(String key, String value) {
-    super.setOption(key, value);
-
-    if (CLIENT_ID.equals(key)) {
-      GitHubOauthServlet.clientId = value;
-    }
-    
-    if (CLIENT_SECRET.equals(key)) {
-      GitHubOauthServlet.clientSecret = value;
-    }
-  }
-  
-  @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    String acceptHeader = req.getHeader("Accept");
-    if ("text/html".equals(acceptHeader)) {
-      serveConfigPage(resp);
-    } else if ("application/json".equals(acceptHeader)) {
-      serveTheCurrentOptions(resp);
-    }
-  }
-  
-  /**
-   * Returns the html/css/js for the configuration page.
-   * @throws IOException 
-   */
-  private void serveConfigPage(HttpServletResponse resp) throws IOException {
-    @SuppressWarnings("unused")
-    String clientId = getOption(CLIENT_ID, GitHubOauthServlet.clientId);
-    @SuppressWarnings("unused")
-    String clientSecret = getOption(CLIENT_SECRET, GitHubOauthServlet.clientId);
-    
-    resp.setStatus(HttpServletResponse.SC_OK);
-    // I should build the options form here, to have the current clientId and clientSecret
-    resp.getWriter().write(getOptionsForm());
-    resp.getWriter().flush();
-  }
-
-  /**
-   * Returns the current options in JSON format.
-   * @throws IOException 
-   */
-  private void serveTheCurrentOptions(HttpServletResponse resp) throws IOException {
-    resp.setStatus(HttpServletResponse.SC_OK);
-    resp.getWriter().write("{\"client_id\":\"" + GitHubOauthServlet.clientId + 
-        "\",\"client_secret\":\"" + GitHubOauthServlet.clientSecret + "\"}");
-    resp.getWriter().flush();
-  }
-  
-  @SuppressWarnings("unchecked")
-  @Override
-  public void doPut(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    String line = null;
-    StringBuffer sb = new StringBuffer();
-    BufferedReader reader = req.getReader();
-
-    while ((line = reader.readLine()) != null) {
-      sb.append(line);
-    }
-    
-    Map<String, String> optionsMap;
-    try {
-      optionsMap = new Gson().fromJson(sb.toString(), Map.class);      
-    } catch (JsonSyntaxException e) {
-      resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      return;
-    }
-    
-    String clientId = optionsMap.get(CLIENT_ID);
-    String clientSecret = optionsMap.get(CLIENT_SECRET);
-    
-    // If the client wants to delete the client_id and client_secret it should
-    // send an empty string for each property
-    if (clientId != null && clientSecret != null) {
-      setOption(CLIENT_ID, clientId);
-      setOption(CLIENT_SECRET, clientSecret);  
-      saveOptions();
-      resp.setStatus(HttpServletResponse.SC_OK);
-    } else {
-      resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    }
-  }
-  
-  @Override
-  public void doDelete(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    String clientId = getDefaultOptions().get(CLIENT_ID);
-    String clientSecret = getDefaultOptions().get(CLIENT_SECRET);
-    
-    setOption(CLIENT_ID, clientId);
-    setOption(CLIENT_SECRET, clientSecret);
-    saveOptions();
-    
-    resp.setStatus(HttpServletResponse.SC_OK);
-    resp.getWriter().write("{\"client_id\":\"" + clientId + "\",\"client_secret\":\"" + clientSecret + "\"}");
-    resp.getWriter().flush();
+  public String getOptionsJson() {
+    return "{\"client_id\":\"" + GitHubOauthServlet.clientId + "\",\"client_secret\":\"" + GitHubOauthServlet.clientSecret + "\"}";
   }
 }

@@ -38,14 +38,7 @@ window.addEventListener('message', function (event) {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        var response = JSON.parse(xhr.responseText);
-        var clientId = response.client_id;
-        var clientSecret = response.client_secret;
-
-        event.source.postMessage({done: true, message: 'Credentials reset succesfully.', data: {
-          clientId: clientId,
-          clientSecret: clientSecret
-        }}, origin);
+        event.source.postMessage({done: true, message: 'Credentials reset succesfully.'}, origin);
       } else if (xhr.readyState == 4) {
         event.source.postMessage({done: false, message: 'Failed to reset credentials.'}, origin);
       }
