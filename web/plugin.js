@@ -1281,7 +1281,10 @@
   loadCss();
 
   /**
-   * Register all the needed listeners.
+   * Register all the needed listeners on the file browser.
+   *
+   * @param {sync.api.FileBrowsingDialog} fileBrowser
+   *  the file browser on which to listen.
    */
   var registerFileBrowserListeners = function (fileBrowser) {
     // handle the user action required event.
