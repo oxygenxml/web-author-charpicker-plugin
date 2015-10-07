@@ -455,16 +455,19 @@
    * @param {event} e The triggering event
    */
   CommitAction.prototype.handleReloadOnNewBranch = function (e) {
-    if (this.branch != fileLocation.branch || (documentOwner != fileLocation.user)) {
+    var branch = fileLocation.branch;
+    var user = fileLocation.user;
+
+    if (this.branch != branch || (documentOwner != user)) {
       /*
       * currentURl looks like this: http://github.com/owner/repo/branch/blob/path/to/file
       * We will replace owner with documentOwner and branch with this.branch
       * */
 
       var currentUrl = decodeURIComponent(sync.util.getURLParameter('url'));
-      var urlParts = currentUrl.split('/' + fileLocation.branch + '/');
+      var urlParts = currentUrl.split('/' + branch + '/');
 
-      var urlSplit = urlParts[0].split('/' + fileLocation.user + '/');
+      var urlSplit = urlParts[0].split('/' + user + '/');
       var firstPart = urlSplit[0] + '/' + documentOwner + '/' + urlSplit[1];
 
       var newUrl = firstPart + '/' + this.branch + '/' + urlParts[1];
@@ -1105,7 +1108,7 @@
     return {
       user: pathSplit[0],
       repo: pathSplit[1],
-      branch: pathSplit[2],
+      branch: decodeURIComponent(pathSplit[2]),
       filePath: pathSplit.slice(3).map(decodeURIComponent).join("/")
     };
   }
@@ -1312,7 +1315,6 @@
   	'../plugin-resources/github-static/GitHub-Mark-120px-plus.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
-  githubOpenAction.setActionName('GitHub');
   
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
