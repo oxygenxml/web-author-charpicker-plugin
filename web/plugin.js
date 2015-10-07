@@ -778,7 +778,7 @@
       var dialogHtml = '<div class="github-login-dialog">';
 
       dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
-      dialogHtml += '<div><label class="github-input">User Name: <input autofocus="autofocus" tabindex="0" name="user" type="text"></label></div>';
+      dialogHtml += '<div><label class="github-input">User Name: <input autofocus="autofocus" autocorrect="off" autocapitalize="none" tabindex="0" name="user" type="text"></label></div>';
       dialogHtml += '<div><label class="github-input">Password: <input tabindex="0" name="pass" type="password"></label></div>';
 
       if (this.oauthProps && this.oauthProps.oauthUrl) {
