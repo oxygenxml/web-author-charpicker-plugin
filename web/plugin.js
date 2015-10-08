@@ -1263,7 +1263,7 @@
           '<div>Example:</div>' +
           '<div style="line-height: 1em; font-size: 0.9em;">' +
             '<div>https://github.com/oxygenxml/userguide/tree/master/</div>' +
-            '<div>https://github.com/oxygenxml/userguide/blob/OXYGEN_BRANCH_17_0/DITA/README.txt</div>' +
+            '<div>https://github.com/oxygenxml/userguide/blob/OXYGEN_BRANCH_17_0/DITA/flowers.ditamap</div>' +
             '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/installation-options.dita</div>' +
           '</div>' +
           '</div>';
