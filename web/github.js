@@ -403,13 +403,23 @@
         });
       };
 
-      // List all branches of a repository
+      // List all heads of a repository
       // -------
 
-      this.listBranches = function(cb) {
+      this.getHeads = function(cb) {
         _request("GET", repoPath + "/git/refs/heads", null, function(err, heads) {
           if (err) return cb(err);
           cb(null, _.map(heads, function(head) { return _.last(head.ref.split('/')); }));
+        });
+      };
+
+      // List all branches of a repository
+      // -------
+
+      this.getBranches = function (cb) {
+        _request("GET", repoPath + "/branches", null, function(err, branches) {
+          if (err) return cb(err);
+          cb(null, branches.map(function(branch) { return branch.name;}));
         });
       };
 

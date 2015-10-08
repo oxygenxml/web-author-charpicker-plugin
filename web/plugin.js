@@ -835,12 +835,22 @@
   };
 
   /**
+   * The github api instance
+   */
+  var github;
+
+  var githubCredentials = localStorage.getItem('github.credentials');
+  if (githubCredentials) {
+    github = new Github(JSON.parse(githubCredentials));
+  }
+
+  /**
    * Returns the github access object asynchronously.
    *
    * @param {Function} cb The method to call when we have the github instance
    */
   GitHubLoginManager.prototype.getCredentials = function(cb) {
-    var github = this.createGitHub();
+    github = this.createGitHub();
     if (github) {
       cb(github);
       return;
@@ -884,7 +894,7 @@
       syncTokenWithServer(localStorageCredentials.token);
     }
 
-    var github = this.createGitHub();
+    github = this.createGitHub();
     if (github && !reset) {
       callback(github);
     } else {
@@ -910,7 +920,7 @@
             }));
 
             this.setOauthProps(credentials.clientId, credentials.state);
-            var github = this.createGitHub();
+            github = this.createGitHub();
             callback(github);
           } else {
             // Login with user and pass
@@ -1219,10 +1229,23 @@
    * @param callback callback method to call with the new options.
    */
   GithubConnectionConfigurator.prototype.configureConnection = function(currentUrl, fileName, callback) {
+    if (!github) {
+      //starthere
+      goog.events.dispatchEvent(fileBrowser.getEventTarget(),
+          new sync.api.FileBrowsingDialog.UserActionRequiredEvent(":D"));
+      return;
+    }
+
+    /**
+     * True if the inserted url is a github.com url and it contains all the needed properties (user, repo, branch)
+     * @type {boolean}
+     */
+    this.urlOk = true;
+
     this.showConfigDialog();
 
-    this.configDialog.onSelect(goog.bind(function (key) {
-      if (key == 'ok') {
+    this.configDialog.onSelect(goog.bind(function (key, event) {
+      if (key == 'ok' && this.urlOk) {
         var url = document.getElementById('github-settings-url').value;
         // save the settings in the local storage.
         localStorage.setItem('github.settings', JSON.stringify({
@@ -1240,6 +1263,14 @@
         callback({
           initialUrl: normalizedUrl
         });
+
+        this.configNotificator.dispose();
+        this.configNotificator = null;
+      } else if (key == 'ok') {
+        event.preventDefault();
+      } else {
+        this.configNotificator.dispose();
+        this.configNotificator = null;
       }
     }, this));
   };
@@ -1253,7 +1284,7 @@
     if(this.configDialog == null) {
       this.configDialog = workspace.createDialog();
       this.configDialog.getElement().innerHTML =
-          '<div style="text-align:left">' +
+          '<div style="text-align:left;box-sizing: border-box;">' +
           '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
           '<div><input id="github-settings-url" type="text" style="width: 100%; line-height: 1.5em;" autofocus="autofocus"/></div>' +
           '<div>Format:</div>' +
@@ -1267,16 +1298,71 @@
             '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/installation-options.dita</div>' +
           '</div>' +
           '</div>';
-			this.configDialog.setTitle('Configure Github');
-      this.configDialog.show();
+			this.configDialog.setTitle('Configure GitHub');
+
+      var githubSettingsUrlInput = this.configDialog.getElement().querySelector('#github-settings-url');
+
+      goog.events.listen(githubSettingsUrlInput, goog.events.EventType.BLUR, goog.bind(function () {
+        this.urlOk = true;
+        var repositoryPath = document.getElementById('github-settings-url').value;
+
+        if (!repositoryPath) {
+          this.urlOk = false;
+          return;
+        }
+
+        var githubUri = new goog.Uri(repositoryPath);
+
+        var scheme = githubUri.getScheme();
+        if (scheme !== 'http' && scheme !== 'https') {
+          this.configNotificator.show("Make sure the url respects the Format below.",
+              sync.view.InplaceNotificationReporter.types.WARNING);
+          this.urlOk = false;
+          return;
+        }
+
+        var domain = githubUri.getDomain();
+        if ('github.com' !== domain) {
+          this.configNotificator.show("The domain of the url should be github.com.",
+              sync.view.InplaceNotificationReporter.types.WARNING);
+          this.urlOk = false;
+          return;
+        }
+
+        var path = githubUri.getPath().split('/');
+        // The getPath method returns the path starting with a / so we need to remove the first empty string
+        path.shift();
+
+        // If the path contains only the username and repository name
+        if (path.length === 2 || path.length === 3) {
+          this.configNotificator.show("Getting you a list of branches.",
+              sync.view.InplaceNotificationReporter.types.WARNING);
+
+          console.log(github);
+
+          // The user should be logged in here and I should have a github instance available here
+
+          // make a request for the branches and display them. get user path[0] and repo path[1]
+        } else if (path.length >= 4 && (path[2] === 'tree' || path[2] === 'blob')) {
+          // Let the user press ok without saying anything, the url seems fine
+          this.configNotificator.hide();
+        } else {
+          this.urlOk = false;
+          this.configNotificator.show("Make sure the url respects the Format below.",
+              sync.view.InplaceNotificationReporter.types.WARNING);
+        }
+      }, this));
     }
+
+    this.configNotificator = new sync.view.InplaceNotificationReporter(this.configDialog.getElement());
 
     var settings = JSON.parse(localStorage.getItem('github.settings'));
     if(settings && settings.url) {
-      document.getElementById('github-settings-url').value = settings.url;
+      this.configDialog.getElement().querySelector('#github-settings-url').value = settings.url;
     } else {
-      document.getElementById('github-settings-url').value = '';
+      this.configDialog.getElement().querySelector('#github-settings-url').value = '';
     }
+
     this.configDialog.show();
   };
 
@@ -1303,6 +1389,7 @@
 
   // create the connection configurator.
   var connectionConfigurator = new GithubConnectionConfigurator();
+
   var fileBrowser = new sync.api.FileBrowsingDialog({
     fileRepositoryConnectionConfigurator: connectionConfigurator
   });
