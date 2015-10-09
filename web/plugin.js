@@ -1222,13 +1222,26 @@
       sync.api.FileBrowsingDialog.FileRepositoryConnectionConfigurator);
 
   /**
-   *  Handle the connection configurations.
+   * Handle the connection configurations.
+   * Makes sure the github user is logged in before configuring the connection
    *
    * @param currentUrl the file browser's current url.
    * @param fileName the current file name.
    * @param callback callback method to call with the new options.
    */
   GithubConnectionConfigurator.prototype.configureConnection = function(currentUrl, fileName, callback) {
+    var loginManager = new GitHubLoginManager();
+    loginManager.authenticateUser(goog.bind(this.configureConnection_, this, currentUrl, fileName, callback));
+  };
+
+  /**
+   *  Handle the connection configurations.
+   *
+   * @param currentUrl the file browser's current url.
+   * @param fileName the current file name.
+   * @param callback callback method to call with the new options.
+   */
+  GithubConnectionConfigurator.prototype.configureConnection_ = function (currentUrl, fileName, callback) {
     if (!github) {
       goog.events.dispatchEvent(fileBrowser.getEventTarget(),
           new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
