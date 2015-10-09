@@ -5,7 +5,7 @@
 <plugin
  id="com.oxygenxml.sdksamples.github.GitHubPlugin"
  name="GitHubPlugin"
- description="WebApp GitHub connector"
+ description="A plugin to enable the editing and committing of files from a GitHub repository."
  version="${project.version}"
  vendor="SyncRO"
  class="com.oxygenxml.sdksamples.github.GitHubPlugin">
