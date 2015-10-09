@@ -1525,7 +1525,7 @@
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(
-  	'../plugin-resources/github-static/GitHub-Mark-120px-plus.png');
+  	'../plugin-resources/github-static/GitHub70.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   
