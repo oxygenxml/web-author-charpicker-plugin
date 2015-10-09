@@ -150,3 +150,10 @@
 .gh-commit-diag-descripion {
     padding: 0 5px;
 }
+#gh-settings-url,
+#gh-settings-branch-select {
+    width: 100%;
+    line-height: 1.5em;
+    padding: 2px;
+    box-sizing: border-box;
+}

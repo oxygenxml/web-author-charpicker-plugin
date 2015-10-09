@@ -1246,7 +1246,7 @@
 
     this.configDialog.onSelect(goog.bind(function (key, event) {
       if (key == 'ok' && this.urlOk) {
-        var url = document.getElementById('github-settings-url').value;
+        var url = document.getElementById('gh-settings-url').value;
         // save the settings in the local storage.
         localStorage.setItem('github.settings', JSON.stringify({
           url: url
@@ -1266,11 +1266,13 @@
 
         this.configNotificator.dispose();
         this.configNotificator = null;
+        goog.events.unlistenByKey(this.keyHandleBranchSelected);
       } else if (key == 'ok') {
         event.preventDefault();
       } else {
         this.configNotificator.dispose();
         this.configNotificator = null;
+        goog.events.unlistenByKey(this.keyHandleBranchSelected);
       }
     }, this));
   };
@@ -1286,7 +1288,7 @@
       this.configDialog.getElement().innerHTML =
           '<div style="text-align:left;box-sizing: border-box;">' +
           '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
-          '<div><input id="github-settings-url" type="text" style="width: 100%; line-height: 1.5em;" autofocus="autofocus"/></div>' +
+          '<div><input id="gh-settings-url" type="text" autofocus="autofocus"/></div>' +
           '<div>Format:</div>' +
           '<div style="line-height: 1em; font-size: 0.9em;">' +
             '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
@@ -1300,24 +1302,30 @@
           '</div>';
 			this.configDialog.setTitle('Configure GitHub');
 
-      var githubSettingsUrlInput = this.configDialog.getElement().querySelector('#github-settings-url');
+      var githubSettingsUrlInput = this.configDialog.getElement().querySelector('#gh-settings-url');
+
+      var branchesForUrl = {};
 
       goog.events.listen(githubSettingsUrlInput, goog.events.EventType.BLUR, goog.bind(function () {
         this.urlOk = true;
-        var repositoryPath = document.getElementById('github-settings-url').value;
+        var repositoryURL = githubSettingsUrlInput.value;
 
-        if (!repositoryPath) {
+        if (!repositoryURL) {
           this.urlOk = false;
           return;
         }
 
-        var githubUri = new goog.Uri(repositoryPath);
+        var githubUri = new goog.Uri(repositoryURL);
 
         var scheme = githubUri.getScheme();
         if (scheme !== 'http' && scheme !== 'https') {
           this.configNotificator.show("Make sure the url respects the Format below.",
               sync.view.InplaceNotificationReporter.types.WARNING);
           this.urlOk = false;
+
+          // Select the scheme of the url so the user can easily see the wrong part
+          githubSettingsUrlInput.focus();
+          githubSettingsUrlInput.setSelectionRange(0, scheme.length);
           return;
         }
 
@@ -1326,6 +1334,11 @@
           this.configNotificator.show("The domain of the url should be github.com.",
               sync.view.InplaceNotificationReporter.types.WARNING);
           this.urlOk = false;
+
+          // Select the domain of the url so the user can easily see the wrong part
+          var startIndex = repositoryURL.indexOf(domain);
+          githubSettingsUrlInput.focus();
+          githubSettingsUrlInput.setSelectionRange(startIndex, startIndex + domain.length);
           return;
         }
 
@@ -1333,19 +1346,46 @@
         // The getPath method returns the path starting with a / so we need to remove the first empty string
         path.shift();
 
-        // If the path contains only the username and repository name
-        if (path.length === 2 || path.length === 3) {
-          this.configNotificator.show("Getting you a list of branches.",
-              sync.view.InplaceNotificationReporter.types.WARNING);
+        // If the path contains only the username and repository name and they're not empty
+        if ((path.length === 2 || path.length === 3 || (path.length === 4 && !path[3])) && (path[0] && path[1])) {
+          // disable the ok button until the request for branches completes
+          this.urlOk = false;
 
-          console.log(github);
+          if (branchesForUrl[repositoryURL]) {
+            this.showPossibleBranches(branchesForUrl[repositoryURL], githubUri);
+          } else {
+            // Get the repository described in the url
+            var repo = github.getRepo(path[0], path[1]);
+            repo.getBranches(goog.bind(function (err, branches) {
+              if (err) {
+                this.configNotificator.show("Attempting to get list of branches failed.<br/>" +
+                    "Make sure the url exists and respects the format below.",
+                    sync.view.InplaceNotificationReporter.types.ERROR);
+              } else {
+                // cache the result no need to make the same request twice
+                branchesForUrl[repositoryURL] = branches;
 
-          // The user should be logged in here and I should have a github instance available here
+                this.configNotificator.show("Select the branch you want to work on.",
+                    sync.view.InplaceNotificationReporter.types.INFO);
 
-          // make a request for the branches and display them. get user path[0] and repo path[1]
-        } else if (path.length >= 4 && (path[2] === 'tree' || path[2] === 'blob')) {
+                this.showPossibleBranches(branches, {
+                  githubUri: githubUri,
+                  user: path[0],
+                  repo: path[1]
+                });
+              }
+            }, this));
+          }
+        }
+        // If the path is of length 4 and we have the path like: /:user/:repo/[tree|blob]/:branch
+        else if (path.length >= 4 && (path[2] === 'tree' || path[2] === 'blob') && path[3]) {
           // Let the user press ok without saying anything, the url seems fine
           this.configNotificator.hide();
+          // Remove the branches select, it's no longer needed
+          var select = goog.dom.getElement('gh-settings-branch-select');
+          if (select) {
+            select.parentNode.removeChild(select);
+          }
         } else {
           this.urlOk = false;
           this.configNotificator.show("Make sure the url respects the Format below.",
@@ -1354,16 +1394,81 @@
       }, this));
     }
 
+    // Remove the branch select element initially. It will appear when needed.
+    var select = goog.dom.getElement('gh-settings-branch-select');
+    if (select) {
+      select.parentNode.removeChild(select);
+    }
+
     this.configNotificator = new sync.view.InplaceNotificationReporter(this.configDialog.getElement());
 
     var settings = JSON.parse(localStorage.getItem('github.settings'));
     if(settings && settings.url) {
-      this.configDialog.getElement().querySelector('#github-settings-url').value = settings.url;
+      this.configDialog.getElement().querySelector('#gh-settings-url').value = settings.url;
     } else {
-      this.configDialog.getElement().querySelector('#github-settings-url').value = '';
+      this.configDialog.getElement().querySelector('#gh-settings-url').value = '';
     }
 
     this.configDialog.show();
+  };
+
+  /**
+   * Displays the given branches in a select element after the :elToInserAfter element
+   * @param {array<string>} branches
+   * @param {{githubUri: goog.Uri, user: string, repo: string}} props The uri object representing the url written by
+   * the user in the github setting url input
+   */
+  GithubConnectionConfigurator.prototype.showPossibleBranches = function (branches, props) {
+    goog.events.unlistenByKey(this.keyHandleBranchSelected);
+
+    var githubSettingsUrlInput = this.configDialog.getElement().querySelector('#gh-settings-url');
+
+    var select = goog.dom.getElement('gh-settings-branch-select');
+
+    if (!select) {
+      select = goog.dom.createDom('select', {id: 'gh-settings-branch-select'});
+    } else {
+      // Clear the old branches
+      select.innerHTML = '';
+    }
+
+    // Make sure the master branch is first in the list. It's the most commonly used one.
+    var option = goog.dom.createDom('option', {value: 'master'}, 'master');
+    select.appendChild(option);
+    for (var i = 0; i < branches.length; i++) {
+      if (branches[i] != 'master') {
+        option = goog.dom.createDom('option', {value: branches[i]}, branches[i]);
+        select.appendChild(option);
+      }
+    }
+
+    githubSettingsUrlInput.parentNode.insertBefore(select, githubSettingsUrlInput.nextSibling);
+
+    // Call the handleBranchSelectedOnce here to select the first branch in the list
+    this.handleBranchSelected(props, {target: select});
+
+    this.keyHandleBranchSelected = goog.events.listen(select, goog.events.EventType.CHANGE,
+        goog.bind(this.handleBranchSelected, this, props));
+  };
+
+  /**
+   * Called when a branch is selected to modify the repository url to include the selected branch.
+   *
+   * @param {{githubUri: goog.Uri, user: string, repo: string}} props The uri object representing the url written by
+   * the user in the github setting url input
+   * @param {goog.events.Event} event The triggering event
+   */
+  GithubConnectionConfigurator.prototype.handleBranchSelected = function (props, event) {
+    var select = event.target;
+
+    var githubUri = props.githubUri;
+    var selectedBranch = select.options[select.selectedIndex].text;
+
+    var githubSettingsUrlInput = this.configDialog.getElement().querySelector('#gh-settings-url');
+    githubSettingsUrlInput.value = githubUri.getScheme() + '://' + githubUri.getDomain() + '/' +
+        props.user + '/' + props.repo + '/tree/' + selectedBranch;
+
+    this.urlOk = true;
   };
 
   // load the css by now because we will show a styled "Login with Github" button
