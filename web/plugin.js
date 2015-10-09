@@ -1296,7 +1296,7 @@
       this.configDialog.getElement().innerHTML =
           '<div style="text-align:left;box-sizing: border-box;">' +
           '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
-          '<div><input id="gh-settings-url" type="text" autofocus="autofocus"/></div>' +
+          '<div><input id="gh-settings-url" type="text" autofocus="autofocus" autocorrect="off" autocapitalize="none"/></div>' +
           '<div>Format:</div>' +
           '<div style="line-height: 1em; font-size: 0.9em;">' +
             '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
