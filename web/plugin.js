@@ -1232,7 +1232,7 @@
     if (!github) {
       //starthere
       goog.events.dispatchEvent(fileBrowser.getEventTarget(),
-          new sync.api.FileBrowsingDialog.UserActionRequiredEvent(":D"));
+          new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
       return;
     }
 
@@ -1251,11 +1251,7 @@
         localStorage.setItem('github.settings', JSON.stringify({
           url: url
         }));
-        // add a '/' if it is a folder's url.
-        var trimmedUrl = url.substring(url.indexOf('github.com/') + 'github.com/'.length);
-        var urlElements = trimmedUrl.split('/');
-        var marker = (urlElements.length > 2) && urlElements[2];
-        if(marker == 'tree') {
+        if (url.charAt(url.length - 1) != '/') {
           url = url + '/';
         }
 
@@ -1306,7 +1302,14 @@
 
       var branchesForUrl = {};
 
-      goog.events.listen(githubSettingsUrlInput, goog.events.EventType.BLUR, goog.bind(function () {
+      goog.events.listen(githubSettingsUrlInput, [goog.events.EventType.KEYPRESS, goog.events.EventType.BLUR], goog.bind(function (event) {
+        if (event.type == goog.events.EventType.KEYPRESS) {
+          if (event.keyCode == 13) {
+            event.stopPropagation();
+          }
+          return;
+        }
+
         this.urlOk = true;
         var repositoryURL = githubSettingsUrlInput.value;
 
@@ -1352,7 +1355,11 @@
           this.urlOk = false;
 
           if (branchesForUrl[repositoryURL]) {
-            this.showPossibleBranches(branchesForUrl[repositoryURL], githubUri);
+            this.showPossibleBranches(branchesForUrl[repositoryURL], {
+              githubUri: githubUri,
+              user: path[0],
+              repo: path[1]
+            });
           } else {
             // Get the repository described in the url
             var repo = github.getRepo(path[0], path[1]);
