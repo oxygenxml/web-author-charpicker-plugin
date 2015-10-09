@@ -1230,7 +1230,6 @@
    */
   GithubConnectionConfigurator.prototype.configureConnection = function(currentUrl, fileName, callback) {
     if (!github) {
-      //starthere
       goog.events.dispatchEvent(fileBrowser.getEventTarget(),
           new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
       return;
