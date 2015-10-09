@@ -1449,6 +1449,8 @@
 
     this.keyHandleBranchSelected = goog.events.listen(select, goog.events.EventType.CHANGE,
         goog.bind(this.handleBranchSelected, this, props));
+
+    select.focus();
   };
 
   /**
