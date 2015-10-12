@@ -339,15 +339,33 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       return;
     }
 
-    if (githubState == null || githubCode == null) {
+    /**
+     * I have 3 separate if statements because I want to give separate feedback to the user 
+     * in case they may need to report some error.
+     * This way we will have a better idea of where to look. 
+     */
+    
+    if (githubState == null) {
       logger.warn("Third Party.");
-      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Hi, you must have come here by mistake!");
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Wrong state.");
+      return;
+    }
+    
+    if (githubCode == null) {
+      logger.warn("Third Party.");
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Wrong code.");
+      return;
+    }
+    
+    if (redirectTo == null) {
+      logger.warn("Third Party.");
+      httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Where do you want to go?");
       return;
     }
     
     // If the github state is different from our saved state, this request
     // has been created by a third party so we stop the flow.
-    if (!githubState.equals(state) || redirectTo == null) {
+    if (!githubState.equals(state)) {
       logger.warn("Third Party!");
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Hi, you must have come here by mistake!");
     } else {

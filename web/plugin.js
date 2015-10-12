@@ -1002,7 +1002,7 @@
             loginManager.authenticateUser(loadDocument, true);
             return;
           } else if (err == 'not found') {
-            loginManager.setErrorMessage('The requested file was not found');
+            loginManager.setErrorMessage('The requested file was not found.');
           }
 
           // Try to authenticate again.
@@ -1096,7 +1096,7 @@
     localStorage.removeItem('github.credentials');
 
     var xhrRequest = new XMLHttpRequest();
-    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_reset_access/', true);
+    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_reset_access/', false);
     xhrRequest.send();
   }
 
