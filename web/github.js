@@ -256,6 +256,7 @@
 
       this.createCommit = function (branch, path, content, message, cb) {
         that.getHead(branch, function (err, head) {
+          if (err) {return cb(err);}
           _request('GET', head.url, null, function (err, response) {
             if (err) {return cb(err);}
             var SHA_BASE_TREE = response.tree.sha;
