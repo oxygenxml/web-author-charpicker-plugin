@@ -1299,19 +1299,18 @@
     if(this.configDialog == null) {
       this.configDialog = workspace.createDialog();
       this.configDialog.getElement().innerHTML =
-          '<div style="text-align:left;box-sizing: border-box;">' +
-          '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
-          '<div><input id="gh-settings-url" type="text" autofocus="autofocus" autocorrect="off" autocapitalize="none"/></div>' +
-          '<div>Format:</div>' +
-          '<div style="line-height: 1em; font-size: 0.9em;">' +
-            '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
-          '</div>' +
-          '<div>Example:</div>' +
-          '<div style="line-height: 1em; font-size: 0.9em;">' +
-            '<div>https://github.com/oxygenxml/userguide/tree/master/</div>' +
-            '<div>https://github.com/oxygenxml/userguide/blob/OXYGEN_BRANCH_17_0/DITA/flowers.ditamap</div>' +
-            '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/installation-options.dita</div>' +
-          '</div>' +
+          '<div class="gh-config-dialog">' +
+            '<div>Please paste the GitHub URL of the file or folder you want to work with:</div>' +
+            '<div><input id="gh-settings-url" type="text" autofocus="autofocus" autocorrect="off" autocapitalize="none"/></div>' +
+            '<div>Format:</div>' +
+            '<div style="line-height: 1em; font-size: 0.9em;">' +
+              '<div>https://github.com/{username}/{repository_name}/tree/{branch_name}/{path}</div>' +
+            '</div>' +
+            '<div>Example:</div>' +
+            '<div style="line-height: 1em; font-size: 0.9em">' +
+              '<div>https://github.com/oxygenxml/userguide/tree/master/</div>' +
+              '<div>https://github.com/oxygenxml/userguide/blob/master/DITA/topics/</div>' +
+            '</div>' +
           '</div>';
 			this.configDialog.setTitle('Configure GitHub');
 
@@ -1529,8 +1528,8 @@
   registerFileBrowserListeners(fileBrowser);
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
-  var largeIcon = '../plugin-resources/github-static/GitHub70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png';
-  githubOpenAction.setLargeIcon(largeIcon);
+  githubOpenAction.setLargeIcon(
+  	'../plugin-resources/github-static/GitHub70.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   
