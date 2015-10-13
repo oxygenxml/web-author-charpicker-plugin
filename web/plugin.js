@@ -991,6 +991,11 @@
     }
 
     function loadDocument_(github) {
+      // Show a spinner while the document is loading.
+      workspace.docContainer.innerHTML =
+          '<img class="document-loading" src="' + (sync.util.isDevMode() ? '' : sync.api.Version + '-' ) +
+          'lib/jquery-mobile/images/ajax-loader.gif">';
+
       documentOwner = fileLocation.user;
 
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
