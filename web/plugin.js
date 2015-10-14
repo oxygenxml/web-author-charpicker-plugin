@@ -1532,6 +1532,7 @@
   	'../plugin-resources/github-static/GitHub70.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
+  githubOpenAction.setActionName("GitHub");
   
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
