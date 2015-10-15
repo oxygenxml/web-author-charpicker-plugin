@@ -34,8 +34,22 @@
     background-color: #6f6f6f;
 }
 
-.github-login-dialog {
+.github-login-dialog label {
     text-align: right;
+    display: block;
+}
+
+@media only screen and (max-width: 550px) {
+    .github-login-dialog {
+        width: auto;
+    }
+    .github-login-dialog label {
+        text-align: left;
+    }
+    .github-login-dialog input {
+        width: 100%;
+        display: block;
+    }
 }
 
 .github-oauth-text {
