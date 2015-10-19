@@ -185,7 +185,7 @@
     }
 }
 
-@media only screen and (max-height: 320px) {
+@media only screen and (max-height: 320px), only screen and (max-width: 330px) {
     .gh-config-dialog {
         height: 125px;
         overflow-y: scroll;
