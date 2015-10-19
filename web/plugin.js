@@ -773,17 +773,17 @@
   GitHubLoginManager.prototype.getLoginDialog = function() {
     if (!this.loginDialog) {
       this.loginDialog = workspace.createDialog();
-      this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK);
+      this.loginDialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.CANCEL);
 
       var dialogHtml = '<div class="github-login-dialog">';
-
       dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
-      dialogHtml += '<label class="github-input">User Name: <input autofocus="autofocus" autocorrect="off" autocapitalize="none" tabindex="0" name="user" type="text"></label>';
-      dialogHtml += '<label class="github-input">Password: <input tabindex="0" name="pass" type="password"></label>';
 
+      // If OAuth is available
       if (this.oauthProps && this.oauthProps.oauthUrl) {
-        dialogHtml += '<div class="github-login-center-aligned">or</div>';
+        dialogHtml += 'To access files stored on the repository you must login using your GitHub account.';
         dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
+      } else {
+        dialogHtml += 'The github plugin is not properly configured.';
       }
 
       this.loginDialog.getElement().innerHTML = dialogHtml;
@@ -857,17 +857,6 @@
     }
 
     var dialog = this.getLoginDialog();
-    dialog.onSelect(goog.bind(function() {
-      var user = dialog.getElement().querySelector('[name="user"]').value;
-      var pass = dialog.getElement().querySelector('[name="pass"]').value;
-      localStorage.setItem('github.credentials', JSON.stringify({
-        username: user,
-        password: pass,
-        auth: "basic"
-      }));
-      cb(this.createGitHub());
-    }, this));
-
     dialog.show();
 
     // Reset the error message to null, it will be set again if needed
@@ -1529,7 +1518,7 @@
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(
-      sync.util.computeHdpiIcon('../plugin-resources/github-static/GitHub70.png'));
+  	'../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");

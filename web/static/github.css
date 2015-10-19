@@ -34,6 +34,11 @@
     background-color: #6f6f6f;
 }
 
+.github-login-dialog {
+    text-align: center;
+    max-width: 300px;
+}
+
 .github-login-dialog label {
     text-align: right;
     display: block;
