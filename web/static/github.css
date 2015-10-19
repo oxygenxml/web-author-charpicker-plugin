@@ -184,3 +184,10 @@
         width: 100%;
     }
 }
+
+@media only screen and (max-height: 320px) {
+    .gh-config-dialog {
+        height: 125px;
+        overflow-y: scroll;
+    }
+}
