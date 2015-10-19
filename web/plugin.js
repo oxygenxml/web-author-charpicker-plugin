@@ -1318,12 +1318,17 @@
 
       var branchesForUrl = {};
 
-      goog.events.listen(githubSettingsUrlInput, [goog.events.EventType.KEYPRESS, goog.events.EventType.BLUR], goog.bind(function (event) {
+      goog.events.listen(githubSettingsUrlInput,
+          [goog.events.EventType.KEYPRESS, goog.events.EventType.BLUR], goog.bind(function (event) {
         if (event.type == goog.events.EventType.KEYPRESS) {
           if (event.keyCode == 13) {
+            // If the enter key is pressed we stop propagation because we don't want this dialog to close yet
             event.stopPropagation();
+          } else {
+            // Exiting this method because we only want to search for repositories
+            // if an only if the user pressed enter or blurred the input
+            return;
           }
-          return;
         }
 
         this.urlOk = true;
@@ -1404,11 +1409,6 @@
         else if (path.length >= 4 && (path[2] === 'tree' || path[2] === 'blob') && path[3]) {
           // Let the user press ok without saying anything, the url seems fine
           this.configNotificator.hide();
-          // Remove the branches select, it's no longer needed
-          var select = goog.dom.getElement('gh-settings-branch-select');
-          if (select) {
-            select.parentNode.removeChild(select);
-          }
         } else {
           this.urlOk = false;
           this.configNotificator.show("Make sure the url respects the Format below.",
