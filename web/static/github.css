@@ -29,6 +29,7 @@
     padding: 0 10px 0 5px;
     text-align: center;
     text-decoration: none;
+    margin-top: 3px;
 }
 #github-oauth-button:hover {
     background-color: #6f6f6f;
@@ -37,6 +38,7 @@
 .github-login-dialog {
     text-align: center;
     max-width: 300px;
+    margin: 0 auto;
 }
 
 .github-login-dialog label {
@@ -68,16 +70,15 @@
 
 .github-login-dialog-error {
     text-align: center;
-    background-color: #f2dede;
+    background-color: #FEEBEB;
     color: #b94a48;
     border: 1px solid #eed3d7;
     border-radius: 4px;
     text-overflow: ellipsis;
     overflow: hidden;
-    margin-bottom: 5px;
     padding: 3px 3px 3px 5px;
-    max-width: 270px;
     line-height: 1.2;
+    margin: 0 auto 5px auto;
 }
 
 #github-toolbar-button {

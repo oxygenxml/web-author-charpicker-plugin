@@ -757,6 +757,23 @@
   var GitHubLoginManager = function() {
     this.loginDialog = null;
     this.errorMessage = null;
+    this.gotRepoAccess = false;
+  };
+
+  /**
+   * Set the gotRepoAccess property.
+   *
+   * @param {boolean} gotRepoAccess True if the logged in user has read access in the current documents repo
+   */
+  GitHubLoginManager.prototype.setGotRepoAccess = function (gotRepoAccess) {
+    this.gotRepoAccess = gotRepoAccess;
+  };
+
+  /**
+   * @returns {boolean} Returns true if the current user has read access for the current documents repo
+   */
+  GitHubLoginManager.prototype.getGotRepoAccess = function () {
+    return this.gotRepoAccess;
   };
 
   /**
@@ -778,22 +795,43 @@
       var dialogHtml = '<div class="github-login-dialog">';
       dialogHtml += '<div class="github-login-dialog-error">' + this.errorMessage + '</div>';
 
-      // If OAuth is available
-      if (this.oauthProps && this.oauthProps.oauthUrl) {
-        dialogHtml += 'To access files stored on the repository you must login using your GitHub account.';
-        dialogHtml += '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
-      } else {
-        dialogHtml += 'The github plugin is not properly configured.';
-      }
+      dialogHtml += '<div id="gh-login-button-container"></div>';
 
       this.loginDialog.getElement().innerHTML = dialogHtml;
       this.loginDialog.setTitle("GitHub Login");
+
+      this.loginDialog.onSelect(function (key) {
+        if (key == 'cancel') {
+          // Go to the dashboard view
+          window.location.href = window.location.protocol + "//" + window.location.hostname +
+              (window.location.port ? ':' + window.location.port : '') + window.location.pathname;
+        }
+      });
+    }
+
+    if (!this.getGotRepoAccess() && (this.oauthProps && this.oauthProps.oauthUrl)) {
+      var loginButtonContainer = this.loginDialog.dialog.getElement().querySelector('#gh-login-button-container');
+      loginButtonContainer.innerHTML = 'To access files stored on the repository you must login using your GitHub account.' +
+          '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
     }
 
     var errorMessageElement = this.loginDialog.getElement().querySelector('.github-login-dialog-error');
     if (this.errorMessage) {
       errorMessageElement.innerHTML = this.errorMessage;
       errorMessageElement.style.display = 'block';
+
+      if (!this.getGotRepoAccess()) {
+        new sync.ui.CornerTooltip(errorMessageElement,
+            '<div>' +
+              'There are 2 possible reasons for that:' +
+              '<ul>' +
+                '<li>The file does not exist</li>' +
+                '<li>You do not have access to read the file</li>' +
+              '</ul>' +
+              'Try <a href="https://github.com/" target="_blank">logging in</a> with a different user which has read/write access.' +
+            '</div>'
+        );
+      }
     } else {
       errorMessageElement.style.display = 'none';
     }
@@ -813,9 +851,8 @@
       this.oauthProps = {
         clientId: clientId,
         oauthUrl: 'https://github.com/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
-      }
-    } else {
-      this.oauthProps = {};
+      };
+      localStorage.setItem('github.oauthProps', JSON.stringify(this.oauthProps));
     }
   };
 
@@ -883,6 +920,11 @@
       syncTokenWithServer(localStorageCredentials.token);
     }
 
+    var localStorageOauthProps = JSON.parse(localStorage.getItem('github.oauthProps'));
+    if (localStorageOauthProps) {
+      this.setOauthProps(localStorageOauthProps.clientId, localStorageOauthProps.state);
+    }
+
     github = this.createGitHub();
     if (github && !reset) {
       callback(github);
@@ -890,7 +932,8 @@
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
         if (err) {
           // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-          this.setOauthProps(null);
+          // TODO: show error message sayng that the github plugin is not properly configured?
+          console.log(err);
           this.resetCredentials();
 
           this.getCredentials(callback);
@@ -899,7 +942,7 @@
           if (credentials.error) {
             errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' +
                 credentials.error, sync.api.Dialog.ButtonConfiguration.OK);
-            // When an oauth flow error occurs we shoul remove any saved credentials so we can get new ones
+            // When an oauth flow error occurs we should remove any saved credentials so we can get new ones
             // (This error occurs when the wrong clientId and clientSecret are set)
             localStorage.removeItem('github.credentials');
           } else if (credentials.accessToken) {
@@ -983,6 +1026,7 @@
       documentOwner = fileLocation.user;
 
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
+
       // Read the content using the GitHub API.
       repo.getContents(fileLocation.branch, fileLocation.filePath, goog.bind(function(err, file) {
         if (err) {
@@ -991,7 +1035,20 @@
             loginManager.authenticateUser(loadDocument, true);
             return;
           } else if (err == 'not found') {
-            loginManager.setErrorMessage('The requested file was not found.');
+            repo.show(function (_, repoAccess) {
+              if (repoAccess) {
+                loginManager.setErrorMessage('The requested file was not found.');
+              } else {
+                loginManager.setErrorMessage('We could not find your file. You might not have read access.');
+              }
+
+              loginManager.setGotRepoAccess(!!repoAccess);
+
+              // Try to authenticate again.
+              loginManager.resetCredentials();
+              loginManager.getCredentials(loadDocument);
+            });
+            return;
           }
 
           // Try to authenticate again.
