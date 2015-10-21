@@ -75,7 +75,7 @@
       this.dialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.YES_NO);
 
       var dialogHtml = '<div>';
-      dialogHtml += '<div>Are you sure you want to log-out? All the changes made to the opened file will be lost.</div>';
+      dialogHtml += '<div>Are you sure you want to log-out? All uncommitted changes will be lost.</div>';
       dialogHtml += '</div>';
 
       this.dialog.getElement().innerHTML = dialogHtml;
@@ -850,6 +850,7 @@
     if (clientId && state) {
       this.oauthProps = {
         clientId: clientId,
+        state: state,
         oauthUrl: 'https://github.com/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
       };
       localStorage.setItem('github.oauthProps', JSON.stringify(this.oauthProps));
