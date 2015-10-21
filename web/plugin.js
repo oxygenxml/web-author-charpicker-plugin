@@ -757,7 +757,7 @@
   var GitHubLoginManager = function() {
     this.loginDialog = null;
     this.errorMessage = null;
-    this.gotRepoAccess = false;
+    this.gotRepoAccess = undefined;
   };
 
   /**
@@ -770,7 +770,9 @@
   };
 
   /**
-   * @returns {boolean} Returns true if the current user has read access for the current documents repo
+   * @returns {boolean} true - if the user has access to the repository,
+   *                    false - if the user doesn't have access to the repository,
+   *                    undefined - if we didn't check to see the access.
    */
   GitHubLoginManager.prototype.getGotRepoAccess = function () {
     return this.gotRepoAccess;
@@ -809,10 +811,20 @@
       });
     }
 
-    if (!this.getGotRepoAccess() && (this.oauthProps && this.oauthProps.oauthUrl)) {
+    var gotRepoAccess = this.getGotRepoAccess();
+    if (this.oauthProps && this.oauthProps.oauthUrl) {
       var loginButtonContainer = this.loginDialog.dialog.getElement().querySelector('#gh-login-button-container');
-      loginButtonContainer.innerHTML = 'To access files stored on the repository you must login using your GitHub account.' +
-          '<a href="' + this.oauthProps.oauthUrl + '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
+      if (typeof gotRepoAccess == 'undefined') {
+        // gotRepoAccess is undefined, this means we didn't check for repo access and this dialog is an initial login dialog
+        loginButtonContainer.innerHTML = 'To access files stored on the repository you must login using your GitHub account.' +
+            '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
+            '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
+      } else if (gotRepoAccess === false) {
+        // gotRepoAccess is false, this means we checked for access so this file is either not found or not accessible,
+        // so show a more meaningfull login dialog
+        loginButtonContainer.innerHTML = '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
+            '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Re-login with GitHub</span></a>';
+      }
     }
 
     var errorMessageElement = this.loginDialog.getElement().querySelector('.github-login-dialog-error');
@@ -820,17 +832,28 @@
       errorMessageElement.innerHTML = this.errorMessage;
       errorMessageElement.style.display = 'block';
 
-      if (!this.getGotRepoAccess()) {
-        new sync.ui.CornerTooltip(errorMessageElement,
-            '<div>' +
-              'There are 2 possible reasons for that:' +
-              '<ul>' +
-                '<li>The file does not exist</li>' +
-                '<li>You do not have access to read the file</li>' +
-              '</ul>' +
-              'Try <a href="https://github.com/" target="_blank">logging in</a> with a different user which has read/write access.' +
-            '</div>'
-        );
+      if (gotRepoAccess === false) {
+        Github.apiRequest('GET', '/users/' + documentOwner, null, function (err, owner) {
+          var contactInfo;
+
+          if (!err && owner.email) {
+            contactInfo = 'mailto:' + owner.email + '?subject=Github access request';
+          } else {
+            contactInfo = 'https://github.com/' + documentOwner;
+          }
+
+          new sync.ui.CornerTooltip(errorMessageElement,
+              '<div>' +
+                'There are 2 possible reasons for that:' +
+                '<ul>' +
+                  '<li>The file does not exist</li>' +
+                  '<li>You do not have access to read the file</li>' +
+                '</ul>' +
+                'You can <a href="' + contactInfo + '">contact the repository owner</a> to request access.<br/>' +
+                'Or <a href="https://github.com/" target="_blank">login</a> with a user which has read access.' +
+              '</div>'
+          );
+        });
       }
     } else {
       errorMessageElement.style.display = 'none';
