@@ -936,9 +936,6 @@
   GitHubLoginManager.prototype.authenticateUser = function(callback, reset) {
     // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
-    if (localStorageCredentials && (localStorageCredentials.username == '' || localStorageCredentials.password == '')) {
-      localStorage.removeItem('github.credentials');
-    }
 
     // Send the access token to the server to synchronize
     if (localStorageCredentials && localStorageCredentials.token) {
@@ -1037,8 +1034,6 @@
         user.show(null, function (err, author) {
           if (!err && author.login) {
             loadingOptions.userName = author.login;
-            // set the user info in the top right panel
-            workspace.setUserInfo(loadingOptions.userName);
           }
           loadDocument_(github);
         });
