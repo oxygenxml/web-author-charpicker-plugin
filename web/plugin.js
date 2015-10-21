@@ -844,13 +844,14 @@
 
           new sync.ui.CornerTooltip(errorMessageElement,
               '<div>' +
-                'There are 2 possible reasons for that:' +
+                'There are 2 possible reasons for this error:' +
                 '<ul>' +
                   '<li>The file does not exist</li>' +
                   '<li>You do not have access to read the file</li>' +
                 '</ul>' +
                 'You can <a href="' + contactInfo + '">contact the repository owner</a> to request access.<br/>' +
-                'Or <a href="https://github.com/" target="_blank">login</a> with a user which has read access.' +
+                'Or <a href="https://github.com/" target="_blank">go to GitHub and login</a> with a user which has<br/> ' +
+                'read access and afterwards click the "Re-login with GitHub" button.' +
               '</div>'
           );
         });
@@ -1063,7 +1064,8 @@
               if (repoAccess) {
                 loginManager.setErrorMessage('The requested file was not found.');
               } else {
-                loginManager.setErrorMessage('We could not find your file. You might not have read access.');
+                loginManager.setErrorMessage('We could not open this file. ' +
+                    'Make sure the repository owner gave you access.');
               }
 
               loginManager.setGotRepoAccess(!!repoAccess);
