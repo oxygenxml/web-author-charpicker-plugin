@@ -966,7 +966,7 @@
           new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
               '<div>' +
                 'If you are the administrator of the application<br/> make sure the client ID and ' +
-                'client Secret are properly<br/> set in the administration page.' +
+                'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
               '</div>'
           );
 
@@ -1611,7 +1611,7 @@
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
-  
+ 
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
 }());
