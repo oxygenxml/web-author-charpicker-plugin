@@ -962,6 +962,14 @@
           this.resetCredentials();
 
           this.getCredentials(callback);
+
+          new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
+              '<div>' +
+                'If you are the administrator of the application<br/> make sure the client ID and ' +
+                'client Secret are properly<br/> set in the administration page.' +
+              '</div>'
+          );
+
         } else {
           // Got the access token, we can load the document
           if (credentials.error) {
@@ -1603,7 +1611,7 @@
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
-
+  
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
 }());
