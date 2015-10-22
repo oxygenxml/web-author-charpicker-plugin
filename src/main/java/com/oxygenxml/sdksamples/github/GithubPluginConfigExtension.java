@@ -33,8 +33,14 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     super.init();
  
     Map<String, String> defaultOptions = new HashMap<String, String>();
-    defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);
-    defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
+    
+    if (GitHubOauthServlet.clientId != null) {
+      defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);  
+    }
+    if (GitHubOauthServlet.clientSecret != null) {
+      defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
+    }
+    
     setDefaultOptions(defaultOptions);
     
     // If the options are set by the user in the admin page they will be returned from getOption.
@@ -114,6 +120,11 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    */
   @Override
   public String getOptionsJson() {
-    return "{\"client_id\":\"" + GitHubOauthServlet.clientId + "\",\"client_secret\":\"" + GitHubOauthServlet.clientSecret + "\"}";
+    if (GitHubOauthServlet.clientId != null && GitHubOauthServlet.clientSecret != null) {
+      return "{\"client_id\":\"" + GitHubOauthServlet.clientId + "\",\"client_secret\":\"" + GitHubOauthServlet.clientSecret + "\"}";  
+    } else {
+      return "{\"client_id\":\"\",\"client_secret\":\"\"}";
+    }
+    
   }
 }

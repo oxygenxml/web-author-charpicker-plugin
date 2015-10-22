@@ -878,6 +878,9 @@
         oauthUrl: 'https://github.com/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
       };
       localStorage.setItem('github.oauthProps', JSON.stringify(this.oauthProps));
+    } else {
+      this.oauthProps = null;
+      localStorage.removeItem('github.oauthProps');
     }
   };
 
@@ -954,8 +957,8 @@
       getGithubClientIdOrToken(goog.bind(function (err, credentials) {
         if (err) {
           // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-          // TODO: show error message sayng that the github plugin is not properly configured?
-          console.log(err);
+          this.setErrorMessage('The GitHub plugin is not configured properly.');
+          this.setOauthProps(null);
           this.resetCredentials();
 
           this.getCredentials(callback);
@@ -1600,7 +1603,7 @@
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
-  
+
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
 }());

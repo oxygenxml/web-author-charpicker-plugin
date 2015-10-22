@@ -79,7 +79,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     String requestPath = httpRequest.getPathInfo();
     
     // If the clinetId is null the OAuth flow is not available
-    if (clientId == null || clientSecret == null) {
+    if ((clientId == null || clientSecret == null) || 
+        (clientId != null && clientId.isEmpty() || clientSecret != null && clientSecret.isEmpty())) {
       httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
@@ -114,7 +115,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       throws ServletException, IOException {
 
     // If the clinetId is null the OAuth flow is not available
-    if (clientId == null || clientSecret == null) {
+    if ((clientId == null || clientSecret == null) || 
+        (clientId != null && clientId.isEmpty() || clientSecret != null && clientSecret.isEmpty())) {
       httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
