@@ -181,14 +181,8 @@
 .gh-config-dialog {
     text-align: left;
     box-sizing: border-box;
-    width: 510px;
     word-wrap: break-word;
-}
-
-@media only screen and (max-width: 550px) {
-    .gh-config-dialog {
-        width: 100%;
-    }
+    width: 100%;
 }
 
 @media only screen and (max-height: 320px), only screen and (max-width: 330px) {
@@ -196,4 +190,41 @@
         height: 125px;
         overflow-y: scroll;
     }
+}
+.github-repo-edit {
+    display:none;
+    background-size: 16px 16px;
+    position: absolute;
+    right:0;
+    padding-right: 5px;
+    height: 100%;
+    width: 20px;
+    background: lightgrey url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXUlEQVR42mNgGBKgoKAgAYj/Q3ECJZrBmCLNRBuASzNRXhhemj8AsQExmgWA+ABZmpEMUQDiC+RqBtnugOQVA1JTG8jWCVCvbIAaCKIboDgAZAFWg////08RptgAAMDo/Jm25cdCAAAAAElFTkSuQmCC) no-repeat 50% 50%;
+    border-color: #ccc;
+}
+
+.file-browser-repo-config-area:hover > .github-repo-edit {
+    display: inline-block;
+}
+
+.repo-icon {
+    background: url('repo.svg');
+}
+.branch-icon {
+    background: url('git-branch.svg');
+}
+.branch-icon,
+.repo-icon {
+    margin: 0 5px;
+    display: inline-block;
+    background-size: 16px 16px;
+    opacity: 0.5;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+}
+
+.github-repo-right {
+    position: absolute;
+    right: 30px;
 }
