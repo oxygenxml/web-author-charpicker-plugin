@@ -26,6 +26,31 @@ import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
  */
 public class GitHubOauthServlet extends WebappServletPluginExtension{
   
+  /**
+   * Constant for the github oauth client id key
+   */
+  private static final String CLIENT_ID = "clientId";
+
+  /**
+   * Constant for the github oauth redirectTo key
+   */
+  private static final String REDIRECT_TO = "redirectTo";
+
+  /**
+   * Constant for the github oauth state key
+   */
+  private static final String STATE = "state";
+
+  /**
+   * Constant for the github oauth accessToken key
+   */
+  private static final String ACCESS_TOKEN = "accessToken";
+
+  /**
+   * Constant for the github oauth error key
+   */
+  private static final String ERROR = "error";
+  
   /** 
    * The Github clientId
    */
@@ -135,42 +160,12 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       } catch (IOException e) {
         logger.error(e.getMessage());
       }
-    } else if (requestPath.matches(".*?\\/github_sync_token\\/?")) {
-      try {
-        handleGithubSyncTokenRequest(httpRequest, httpResponse);
-      } catch (IOException e) {
-        logger.error(e.getMessage());
-      }
     } else {
       // The requested resource does not exist
       httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
   }
   
-  /**
-   * Saves the token received from the client
-   * 
-   * @param httpRequest The HTTP request object
-   * @param httpResponse The HTTP response object
-   * @throws IOException
-   */
-  private void handleGithubSyncTokenRequest(HttpServletRequest httpRequest,
-      HttpServletResponse httpResponse) throws IOException {
-
-    HttpSession session = httpRequest.getSession();
-    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
-    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
-    
-    String accessToken = (String) requestBody.get("accessToken");
-    
-    if (accessToken != null) {
-      session.setAttribute("accessToken", accessToken);
-      GithubUrlStreamHandler.accessTokens.put(session.getId(), accessToken);
-    }
-    
-    httpResponse.sendError(HttpServletResponse.SC_OK);
-  }
-
   /**
    * Clears the access token from the session
    * (This method will be called when a 401 code is returned after calling a github action in the client)
@@ -181,7 +176,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    */
   private void handleGithubClearAccessRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
     HttpSession session = httpRequest.getSession();
-    session.removeAttribute("accessToken");
+    session.removeAttribute(ACCESS_TOKEN);
     
     httpResponse.sendError(HttpServletResponse.SC_OK);
   }
@@ -194,19 +189,37 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private void handleGithubCredentialsRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+    // Identifying the user making the request
+    HttpSession session = httpRequest.getSession();
+    
+    // Getting the request body
     String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
     HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
-    
-    HttpSession session = httpRequest.getSession();
 
+    // Synchronize oauth credentials with the client
+    String clientId = (String) requestBody.get(CLIENT_ID);
+    String accessToken = (String) requestBody.get(ACCESS_TOKEN);
+    String state = (String) requestBody.get(STATE);
+
+    // Only if the client has the same client id, synchronize accessTokens
+    if (GitHubOauthServlet.clientId != null) {
+      if (GitHubOauthServlet.clientId.equals(clientId) &&
+          accessToken != null && !accessToken.isEmpty() &&
+          state != null && !state.isEmpty()) {
+        session.setAttribute(ACCESS_TOKEN, accessToken);
+        session.setAttribute(STATE, state);
+      } else if (!GitHubOauthServlet.clientId.equals(clientId)) {
+        resetOauthCredentials(session);
+      }
+    }
+    
     // reset will be true if the access token has expired so we will reset everything to null to start the OAuth flow again
     Boolean reset = (Boolean) requestBody.get("reset");
     if (reset != null && reset == true) {
-      session.removeAttribute("error");
-      session.removeAttribute("accessToken");
-      session.removeAttribute("state");
+      resetOauthCredentials(session);
     }
     
+    // Return the Error, Access Token or Client ID
     httpResponse.addHeader("Content-Type", "application/json");
     if (sendErrorIfAvailable(session, httpResponse)) {
       return;
@@ -215,6 +228,16 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       return;
     }
     sendClientId(session, requestBody, httpResponse);
+  }
+
+  /**
+   * Removes OAuth flow related properties from the session so that a new oauth flow is triggered. Causing the user to relogin.
+   * @param session The Http session which identifies a user.
+   */
+  private void resetOauthCredentials(HttpSession session) {
+    session.removeAttribute(ERROR);
+    session.removeAttribute(ACCESS_TOKEN);
+    session.removeAttribute(STATE);
   }
   
   /**
@@ -226,14 +249,14 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private boolean sendErrorIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
-    String error = (String) session.getAttribute("error"); 
+    String error = (String) session.getAttribute(ERROR); 
     
     if (error != null) {
       httpResponse.getWriter().write("{\"error\":\"" + error + "\"}");
       httpResponse.flushBuffer();
       
       // If we don't remove the error attribute now, the client could end up being blocked without being able to login until his/her session expires.
-      session.removeAttribute("error");
+      session.removeAttribute(ERROR);
       return true;
     } else {
       return false;
@@ -249,11 +272,11 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private boolean sendAccessTokenIfAvailable(HttpSession session, HttpServletResponse httpResponse) throws IOException {
-    String accessToken = (String) session.getAttribute("accessToken");
-    String state = (String) session.getAttribute("state");
+    String accessToken = (String) session.getAttribute(ACCESS_TOKEN);
+    String state = (String) session.getAttribute(STATE);
 
     if (accessToken != null) {
-      GithubUrlStreamHandler.accessTokens.put(session.getId(), accessToken);
+      GitHubPlugin.accessTokens.put(session.getId(), accessToken);
       
       httpResponse.getWriter().write("{\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
@@ -275,8 +298,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     // The redirectTo (representing a URL) attribute will be needed when we want to redirect back to the application 
     String redirectTo = null;
     try {
-      redirectTo = (String) requestBody.get("redirectTo");
-      session.setAttribute("redirectTo", redirectTo);
+      redirectTo = (String) requestBody.get(REDIRECT_TO);
+      session.setAttribute(REDIRECT_TO, redirectTo);
     } catch (NullPointerException e) {
       httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "The property redirectTo is required");
       return;
@@ -285,7 +308,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     // The state attribute will be sent to github and then returned back
     // We will have to check if the one received back from github is the same
     String state = UUID.randomUUID().toString();
-    session.setAttribute("state", state);
+    session.setAttribute(STATE, state);
 
     if (clientId == null) {
       logger.error("Missing github configuration parameter <clientId>. Make sure the 'github-plugin.properties' file is available");
@@ -311,22 +334,22 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    */
   private void handleGithubCallbackRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
     HttpSession session = httpRequest.getSession();
-    session.removeAttribute("error");
+    session.removeAttribute(ERROR);
     
     HashMap<String, String> urlParams = parseQueryString(httpRequest.getQueryString());
     
     String githubCode = urlParams.get("code");
-    String githubState = urlParams.get("state");
+    String githubState = urlParams.get(STATE);
     
-    String githubError = urlParams.get("error");
+    String githubError = urlParams.get(ERROR);
     String githubErrorDescription = urlParams.get("error_description");
     String githubErrorUri = urlParams.get("error_uri");
     
     logger.debug("githubCode:" + githubCode);
     logger.debug("githubState: " + githubState);    
     
-    String state = (String) session.getAttribute("state");
-    String redirectTo = (String) session.getAttribute("redirectTo");
+    String state = (String) session.getAttribute(STATE);
+    String redirectTo = (String) session.getAttribute(REDIRECT_TO);
     
     logger.debug("state: " + state);
     logger.debug("redirectTo: " + redirectTo);
@@ -336,7 +359,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       logger.error("GithubErrorDescripion: " + githubErrorDescription);
       logger.error("GithubErrorUri: " + githubErrorUri);
 
-      session.setAttribute("error", githubError);
+      session.setAttribute(ERROR, githubError);
       httpResponse.sendRedirect(redirectTo);
       return;
     }
@@ -376,17 +399,17 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         String accessToken = getAccessTokenFromGithub(githubCode);
         
         if (accessToken == null) {
-          session.setAttribute("error", "Internal Server Error (Github Plugin is not configured properly)");
+          session.setAttribute(ERROR, "Internal Server Error (Github Plugin is not configured properly)");
           httpResponse.sendRedirect(redirectTo);
           return;
         }
         
         logger.debug("got github access token, saving it..");
-        session.setAttribute("accessToken", accessToken);
+        session.setAttribute(ACCESS_TOKEN, accessToken);
         httpResponse.sendRedirect(redirectTo);
       } catch (IOException e) {
         logger.error(e.getMessage());
-        session.setAttribute("error", "Internal Server Error (#HGCR)");
+        session.setAttribute(ERROR, "Internal Server Error (#HGCR)");
         httpResponse.sendRedirect(redirectTo);
       }
     }

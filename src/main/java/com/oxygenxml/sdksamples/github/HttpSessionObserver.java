@@ -19,7 +19,7 @@ public class HttpSessionObserver implements HttpSessionListener {
 
   @Override
   public void sessionDestroyed(HttpSessionEvent session) {
-    GithubUrlStreamHandler.accessTokens.remove(session.getSession().getId());
+    GitHubPlugin.accessTokens.remove(session.getSession().getId());
   }
 
 }

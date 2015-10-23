@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.URLStreamHandlerWithContext;
 
@@ -16,12 +14,6 @@ import ro.sync.ecss.extensions.api.webapp.plugin.URLStreamHandlerWithContext;
  *
  */
 public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
-  
-  /**
-   * A map of <sessionId, access_token>
-   * Used to hold the access_token for each session
-   * */
-  public static final Map<String, String> accessTokens = new HashMap<String, String>();
   
   @Override
   protected URLConnection openConnectionInContext(String contextId, URL url,
@@ -51,7 +43,7 @@ public class GithubUrlStreamHandler extends URLStreamHandlerWithContext {
     
     URL apiUrl = new URL(githubApiUrlString);
     
-    String accessToken = accessTokens.get(contextId);
+    String accessToken = GitHubPlugin.accessTokens.get(contextId);
     return new GithubUrlConnection(apiUrl.openConnection(), accessToken, urlPathPart);
   }
 }

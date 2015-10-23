@@ -529,7 +529,7 @@
 
       return;
     } else if (err.error == 401) {
-      msg = 'Not authorized';
+      msg = 'Not authorized.';
 
       // Clear the github credentials to make sure the login dialog is shown when the page is refreshed
       clearGithubCredentials();
@@ -937,64 +937,39 @@
    * @param {boolean=} reset Set to true if we want to get a new access token
    */
   GitHubLoginManager.prototype.authenticateUser = function(callback, reset) {
-    // Remove the localStorage info if they are empty values (username == '') To make sure the login dialog is displayed
-    var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials'));
+    getGithubClientIdOrToken(goog.bind(function (err, credentials) {
+      if (err || credentials.error) {
+        // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
+        this.setErrorMessage('The GitHub plugin is not configured properly.');
+        this.setOauthProps(null);
+        this.resetCredentials();
 
-    // Send the access token to the server to synchronize
-    if (localStorageCredentials && localStorageCredentials.token) {
-      syncTokenWithServer(localStorageCredentials.token);
-    }
+        this.getCredentials(callback);
 
-    var localStorageOauthProps = JSON.parse(localStorage.getItem('github.oauthProps'));
-    if (localStorageOauthProps) {
-      this.setOauthProps(localStorageOauthProps.clientId, localStorageOauthProps.state);
-    }
+        new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
+            '<div>' +
+              'If you are the administrator of the application<br/> make sure the client ID and ' +
+              'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
+            '</div>'
+        );
 
-    github = this.createGitHub();
-    if (github && !reset) {
-      callback(github);
-    } else {
-      getGithubClientIdOrToken(goog.bind(function (err, credentials) {
-        if (err) {
-          // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-          this.setErrorMessage('The GitHub plugin is not configured properly.');
-          this.setOauthProps(null);
-          this.resetCredentials();
+      } else {
+        if (credentials.accessToken) {
+          localStorage.setItem('github.credentials', JSON.stringify({
+            token: credentials.accessToken,
+            auth: "oauth"
+          }));
 
-          this.getCredentials(callback);
-
-          new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
-              '<div>' +
-                'If you are the administrator of the application<br/> make sure the client ID and ' +
-                'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
-              '</div>'
-          );
-
+          this.setOauthProps(credentials.clientId, credentials.state);
+          github = this.createGitHub();
+          callback(github);
         } else {
-          // Got the access token, we can load the document
-          if (credentials.error) {
-            errorReporter.showError('GitHub Error', 'Error description: "GitHub Oauth Flow: ' +
-                credentials.error, sync.api.Dialog.ButtonConfiguration.OK);
-            // When an oauth flow error occurs we should remove any saved credentials so we can get new ones
-            // (This error occurs when the wrong clientId and clientSecret are set)
-            localStorage.removeItem('github.credentials');
-          } else if (credentials.accessToken) {
-            localStorage.setItem('github.credentials', JSON.stringify({
-              token: credentials.accessToken,
-              auth: "oauth"
-            }));
-
-            this.setOauthProps(credentials.clientId, credentials.state);
-            github = this.createGitHub();
-            callback(github);
-          } else {
-            // Login with user and pass
-            this.setOauthProps(credentials.clientId, credentials.state);
-            this.getCredentials(callback);
-          }
+          // Login with user and pass
+          this.setOauthProps(credentials.clientId, credentials.state);
+          this.getCredentials(callback);
         }
-      }, this), reset);
-    }
+      }
+    }, this), reset);
   };
 
   /**
@@ -1131,22 +1106,19 @@
   }, true);
 
   /**
-   * Sends the token to the server to synchronize
-   * @param {String} accessToken The Github access token
-   */
-  function syncTokenWithServer(accessToken) {
-    var xhrRequest = new XMLHttpRequest();
-    xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_sync_token/', true);
-    xhrRequest.send(JSON.stringify({accessToken: accessToken}));
-  }
-
-  /**
    * Gets the github access token or client_id
    *
    * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
    * @param {boolean=} reset If true, will trigger a new OAuth flow for getting a new access token (called with true when the access token expires)
    */
   function getGithubClientIdOrToken(callback, reset) {
+    var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials')) || {};
+    var localStorageOauthProps = JSON.parse(localStorage.getItem('github.oauthProps')) || {};
+
+    var accessToken = localStorageCredentials.accessToken || '';
+    var clientId = localStorageOauthProps.clientId || '';
+    var state = localStorageOauthProps.state || '';
+
     var xhrRequest = new XMLHttpRequest();
 
     xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_credentials/', true);
@@ -1167,7 +1139,15 @@
     };
 
     // Send the current url. It will be needed to redirect back to this page
-    xhrRequest.send(JSON.stringify({redirectTo: window.location.href, reset: reset}));
+    // Also send the oauth related props so that we can synchronize with the server, in case we need new credentials
+    xhrRequest.send(JSON.stringify({
+      redirectTo: window.location.href,
+      reset: reset,
+
+      accessToken: accessToken,
+      clientId: clientId,
+      state: state
+    }));
   }
 
   /**

@@ -58,6 +58,15 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     return "github-config";
   }
   
+  @Override
+  public void doPut(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    super.doPut(req, resp);
+    
+    // Removing all access tokens to force all users to relogin
+    GitHubPlugin.accessTokens.clear();
+  }
+  
   /**
    * Overriding to make sure the GithubOauthServlet properties are updated as well.
    */
@@ -67,6 +76,8 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     super.doDelete(req, resp);
     GitHubOauthServlet.clientId = getDefaultOptions().get(CLIENT_ID);
     GitHubOauthServlet.clientSecret = getDefaultOptions().get(CLIENT_SECRET);
+    
+    GitHubPlugin.accessTokens.clear();
   }
   
   /**
