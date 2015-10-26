@@ -209,17 +209,19 @@
 
 .repo-icon {
     background: url('repo.svg');
+    background-size: 12px 16px;
+    width: 12px;
 }
 .branch-icon {
     background: url('git-branch.svg');
+    background-size: 9px 16px;
+    width: 9px;
 }
 .branch-icon,
 .repo-icon {
     margin: 0 5px;
     display: inline-block;
-    background-size: 16px 16px;
     opacity: 0.5;
-    width: 16px;
     height: 16px;
     background-repeat: no-repeat;
 }

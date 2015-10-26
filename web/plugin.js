@@ -1311,7 +1311,7 @@
       goog.dom.classlist.add(element, 'vertical-align-children');
       var details = url.match("github://getFileContent/([^/]*)/([^/]*)/([^/]*)/.*");
       element.innerHTML = '<span class="repo-icon"></span>' +
-        details[1] + '/' + details[2] + '<span class="github-repo-right"><span class="branch-icon"></span>' + details[3] + '</span>';
+        details[1] + '/' + details[2] + '<span class="github-repo-right vertical-align-children"><span class="branch-icon"></span>' + details[3] + '</span>';
 
       var button = goog.dom.createDom('div', 'github-repo-edit');
       button.title = "Edit GitHub repository and branch";
@@ -1328,6 +1328,7 @@
           new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
       return;
     }
+    goog.dom.classlist.remove(element, 'vertical-align-children');
 
     element.innerHTML =
       '<div class="gh-config-dialog">' +
