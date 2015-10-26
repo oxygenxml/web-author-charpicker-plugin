@@ -1,8 +1,12 @@
 package com.oxygenxml.sdksamples.github;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +30,14 @@ import ro.sync.util.URLUtil;
 public class GithubUrlConnection extends FilterURLConnection implements FileBrowsingConnection {
 
   /**
-   * The path of the opened url
+   * The path of the opened url.
    */
   private String urlPathPart;
+  
+  /**
+   * The github OAuth access token.
+   */
+  String accessToken;
   
   /**
    * Constructor
@@ -38,6 +47,7 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
   public GithubUrlConnection(URLConnection delegateConnection, String accessToken, String urlPathPart) {
     super(delegateConnection);
     if (accessToken != null) {
+      this.accessToken = accessToken;
       delegateConnection.setRequestProperty("Authorization", "token " + accessToken);
     }
     this.urlPathPart = urlPathPart;
@@ -58,7 +68,38 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
     byte[] decodedContent = Base64.decode(base64Content);
 
     return new ByteArrayInputStream(decodedContent);
+  }
+  
+  @Override
+  public OutputStream getOutputStream() throws IOException {
+    return new ByteArrayOutputStream() {
+      @Override
+      public void close() throws IOException {
+        byte[] content = toByteArray();
+        String encodedContent = Base64.encodeBytes(content);
+        
+        String apiRequestBody = 
+              "{"
+              + "\"message\":\"Creating new file from template.\","
+              + "\"content\":\"" + encodedContent + "\""
+            + "}";
 
+        URL apiCallUrl = delegateConnection.getURL();
+        HttpURLConnection urlConnection = (HttpURLConnection) apiCallUrl.openConnection();
+        urlConnection.setRequestProperty("Content-Type", "application/json");
+        urlConnection.setRequestProperty("Authorization", "token " + accessToken);
+        urlConnection.setRequestMethod("PUT");
+        urlConnection.setDoOutput(true);
+        
+        OutputStream outputStream = urlConnection.getOutputStream();
+        outputStream.write(apiRequestBody.getBytes());
+        outputStream.flush();
+        outputStream.close();
+        
+        String inputStreamToString = GithubUtil.inputStreamToString(urlConnection.getInputStream());
+        // continue from here
+      }
+    };
   }
   
   @Override

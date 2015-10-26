@@ -1018,8 +1018,8 @@
       if (!urlAuthor) {
         var user = github.getUser();
         user.show(null, function (err, author) {
-          if (!err && author.login) {
-            loadingOptions.userName = author.login;
+          if (!err && (author.login || author.name)) {
+            loadingOptions.userName = author.name || author.login;
           }
           loadDocument_(github);
         });
@@ -1059,6 +1059,7 @@
           }
 
           // Try to authenticate again.
+          loginManager.setErrorMessage('GitHub error.');
           loginManager.resetCredentials();
           loginManager.getCredentials(loadDocument);
           return;
@@ -1073,7 +1074,7 @@
 
         var fileContent = sync.util.decodeB64(file.content);
 
-        workspace.setUrlChooser(new GithubFileBrowser());
+        workspace.setUrlChooser(fileBrowser);
 
         // Load the retrieved content in the editor.
         loadingOptions.content = fileContent;
@@ -1415,8 +1416,7 @@
           var repo = github.getRepo(path[0], path[1]);
           repo.getBranches(goog.bind(function (err, branches) {
             if (err) {
-              this.configNotificator.show("Attempting to get list of branches failed.<br/>" +
-                  "Make sure the url exists and respects the format below.",
+              this.configNotificator.show("Could not retrieve the list of branches from the GitHub URL you have provided.",
                   sync.view.InplaceNotificationReporter.types.ERROR);
             } else {
               // cache the result no need to make the same request twice
@@ -1588,7 +1588,16 @@
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
+
+  var githubCreateAction = new sync.api.CreateDocumentAction(fileBrowser);
+  githubCreateAction.setLargeIcon(
+      '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+  githubCreateAction.setDescription('Create a file on your GitHub repository');
+  githubCreateAction.setActionId('github-create-action');
+  githubCreateAction.setActionName('Github');
  
   workspace.getActionsManager().registerOpenAction(
       githubOpenAction);
+  workspace.getActionsManager().registerCreateAction(
+      githubCreateAction);
 }());

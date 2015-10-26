@@ -309,8 +309,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     // We will have to check if the one received back from github is the same
     String state = UUID.randomUUID().toString();
     session.setAttribute(STATE, state);
-
-    if (clientId == null) {
+    
+    if (clientId == null || clientSecret == null) {
       logger.error("Missing github configuration parameter <clientId>. Make sure the 'github-plugin.properties' file is available");
       httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     } else {
