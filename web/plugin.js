@@ -964,7 +964,11 @@
           github = this.createGitHub();
           callback(github);
         } else {
-          // Login with user and pass
+          // If the server didn't respond with a accessToken that means we should get a new one by starting the oauth
+          // flow so remove the github.credentials so that the login dialog can appear.
+          localStorage.removeItem('github.credentials');
+
+          // We don't have an access token yet, so use the clientId and state to start the oauth flow
           this.setOauthProps(credentials.clientId, credentials.state);
           this.getCredentials(callback);
         }

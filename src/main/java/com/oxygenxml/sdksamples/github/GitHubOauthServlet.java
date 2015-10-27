@@ -213,7 +213,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       }
     }
     
-    // reset will be true if the access token has expired so we will reset everything to null to start the OAuth flow again
+    // reset will be true if user wants to re-authenticate so we will reset everything to null to start the OAuth flow again
     Boolean reset = (Boolean) requestBody.get("reset");
     if (reset != null && reset == true) {
       resetOauthCredentials(session);
@@ -275,17 +275,46 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     String accessToken = (String) session.getAttribute(ACCESS_TOKEN);
     String state = (String) session.getAttribute(STATE);
 
-    if (accessToken != null) {
+    if (accessToken != null && tokenIsStillValid(accessToken)) {
       GitHubPlugin.accessTokens.put(session.getId(), accessToken);
-      
+        
       httpResponse.getWriter().write("{\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
       return true;
     } else {
+      // If the accessToken is not null but not valid we will remove it so that we can get a new one
+      GitHubPlugin.accessTokens.remove(session.getId());
+      session.removeAttribute(ACCESS_TOKEN);
+      
       return false;
     }
   }
   
+  /**
+   * Tests whether an access token is still valid.
+   * 
+   * @param accessToken The access token to test for validity
+   * @return True if the access token is still valid. (If the user did not revoke access for our application)
+   */
+  private boolean tokenIsStillValid(String accessToken) {
+    boolean tokenIsStillValid = true;
+    try {
+      // Send the client_id and client_secret as well because we want to use the 5000 requests quota not the free one
+      URL apiUrl = new URL("https://api.github.com/user?client_id=" + clientId + "&client_secret=" + clientSecret);
+      HttpURLConnection apiConnection = (HttpURLConnection) apiUrl.openConnection();
+      apiConnection.setRequestProperty("Authorization", "token " + accessToken);
+      int responseCode = apiConnection.getResponseCode();
+      
+      if (responseCode != 200) {
+        tokenIsStillValid =  false;
+      } 
+    } catch (IOException e) {
+      tokenIsStillValid = false;
+    }
+    
+    return tokenIsStillValid;
+  }
+
   /**
    * Returns the Github client_id to the client.
    * 
