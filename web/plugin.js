@@ -1277,7 +1277,11 @@
         url.indexOf('github://') != -1;
   }
 
-
+  /**
+   * GitHub file browser.
+   *
+   * @constructor
+   */
   GithubFileBrowser = function() {
     var latestUrl = localStorage.getItem('github.latestUrl');
     sync.api.FileBrowsingDialog.call(this, {
@@ -1510,6 +1514,7 @@
    * @param {array<string>} branches
    * @param {{githubUri: goog.Uri, user: string, repo: string}} props The uri object representing the url written by
    * the user in the github setting url input
+   * @param {HTMLElement} The element in which the editing interface is rendered.
    */
   GithubFileBrowser.prototype.showPossibleBranches = function (branches, props, element) {
     goog.events.unlistenByKey(this.keyHandleBranchSelected);
@@ -1551,6 +1556,7 @@
    *
    * @param {{githubUri: goog.Uri, user: string, repo: string}} props The uri object representing the url written by
    * the user in the github setting url input
+   * @param {HTMLElement} The element in which the editing interface is rendered.
    * @param {goog.events.Event} event The triggering event
    */
   GithubFileBrowser.prototype.handleBranchSelected = function (props, element, event) {
@@ -1596,7 +1602,7 @@
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(
-  	'../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+      sync.util.computeHdpiIcon('../plugin-resources/github-static/GitHub70.png'));
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
