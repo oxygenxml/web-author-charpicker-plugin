@@ -1113,6 +1113,11 @@
    * @param {boolean=} reset If true, will trigger a new OAuth flow for getting a new access token (called with true when the access token expires)
    */
   function getGithubClientIdOrToken(callback, reset) {
+    if (reset) {
+      localStorage.removeItem('github.credentials');
+      localStorage.removeItem('github.oauthProps');
+    }
+
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials')) || {};
     var localStorageOauthProps = JSON.parse(localStorage.getItem('github.oauthProps')) || {};
 
@@ -1574,7 +1579,9 @@
         function () {
           // authenticate the user.
           var loginManager = new GitHubLoginManager();
-          loginManager.authenticateUser(goog.bind(fileBrowser.refresh,fileBrowser));
+          // Calling authenticateUser with the reset flag set to true to make sure we request a new login flow.
+          // We should only end up here if we are not authorized or if the logged in user has removed our application access from GitHub
+          loginManager.authenticateUser(goog.bind(fileBrowser.refresh,fileBrowser), true);
         });
   };
 
