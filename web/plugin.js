@@ -1125,7 +1125,7 @@
     var localStorageCredentials = JSON.parse(localStorage.getItem('github.credentials')) || {};
     var localStorageOauthProps = JSON.parse(localStorage.getItem('github.oauthProps')) || {};
 
-    var accessToken = localStorageCredentials.accessToken || '';
+    var accessToken = localStorageCredentials.token || '';
     var clientId = localStorageOauthProps.clientId || '';
     var state = localStorageOauthProps.state || '';
 
@@ -1602,7 +1602,7 @@
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(
-      sync.util.computeHdpiIcon('../plugin-resources/github-static/GitHub70.png'));
+  	'../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
