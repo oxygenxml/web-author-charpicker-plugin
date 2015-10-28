@@ -1272,9 +1272,14 @@
    * @returns {boolean} true if the url points to a github resource
    */
   function isGitHubUrl(url) {
-    return url.indexOf('github.com') != -1 ||
-        url.indexOf('raw.githubusercontent.com') != -1 ||
-        url.indexOf('github://') != -1;
+    if (url.indexOf('github://') == 0) {
+      return true;
+    }
+    if (url.match("https?://.*")) {
+      return url.indexOf('github.com') != -1 ||
+          url.indexOf('raw.githubusercontent.com') != -1;
+    }
+    return false;
   }
 
   /**
