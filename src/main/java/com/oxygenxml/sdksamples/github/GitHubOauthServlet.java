@@ -17,9 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.merge.MergeConflictResolutionMethods;
+import ro.sync.merge.MergeResult;
 
 /**
  * Servlet used to for the GitHub OAuth flow. 
@@ -148,24 +152,73 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     
     String requestPath = httpRequest.getPathInfo();
     
-    if (requestPath.matches(".*?\\/github_credentials\\/?")) {
-      try {
-        handleGithubCredentialsRequest(httpRequest, httpResponse);
-      } catch (IOException e) {
-        logger.error(e.getMessage());
+    try {
+      if (requestPath.matches(".*?\\/github_credentials\\/?")) {
+          handleGithubCredentialsRequest(httpRequest, httpResponse);
+      } else if (requestPath.matches(".*?\\/github_reset_access\\/?")) {
+          handleGithubClearAccessRequest(httpRequest, httpResponse);
+      } else if (requestPath.matches(".*?\\/github_commit_merge\\/?")) {
+          handleGithubMergeCommit(httpRequest, httpResponse);
+      } else {
+        // The requested resource does not exist
+        httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
       }
-    } else if (requestPath.matches(".*?\\/github_reset_access\\/?")) {
-      try {
-        handleGithubClearAccessRequest(httpRequest, httpResponse);
-      } catch (IOException e) {
-        logger.error(e.getMessage());
-      }
-    } else {
-      // The requested resource does not exist
-      httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch (IOException e) {
+      logger.error(e.getMessage());
     }
   }
   
+  /**
+   * Merges the 
+   * @param httpRequest
+   * @param httpResponse
+   * @throws IOException
+   */
+  private void handleGithubMergeCommit(HttpServletRequest httpRequest,
+      HttpServletResponse httpResponse) throws IOException {
+    // Getting the request body
+    String requestBodyString = GithubUtil.inputStreamToString(httpRequest.getInputStream());
+    HashMap<String, Object> requestBody = GithubUtil.parseJSON(requestBodyString);
+    
+    String ancestor = (String) requestBody.get("ancestor");
+    String left = (String) requestBody.get("left");
+    String right = (String) requestBody.get("right");
+    
+    if (ancestor != null && !ancestor.isEmpty() &&
+        left != null && !left.isEmpty() &&
+        right != null && !right.isEmpty()) {
+      MergeResult mergeResult = PluginWorkspaceProvider.getPluginWorkspace()
+          .getXMLUtilAccess()
+          .threeWayAutoMerge(ancestor, left, right, MergeConflictResolutionMethods.USE_LEFT);
+      
+      String mergedString = mergeResult.getMergedString();
+      String resultType = null;
+      
+      switch (mergeResult.getResultType()) {
+      case CLEAN:
+        resultType = "CLEAN";
+        break;
+      case WITH_CONFLICTS:
+        resultType = "WITH_CONFLICTS";
+        break;
+      case FAILED:
+        resultType = "FAILED";
+        break;
+      }
+      
+      httpResponse.setStatus(HttpServletResponse.SC_OK);
+      httpResponse.getWriter().write(
+            "{"
+                + "\"mergedString\":\"" + mergedString + "\""
+                + "\"resultType\":\"" + resultType + "\""
+          + "}"
+      );
+      httpResponse.flushBuffer();
+    } else {
+      httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    }
+  }
+
   /**
    * Clears the access token from the session
    * (This method will be called when a 401 code is returned after calling a github action in the client)
