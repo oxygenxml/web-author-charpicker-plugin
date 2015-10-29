@@ -30,6 +30,8 @@ import ro.sync.merge.MergeResult;
  */
 public class GitHubOauthServlet extends WebappServletPluginExtension{
   
+  private static final String MERGE_RESULT_HEADER = "OXY-merge-result";
+
   /**
    * Constant for the github oauth client id key
    */
@@ -192,27 +194,21 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
           .threeWayAutoMerge(ancestor, left, right, MergeConflictResolutionMethods.USE_LEFT);
       
       String mergedString = mergeResult.getMergedString();
-      String resultType = null;
       
       switch (mergeResult.getResultType()) {
       case CLEAN:
-        resultType = "CLEAN";
+        httpResponse.setHeader(MERGE_RESULT_HEADER, "CLEAN");
         break;
       case WITH_CONFLICTS:
-        resultType = "WITH_CONFLICTS";
+        httpResponse.setHeader(MERGE_RESULT_HEADER, "WITH_CONFLICTS");
         break;
       case FAILED:
-        resultType = "FAILED";
+        httpResponse.setHeader(MERGE_RESULT_HEADER, "FAILED");
         break;
       }
       
       httpResponse.setStatus(HttpServletResponse.SC_OK);
-      httpResponse.getWriter().write(
-            "{"
-                + "\"mergedString\":\"" + mergedString + "\""
-                + "\"resultType\":\"" + resultType + "\""
-          + "}"
-      );
+      httpResponse.getWriter().write(mergedString);
       httpResponse.flushBuffer();
     } else {
       httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST);
