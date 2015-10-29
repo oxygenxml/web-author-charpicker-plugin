@@ -1481,7 +1481,7 @@
   };
 
   /** @override */
-  GithubFileBrowser.prototype.handleOpenRepo = function(element, e) {
+  GithubFileBrowser.prototype.handleOpenRepo = function(element, event) {
     if (this.urlOk) {
 
       var url = document.getElementById('gh-settings-url').value;
