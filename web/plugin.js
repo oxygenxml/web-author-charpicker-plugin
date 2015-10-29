@@ -1493,7 +1493,7 @@
         url = url + '/';
       }
       var normalizedUrl = normalizeGitHubUrl(url);
-      this.openUrl(normalizedUrl, false, e);
+      this.openUrl(normalizedUrl, false, event);
       localStorage.setItem('github.latestUrl', normalizedUrl);
       this.setRootUrl(this.extractRootUrl_(normalizedUrl));
       if (this.configNotificator) {
