@@ -142,6 +142,10 @@
     this.status = 'none';
     this.githubToolbarButton = null;
     this.statusTimeout = null;
+
+    this.nrListenersFulfilled = 0;
+    this.firstCommit = null;
+    this.firstErr = null;
   };
   goog.inherits(CommitAction, sync.actions.AbstractAction);
 
@@ -229,12 +233,11 @@
   CommitAction.prototype.tryCommit = function(ctx, cb) {
     var self = this;
     if (ctx.branchExists && ctx.hasOwnProperty('content')) {
-
-      // If this is a new branch or the document branch
-      if (!ctx.branchAlreadyExists) {
-        this.getLatestSha_(ctx.branch, self.repo, function (err, latestSha) {
-          if (err) {return cb(err);}
-          if (latestSha === documentSha) {
+      this.getLatestFileVersion(ctx.branch, self.repo, function (err, latestFile) {
+        if (err) {return cb(err);}
+        // If this is a new branch or the document branch
+        if (!ctx.branchAlreadyExists) {
+          if (latestFile.sha === documentSha) {
             self.repo.commitToHead(ctx.branch, self.filePath, ctx.content, ctx.message, function(err, commit) {
               if (!err) {
                 // Have committed, we save the document sha and head for the next commits
@@ -245,14 +248,14 @@
               cb(err);
             });
           } else {
-            self.startCommit_(self.repo, ctx, cb);
+            self.startCommit_(self.repo, ctx, latestFile.content, cb);
           }
-        });
-      } else {
-        // Committing on a different branch is an action which the user has to confirm
-        // Getting the head so we can show the user a diff, so he can make an informed decision
-        self.startCommit_(self.repo, ctx, cb);
-      }
+        } else {
+          // Committing on a different branch is an action which the user has to confirm
+          // Getting the head so we can show the user a diff, so he can make an informed decision
+          self.startCommit_(self.repo, ctx, latestFile.content, cb, true);
+        }
+      });
     }
   };
 
@@ -260,20 +263,205 @@
    * Starts a commit defined by the given context
    * @param {Github.Repository} repo The repo to commit on
    * @param {{branch: string, message: string, content: string}} ctx The commit context
+   * @param {string} latestContent The latest contents of the opened file taken from github
    * @param {function} cb The method to call on result
+   * @param {boolean} differentBranch If true it means this commit is done on a branch different from the current
+   * open documents branch.
    * @private
    */
-  CommitAction.prototype.startCommit_ = function (repo, ctx, cb) {
+  CommitAction.prototype.startCommit_ = function (repo, ctx, latestContent, cb, differentBranch) {
     var self = this;
     repo.getHead(ctx.branch, function (err, head) {
       if (err) {return cb(err);}
-      repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
-        repo.compare(head.sha, commit.sha, function (err, diff) {
-          if (err) {return cb(err);}
-          cb({error: 409, message: 'The file you want to commit has been edited since you opened it.', diff: diff, commit: commit});
+
+      var mergingComponents = {
+        ancestor: initialDocument, // The current document in the state it was when we initially opened it // TODO: update the initialDocument after a succesfull commit
+        left: ctx.content, // Left is the current document with our changes
+        right: latestContent // Right is the latest version of the document from GitHub
+      };
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          // 200 - Auto-merge completed
+          var mergedFile = this.responseText;
+          var resultType = this.getResponseHeader('OXY-Merge-Result');
+
+          if (resultType === 'CLEAN') {
+            this.nrListenersFulfilled = 0;
+            this.firstCommit = null;
+            this.firstErr = null;
+
+            // Make two commits, of the merged file and the unmerged file so that we can show a diff of the "other" changes
+            repo.createCommit(ctx.branch, self.filePath, mergedFile, ctx.message,
+                goog.bind(self.onCommitCreatedForMergedAndLeft_, self, 'MERGED', repo, head, differentBranch, cb));
+            repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message,
+                goog.bind(self.onCommitCreatedForMergedAndLeft_, self, 'LEFT', repo, head, differentBranch, cb));
+          } else {
+            repo.createCommit(ctx.branch, self.filePath, mergedFile, ctx.message, function (err, commit) {
+              repo.compare(head.sha, commit.sha, function (err, diff) {
+                if (err) {return cb(err);}
+                cb({
+                  error: 409,
+                  message: 'The file you want to commit has been edited since you opened it.',
+                  diff: diff,
+                  commit: commit,
+                  autoMergeResult: {
+                    resultType: resultType, // Depending on the value of autoMergeResult we will show
+                                            // different messages to the user.
+                    differentBranch: differentBranch
+                  }
+                });
+              });
+            });
+          }
+        } else if (xhr.readyState == 4) {
+          // If the merge failed, just commit without auto-merging and have the user choose what to do to solve the conflicts
+          repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
+            repo.compare(head.sha, commit.sha, function (err, diff) {
+              if (err) {return cb(err);}
+              cb({
+                error: 409,
+                message: 'The file you want to commit has been edited since you opened it.',
+                diff: diff,
+                commit: commit,
+                autoMergeResult: {
+                  differentBranch: differentBranch
+                }
+              });
+            });
+          });
+        }
+      };
+      xhr.open('POST', '../plugins-dispatcher/github-oauth/github/github_commit_merge');
+      xhr.send(JSON.stringify(mergingComponents));
+    });
+  };
+
+  /**
+   * Called when the merged and left files finish creating commmits.
+   *
+   * @param {string} fileID The identifier of the commited file.
+   * @param {Github.Repository} repo The repo to compare on.
+   * @param {object} head The head of the commit branch.
+   * @param {boolean} differentBranch If true it means this commit is done on a branch different from the current
+   *                  open documents branch.
+   * @param {function} cb The method to call on result
+   * @param {object} err The error object.
+   * @param {object} commit The commit object.
+   * @private
+   */
+  CommitAction.prototype.onCommitCreatedForMergedAndLeft_ = function (fileID, repo, head, differentBranch, cb, err, commit) {
+    debugger;
+    this.nrListenersFulfilled++;
+    if (this.nrListenersFulfilled === 1) {
+      this.firstErr = err;
+      this.firstCommit = commit;  // {blobSha, sha}
+
+      return;
+    }
+
+    var self = this;
+
+    switch (fileID) {
+    case 'MERGED':
+      // If the MERGED file commit fails, it doesn't matter if the LEFT one succeeds or fails
+      if (err) {
+        return cb(err);
+      }
+      // IF the LEFT file commit fails, we will just show a diff between the MERGED and head
+      else if (this.firstErr) {
+        // return repo.compare(head, commit);
+      }
+
+      debugger;
+      repo.compare(this.firstCommit.sha, commit.sha, function (err, diff) {
+        if (err) {return cb(err);}
+        cb({
+          error: 409,
+          message: 'The file you want to commit has been edited since you opened it.',
+          diff: diff,
+          commit: commit, // We set this commit, the MERGED commit, as the one to update to head
+          autoMergeResult: {
+            resultType: 'CLEAN', // Depending on the value of autoMergeResult we will show
+                                    // different messages to the user.
+            differentBranch: differentBranch
+          }
         });
       });
+
+      break;
+    case 'LEFT':
+      debugger;
+      repo.compare(commit.sha, this.firstCommit.sha, function (err, diff) {
+        if (err) {return cb(err);}
+        cb({
+          error: 409,
+          message: 'The file you want to commit has been edited since you opened it.',
+          diff: diff,
+          commit: self.firstCommit, // We set the first commit, the MERGED commit, as the one to update to head
+          autoMergeResult: {
+            resultType: 'CLEAN', // Depending on the value of autoMergeResult we will show
+                                    // different messages to the user.
+            differentBranch: differentBranch
+          }
+        });
+      });
+
+      break;
+    }
+/*
+    if (err) {return this.onComparedMergedAndLeft(fileID, err, null, cb);}
+
+    var self = this;
+    repo.compare(head.sha, commit.sha, function (err, diff) {
+      if (err) {return self.onComparedMergedAndLeft(fileID, err, null, cb);}
+
+      self.onComparedMergedAndLeft(fileID, null, {
+        error: 409,
+        message: 'The file you want to commit has been edited since you opened it.',
+        diff: diff,
+        commit: commit,
+        autoMergeResult: {
+          resultType: 'CLEAN',
+          differentBranch: differentBranch
+        }
+      }, cb);
     });
+  */
+  };
+
+  /**
+   * Called when the merged and left files finish comparing with head.
+   *
+   * @param {string} fileID The identifier for the compared file
+   * @param {object} err The error object
+   * @param {object} result The result of the compare
+   * @param {function} cb The method after both merged and left compares are finished
+   * @private
+   */
+  CommitAction.prototype.onComparedMergedAndLeft_ = function (fileID, err, result, cb) {
+    this.nrListenersFulfilled++;
+    if (this.nrListenersFulfilled === 1) {
+      this.firstCompareResult = result;
+    }
+
+    switch (fileID) {
+    case "MERGED":
+      if (this.nrListenersFulfilled === 2) {
+        if (err) {return cb(err)}
+        cb(null, result);
+      }
+      break;
+    case "LEFT":
+      if (this.nrListenersFulfilled === 2) {
+        if (this.nrListenersFulfilled === 2) {
+          if (err) {return cb(err)}
+          cb(null, result);
+        }
+      }
+      break;
+    }
   };
 
   /**
@@ -313,16 +501,20 @@
   };
 
   /**
-   * Gets the latest sha for the current file
+   * Gets the latest version for the current file
    * @param {string} branch The branch on which we'll make the request
    * @param {Github.Repository} repo The repository on which to check
    * @param {function} cb The method to call on result
    * @private
    */
-  CommitAction.prototype.getLatestSha_ = function (branch, repo, cb) {
+  CommitAction.prototype.getLatestFileVersion = function (branch, repo, cb) {
     repo.getContents(branch, this.filePath, function (err, file) {
       if (err) {return cb(err);}
-      cb(null, file.sha)
+
+      cb(null, {
+        sha: file.sha,
+        content: sync.util.decodeB64(file.content)
+      })
     });
   };
 
@@ -500,19 +692,68 @@
       });
       return;
     } else if (err.error == 409) {
+      debugger;
+      var result = err.autoMergeResult;
+
+      var userMessages;
+      if (result) {
+        if (result.differentBranch === false) {
+          if (typeof result.resultType != 'undefined') {
+            switch (result) {
+            case 'CLEAN':
+              userMessages = {
+                prolog: 'Someone else has edited this file since you opened it.',
+                commitAnywayTitle: 'Commit merged files',
+                commitAnywayMessage: 'We have merged the changes for you. If everything is in order you can go ahead and commit the changes.'
+              };
+              break;
+            case 'WITH_CONFLICTS':
+              userMessages = {
+                prolog: 'Someone else has edited this file since you opened it.',
+                commitAnywayTitle: 'Commit merged files',
+                commitAnywayMessage: 'We have merged the changes for you. If everything is in order you can go ahead and commit the changes.'
+              };
+              break;
+            case 'FAILED':
+              break;
+            }
+          } else {
+            userMessages = {
+              prolog: 'The commit may have conflicts.',
+              commitAnywayTitle: 'Commit anyway',
+              commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
+            };
+          }
+        } else {
+          userMessages = {
+            prolog: 'The commit may have conflicts.',
+            commitAnywayTitle: 'Commit anyway',
+            commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
+          };
+        }
+      } else {
+        userMessages = {
+          prolog: 'The commit may have conflicts.',
+          commitAnywayTitle: 'Commit anyway',
+          commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
+        };
+      }
+
       var commitDialog =
           '<div id="gh-commit-diag-content">' +
-            '<div>The commit may have conflicts. Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, pick one of the following:</div>' +
+            '<div>' + userMessages.prolog + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, pick one of the following:</div>' +
             '<div id="createFork" class="gh-commit-diag-choice gh-default-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
               '<div class="gh-commit-diag-title">Commit on a fresh branch</div>' +
               '<div class="gh-commit-diag-descripion">Create a branch containing your version of the document. Later on, you can merge back the branch, after you solve the conflicts.</div>' +
-            '</div>' +
+            '</div>';
+      commitDialog +=
             '<div id="commitAnyway" class="gh-commit-diag-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
-              '<div class="gh-commit-diag-title">Commit anyway</div>' +
-              '<div class="gh-commit-diag-descripion">If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.</div>' +
-            '</div>' +
+              '<div class="gh-commit-diag-title">' + userMessages.commitAnywayTitle + '</div>' +
+              '<div class="gh-commit-diag-descripion">' + userMessages.commitAnywayMessage + '</div>' +
+            '</div>';
+      commitDialog +=
             '<div id="cancel" class="gh-commit-diag-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-cancel"></span>' +
               '<div class="gh-commit-diag-title">Cancel</div>' +
@@ -642,9 +883,9 @@
    */
   CommitAction.prototype.commitToForkedRepo_ = function (repo) {
     var self = this;
-    self.getLatestSha_(self.ctx.branch, repo, function (err, latestSha) {
+    self.getLatestFileVersion(self.ctx.branch, repo, function (err, latestFile) {
       if (err) {return cb(err);}
-      if (latestSha === documentSha) {
+      if (latestFile.sha === documentSha) {
         repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err, commit) {
           var msg;
           if (err && err.error == 404) {
@@ -681,7 +922,7 @@
           errorReporter.showError(COMMIT_STATUS_TITLE, msg, sync.api.Dialog.ButtonConfiguration.OK);
         });
       } else {
-        self.startCommit_(repo, self.ctx, function (err) {
+        self.startCommit_(repo, self.ctx, latestFile.content, function (err) {
           self.handleErrors(err, repo);
         });
       }
@@ -987,6 +1228,11 @@
   var documentOwner;
 
   /**
+   * The initial value of the document, before the user starts editing
+   */
+  var initialDocument;
+
+  /**
    * An object describing the location of the opened document (filePath, branch. user, repo)
    */
   var fileLocation;
@@ -1077,6 +1323,9 @@
         documentSha = file.sha;
 
         var fileContent = sync.util.decodeB64(file.content);
+
+        // Save the initial document for three way merging before committing
+        initialDocument = fileContent;
 
         workspace.setUrlChooser(fileBrowser);
 

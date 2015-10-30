@@ -157,6 +157,10 @@
     background-image: url('git-commit.svg');
 }
 
+.gh-commit-merge {
+    background-image: url('git-commit.svg');
+}
+
 .gh-commit-cancel {
     background-image: url('x.svg');
 }
