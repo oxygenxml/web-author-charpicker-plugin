@@ -30,7 +30,7 @@ import ro.sync.merge.MergeResult.ResultType;
  */
 public class GitHubOauthServlet extends WebappServletPluginExtension{
   
-  private static final String MERGE_RESULT_HEADER = "OXY-merge-result";
+  private static final String MERGE_RESULT_HEADER = "OXY-Merge-Result";
 
   /**
    * Constant for the github oauth client id key
