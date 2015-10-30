@@ -17,13 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.merge.MergeConflictResolutionMethods;
 import ro.sync.merge.MergeResult;
+import ro.sync.merge.MergeResult.ResultType;
 
 /**
  * Servlet used to for the GitHub OAuth flow. 
@@ -195,16 +195,14 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       
       String mergedString = mergeResult.getMergedString();
       
-      switch (mergeResult.getResultType()) {
-      case CLEAN:
+      ResultType resultType = mergeResult.getResultType();
+      
+      if (resultType == ResultType.CLEAN) {
         httpResponse.setHeader(MERGE_RESULT_HEADER, "CLEAN");
-        break;
-      case WITH_CONFLICTS:
+      } else if (resultType == ResultType.WITH_CONFLICTS) {
         httpResponse.setHeader(MERGE_RESULT_HEADER, "WITH_CONFLICTS");
-        break;
-      case FAILED:
+      } else if (resultType == ResultType.FAILED) {
         httpResponse.setHeader(MERGE_RESULT_HEADER, "FAILED");
-        break;
       }
       
       httpResponse.setStatus(HttpServletResponse.SC_OK);
