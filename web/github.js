@@ -268,7 +268,7 @@
                 that.commit(head.sha, treeSha, message, function (err, commitSha) {
                   if (err) {return cb(err);}
                   // The blobSha is the sha of the committed file itself.
-                  cb(null, {blobSha: blobSha, sha: commitSha});
+                  cb(null, {blobSha: blobSha, sha: commitSha, head: head});
                 });
               });
             });
@@ -282,7 +282,8 @@
       this.updateCommit = function (commit, branch, cb) {
         that.updateHead(branch, commit.sha, function (err, newHead) {
           if (err) {return cb(err);}
-          cb(null, {sha: commit.blobSha, head: newHead.object});
+          commit.head = newHead.object;
+          cb(null, commit);
         });
       };
 
