@@ -613,17 +613,17 @@
         case 'CLEAN':
           commitAnywayIconClass = 'gh-commit-merge';
           userMessages = {
-            prolog: 'Someone else has edited this file since you opened it.',
+            prolog: 'Someone else has edited this file since you last opened it.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'We have merged all the changes. Click here to commit the merged file.'
+            commitAnywayMessage: 'The changes have been reviewed and I want to commit the merged files.'
           };
           break;
         case 'WITH_CONFLICTS':
           commitAnywayIconClass = 'gh-commit-merge';
           userMessages = {
-            prolog: 'Someone else has edited this file since you opened it, causing conflicts.',
+            prolog: 'Someone else has edited this file since you last opened it and there are conflicts.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'We have merged the changes for you. And we solved the conflicts using your version of the file.'
+            commitAnywayMessage: 'Automatically solve the conflicts by ignoring the other version and commit using my version.'
           };
           break;
         }
@@ -632,17 +632,17 @@
         case 'CLEAN':
           commitAnywayIconClass = 'gh-commit-merge';
           userMessages = {
-            prolog: 'There were differences between your file and the one on the branch you committed.',
+            prolog: 'There is a previous version of this file that is different than the version you are trying to commit.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'We have merged all the changes. Click here to commit the merged file.'
+            commitAnywayMessage: 'The changes have been reviewed and I want to commit the merged files.'
           };
           break;
         case 'WITH_CONFLICTS':
           commitAnywayIconClass = 'gh-commit-merge';
           userMessages = {
-            prolog: 'There were differences between your file and the one on the branch you committed.',
+            prolog: 'There is a previous version of this file that is different than the version you are trying to commit.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'We have merged the changes for you. And we solved the conflicts using your version of the file.'
+            commitAnywayMessage: 'Automatically solve the conflicts by ignoring the other version and commit using my version.'
           };
           break;
         }
@@ -650,11 +650,11 @@
 
       var commitDialog =
           '<div id="gh-commit-diag-content">' +
-            '<div>' + userMessages.prolog + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, pick one of the following:</div>' +
+            '<div>' + userMessages.prolog + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, choose one of the following:</div>' +
             '<div id="createFork" class="gh-commit-diag-choice gh-default-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
               '<div class="gh-commit-diag-title">Commit on a fresh branch</div>' +
-              '<div class="gh-commit-diag-descripion">Create a branch containing your version of the document. Later on, you can merge back the branch, after you solve the conflicts.</div>' +
+              '<div class="gh-commit-diag-descripion">Create a new branch with your version of the document. Later, after you solve the conflicts, you can merge with the initial branch.</div>' +
             '</div>';
       commitDialog +=
             '<div id="commitAnyway" class="gh-commit-diag-choice">' +
