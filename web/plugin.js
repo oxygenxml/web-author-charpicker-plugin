@@ -50,7 +50,9 @@
    *
    * @constructor
    */
-  function LogOutAction () {}
+  function LogOutAction (editor) {
+    this.editor = editor;
+  }
   goog.inherits(LogOutAction, sync.actions.AbstractAction);
 
   /** @override */
@@ -94,6 +96,7 @@
     this.dialog.onSelect(goog.bind(function (actionName) {
       if (actionName == 'yes') {
         clearGithubCredentials();
+        this.editor.setDirty(false);
         window.location.reload();
       }
 
@@ -392,7 +395,7 @@
         errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
 
         goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
-            goog.bind(self.handleReloadOnNewBranch, self));
+            goog.bind(self.handleReloadOnNewBranch, self, true));
       });
     } else {
       this.setStatus('none');
@@ -534,7 +537,7 @@
       this.editor.setDirty(false);
       this.setStatus('success');
       errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
-      goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT, goog.bind(this.handleReloadOnNewBranch, this));
+      goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT, goog.bind(this.handleReloadOnNewBranch, this, false));
     } else {
       this.handleErrors(err);
     }
@@ -544,9 +547,10 @@
   /**
    * Navigates to the url of this document on the new branch, created/updated by the latest commit
    *
+   * @param {boolean} reloadEvenIfSameBranch If true the page will reload even if the branch did not change.
    * @param {event} e The triggering event
    */
-  CommitAction.prototype.handleReloadOnNewBranch = function (e) {
+  CommitAction.prototype.handleReloadOnNewBranch = function (reloadEvenIfSameBranch, e) {
     var branch = fileLocation.branch;
     var user = fileLocation.user;
 
@@ -567,6 +571,9 @@
 
       this.editor.setDirty(false);
       window.open(webappUrl, "_self");
+    } else if (reloadEvenIfSameBranch) {
+      this.editor.setDirty(false);
+      window.location.reload();
     }
   };
 
@@ -595,7 +602,12 @@
       var result = err.autoMergeResult;
 
       var commitAnywayIconClass = 'gh-commit-overwrite';
-      var userMessages;
+      var userMessages = {
+        prolog: 'The commit may have conflicts.',
+        commitAnywayTitle: 'Commit anyway',
+        commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
+      };
+
       if (result && !result.differentBranch) {
         switch (result.resultType) {
         case 'CLEAN':
@@ -603,7 +615,7 @@
           userMessages = {
             prolog: 'Someone else has edited this file since you opened it.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'We have merged the changes for you.'
+            commitAnywayMessage: 'If you want to keep yours and the merged changes.'
           };
           break;
         case 'WITH_CONFLICTS':
@@ -614,20 +626,7 @@
             commitAnywayMessage: 'We have merged the changes for you. And we solved the conflicts using your version of the file.'
           };
           break;
-        default:
-          userMessages = {
-            prolog: 'The commit may have conflicts.',
-            commitAnywayTitle: 'Commit anyway',
-            commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
-          };
-          break;
         }
-      } else {
-        userMessages = {
-          prolog: 'The commit may have conflicts.',
-          commitAnywayTitle: 'Commit anyway',
-          commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
-        };
       }
 
       var commitDialog =
@@ -777,7 +776,12 @@
   CommitAction.prototype.commitToForkedRepo_ = function (repo) {
     var self = this;
     self.getLatestFileVersion(self.ctx.branch, repo, function (err, latestFile) {
-      if (err) {return cb(err);}
+      if (err) {
+        self.setStatus('none');
+        errorReporter.showError('Commit result',
+            'We could not find your file on the forked repository.<br/>Maybe you have forked this repository before?', sync.api.Dialog.ButtonConfiguration.OK);
+        return;
+      }
       if (latestFile.sha === documentSha) {
         repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function(err, commit) {
           var msg;
@@ -809,7 +813,7 @@
               errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
 
               goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
-                  goog.bind(self.handleReloadOnNewBranch, self));
+                  goog.bind(self.handleReloadOnNewBranch, self, true));
             });
 
             return;
@@ -1248,7 +1252,7 @@
 
           // Add the github commit and logout actions to the main toolbar
           var commitActionId = installCommitAction(editor, commitAction);
-          var logOutActionId = installLogoutAction(editor, new LogOutAction());
+          var logOutActionId = installLogoutAction(editor, new LogOutAction(editor));
 
           addToolbarToBuiltinToolbar(e.actionsConfiguration, {
             type: "list",
