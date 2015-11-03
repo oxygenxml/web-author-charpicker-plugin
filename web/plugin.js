@@ -615,13 +615,32 @@
           userMessages = {
             prolog: 'Someone else has edited this file since you opened it.',
             commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'If you want to keep yours and the merged changes.'
+            commitAnywayMessage: 'We have merged all the changes. Click here to commit the merged file.'
           };
           break;
         case 'WITH_CONFLICTS':
           commitAnywayIconClass = 'gh-commit-merge';
           userMessages = {
             prolog: 'Someone else has edited this file since you opened it, causing conflicts.',
+            commitAnywayTitle: 'Commit merged files',
+            commitAnywayMessage: 'We have merged the changes for you. And we solved the conflicts using your version of the file.'
+          };
+          break;
+        }
+      } else {
+        switch (result.resultType) {
+        case 'CLEAN':
+          commitAnywayIconClass = 'gh-commit-merge';
+          userMessages = {
+            prolog: 'There were differences between your file and the one on the branch you committed.',
+            commitAnywayTitle: 'Commit merged files',
+            commitAnywayMessage: 'We have merged all the changes. Click here to commit the merged file.'
+          };
+          break;
+        case 'WITH_CONFLICTS':
+          commitAnywayIconClass = 'gh-commit-merge';
+          userMessages = {
+            prolog: 'There were differences between your file and the one on the branch you committed.',
             commitAnywayTitle: 'Commit merged files',
             commitAnywayMessage: 'We have merged the changes for you. And we solved the conflicts using your version of the file.'
           };
@@ -776,10 +795,41 @@
   CommitAction.prototype.commitToForkedRepo_ = function (repo) {
     var self = this;
     self.getLatestFileVersion(self.ctx.branch, repo, function (err, latestFile) {
-      if (err) {
+      if (err === "not found") {
+        repo.createFile(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function (err, result) {
+          if (err) {
+            self.setStatus('none');
+            errorReporter.showError('Commit result',
+                'Failed to create file on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
+            return;
+          }
+
+          /**
+           * Setting the documentSha, documentCommit, self.repo, etc for when we might
+           * "hot-reload" the document without refreshing the page
+           */
+          documentSha = result.content.sha;
+          documentCommit = result.commit.sha;
+          initialDocument = self.ctx.content;
+
+          // Set our working branch to the new branch (The opened document is now on the new branch)
+          self.branch = self.ctx.branch;
+
+          // The active repo is the forked repo
+          self.repo = repo;
+
+          self.setStatus('success');
+          errorReporter.showError('Commit result',
+              'Commit successful on branch <a target="_blank" href="' + result.commit.html_url + '">' + self.ctx.branch + '</a>', sync.api.Dialog.ButtonConfiguration.OK);
+
+          goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
+              goog.bind(self.handleReloadOnNewBranch, self, true));
+        });
+        return;
+      } else if (err) {
         self.setStatus('none');
         errorReporter.showError('Commit result',
-            'We could not find your file on the forked repository.<br/>Maybe you have forked this repository before?', sync.api.Dialog.ButtonConfiguration.OK);
+            'We could not commit on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
         return;
       }
       if (latestFile.sha === documentSha) {
@@ -824,7 +874,7 @@
       } else {
         self.startMergingCommit_(repo, self.ctx, latestFile.content, function (err) {
           self.handleErrors(err, repo);
-        });
+        }, true);
       }
     });
   };

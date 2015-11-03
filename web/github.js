@@ -670,6 +670,19 @@
         }, true);
       };
 
+      // Create a file at given path
+      // -------
+
+      this.createFile = function(branch, path, content, message, cb) {
+        _request("PUT", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + branch : ""), {
+          content: b64encode(content),
+          message: message
+        }, function(err, result) {
+          if (err) return cb(err);
+          cb(null, result);
+        });
+      };
+
       // Get file at given path
       // -------
 
