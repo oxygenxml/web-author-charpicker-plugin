@@ -280,12 +280,20 @@
     margin-right: 5px;
 }
 
+.github-file-icon,
 .big-branch-icon,
 .big-repo-icon {
     height: 32px;
     display: inline-block;
     opacity: 0.5;
     margin-right: 5px;
+}
+.github-file-icon{
+    background: url('file.svg');
+    background-size: 18px 32px;
+    width: 18px;
+    margin-left: 3px;
+    margin-right: 8px;
 }
 .big-repo-icon {
     background: url('repo.svg') no-repeat;

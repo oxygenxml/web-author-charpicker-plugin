@@ -1774,13 +1774,13 @@
       '<span class="github-repo-name"><a tabindex="-1" href="https://github.com/' + owner + '">' + owner + '</a>/<a tabindex="-1" href="https://github.com/' + repoId + '">' + repoName + '</a></span>' +
       '</div>';
     html += '<div class="vertical-align-children"><span class="big-branch-icon"></span><select id="gh-settings-branch-select" tabindex="0"></select></div>';
+    html += '<div class="vertical-align-children" style="display:none"><span class="github-file-icon"></span><span class="github-path"></span></div>';
     if (repoDesc && repoDesc.description) {
       html += '<div class="github-description-preview">' + repoDesc.description + '</div>';
     }
     if (repoDesc && repoDesc.language) {
       html += '<div>Language: ' + repoDesc.language + '</div>';
     }
-    html += '<div style="display:none"><span class="github-path"></span></div>';
     html += '</div>';
     preview.innerHTML = html;
     var select = goog.dom.getElement('gh-settings-branch-select');
