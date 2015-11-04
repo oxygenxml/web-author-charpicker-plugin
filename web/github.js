@@ -174,7 +174,7 @@
 
       this.userRepos = function(username, cb) {
         // Github does not always honor the 1000 limit so we want to iterate over the data set.
-        _requestAllPages('/users/' + username + '/repos?type=all&per_page=1000&sort=updated', function(err, res) {
+        _requestAllPages('/users/' + encodeURIComponent(username) + '/repos?type=all&per_page=1000&sort=updated', function(err, res) {
           cb(err, res);
         });
       };
@@ -183,7 +183,7 @@
       // -------
 
       this.userGists = function(username, cb) {
-        _request('GET', '/users/' + username + '/gists', null, function(err, res) {
+        _request('GET', '/users/' + encodeURIComponent(username) + '/gists', null, function(err, res) {
           cb(err,res);
         });
       };
@@ -193,7 +193,7 @@
 
       this.orgRepos = function(orgname, cb) {
         // Github does not always honor the 1000 limit so we want to iterate over the data set.
-        _requestAllPages('/orgs/' + orgname + '/repos?type=all&&page_num=1000&sort=updated&direction=desc', function(err, res) {
+        _requestAllPages('/orgs/' + encodeURIComponent(orgname) + '/repos?type=all&&page_num=1000&sort=updated&direction=desc', function(err, res) {
           cb(err, res);
         });
       };
@@ -202,7 +202,7 @@
       // -------
 
       this.follow = function(username, cb) {
-        _request('PUT', '/user/following/' + username, null, function(err, res) {
+        _request('PUT', '/user/following/' + encodeURIComponent(username), null, function(err, res) {
           cb(err, res);
         });
       };
@@ -211,7 +211,7 @@
       // -------
 
       this.unfollow = function(username, cb) {
-        _request('DELETE', '/user/following/' + username, null, function(err, res) {
+        _request('DELETE', '/user/following/' + encodeURIComponent(username), null, function(err, res) {
           cb(err, res);
         });
       };
@@ -302,7 +302,7 @@
           return cb(null, currentTree.sha);
         }
         
-        that.getRef('heads/' + branch, function(err, sha) {
+        that.getRef('heads/' + encodeURIComponent(branch), function(err, sha) {
           currentTree.branch = branch;
           currentTree.sha = sha;
           cb(err, sha);
@@ -313,7 +313,7 @@
       // -------
 
       this.getRef = function(ref, cb) {
-        _request('GET', repoPath + '/git/refs/' + ref, null, function(err, res) {
+        _request('GET', repoPath + '/git/refs/' + encodeURIComponent(ref), null, function(err, res) {
           if (err) {
             return cb(err);
           }
@@ -345,7 +345,7 @@
       // repo.deleteRef('tags/v1.0')
 
       this.deleteRef = function(ref, cb) {
-        _request('DELETE', repoPath + '/git/refs/' + ref, options, cb);
+        _request('DELETE', repoPath + '/git/refs/' + encodeURIComponent(ref), options, cb);
       };
 
       // Create a repo
@@ -399,7 +399,7 @@
       // -------
 
       this.compare = function(base, head, cb) {
-        _request("GET", repoPath + "/compare/" + base + "..." + head, null, function(err, diff) {
+        _request("GET", repoPath + "/compare/" + encodeURIComponent(base) + "..." + encodeURIComponent(head), null, function(err, diff) {
           if (err) return cb(err);
           cb(null, diff);
         });
@@ -446,8 +446,8 @@
       // -------
 
       this.getSha = function(branch, path, cb) {
-        if (!path || path === "") return that.getRef("heads/"+branch, cb);
-        _request("GET", repoPath + "/contents/" + path + (branch ? "?ref=" + branch : ""), null, function(err, pathContent) {
+        if (!path || path === "") return that.getRef("heads/" + encodeURIComponent(branch), cb);
+        _request("GET", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + encodeURIComponent(branch) : ""), null, function(err, pathContent) {
           if (err) return cb(err);
           cb(null, pathContent.sha);
         });
@@ -457,7 +457,7 @@
       // -------
 
       this.getTree = function(tree, cb) {
-        _request("GET", repoPath + "/git/trees/"+tree, null, function(err, res) {
+        _request("GET", repoPath + "/git/trees/" + encodeURIComponent(tree), null, function(err, res) {
           if (err) return cb(err);
           cb(null, res.tree);
         });
@@ -541,7 +541,7 @@
 
       this.getHead = function (branch, cb) {
         // Get a reference to HEAD of branch
-        _request('GET', repoPath + '/git/refs/heads/' + branch, null, function (err, response) {
+        _request('GET', repoPath + '/git/refs/heads/' + encodeURIComponent(branch), null, function (err, response) {
           if (err) {return cb(err);}
 
           cb(null, response.object);
@@ -552,7 +552,7 @@
       // -------
 
       this.updateHead = function(head, commit, cb) {
-        _request("PATCH", repoPath + "/git/refs/heads/" + head, { "sha": commit }, cb);
+        _request("PATCH", repoPath + "/git/refs/heads/" + encodeURIComponent(head), { "sha": commit }, cb);
       };
 
       // Show repository information
@@ -588,7 +588,7 @@
 
       this.contents = function(ref, path, cb) {
         path = encodeURI(path);
-        _request("GET", repoPath + "/contents" + (path ? "/" + path : ""), { ref: ref }, cb);
+        _request("GET", repoPath + "/contents" + (path ? "/" + encodeURI(path) : ""), { ref: ref }, cb);
       };
 
       // Fork repository
@@ -607,10 +607,10 @@
           newBranch = oldBranch;
           oldBranch = "master";
         }
-        this.getRef("heads/" + oldBranch, function(err,ref) {
+        this.getRef("heads/" + encodeURIComponent(oldBranch), function(err,ref) {
           if(err && cb) return cb(err);
           that.createRef({
-            ref: "refs/heads/" + newBranch,
+            ref: "refs/heads/" + encodeURIComponent(newBranch),
             sha: ref
           },cb);
         });
@@ -662,7 +662,7 @@
       // -------
 
       this.read = function(branch, path, cb) {
-        _request("GET", repoPath + "/contents/"+encodeURI(path) + (branch ? "?ref=" + branch : ""), null, function(err, obj) {
+        _request("GET", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + encodeURIComponent(branch) : ""), null, function(err, obj) {
           if (err && err.error === 404) return cb("not found", null, null);
 
           if (err) return cb(err);
@@ -674,7 +674,7 @@
       // -------
 
       this.createFile = function(branch, path, content, message, cb) {
-        _request("PUT", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + branch : ""), {
+        _request("PUT", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + encodeURIComponent(branch) : ""), {
           content: b64encode(content),
           message: message
         }, function(err, result) {
@@ -687,7 +687,7 @@
       // -------
 
       this.getContents = function(branch, path, cb) {
-        _request("GET", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + branch : ""), null, function(err, obj) {
+        _request("GET", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + encodeURIComponent(branch) : ""), null, function(err, obj) {
           if (err && err.error === 404) return cb("not found", null, null);
 
           if (err) return cb(err);
@@ -702,7 +702,7 @@
       this.remove = function(branch, path, cb) {
         that.getSha(branch, path, function(err, sha) {
           if (err) return cb(err);
-          _request("DELETE", repoPath + "/contents/" + path, {
+          _request("DELETE", repoPath + "/contents/" + encodeURI(path), {
             message: path + " is removed",
             sha: sha,
             branch: branch
@@ -716,7 +716,7 @@
       this.delete = function(branch, path, cb) {
         that.getSha(branch, path, function(err, sha) {
           if (!sha) return cb("not found", null);
-          var delPath = repoPath + "/contents/" + path;
+          var delPath = repoPath + "/contents/" + encodeURI(path);
           var params = {
             "message": "Deleted " + path,
             "sha": sha

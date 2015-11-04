@@ -1088,6 +1088,7 @@
    */
   GitHubLoginManager.prototype.resetCredentials = function() {
     localStorage.removeItem('github.credentials');
+    localStorage.removeItem('github.userName');
   };
 
   /**
@@ -1212,7 +1213,6 @@
     var loginManager = new GitHubLoginManager();
     loginManager.authenticateUser(loadDocument);
 
-
     /**
      * Loads the document
      *
@@ -1221,10 +1221,14 @@
     function loadDocument(github) {
       var urlAuthor = sync.util.getURLParameter('author');
       if (!urlAuthor) {
+        urlAuthor = localStorage.getItem('github.userName');
+      }
+      if (!urlAuthor) {
         var user = github.getUser();
         user.show(null, function (err, author) {
-          if (!err && (author.login || author.name)) {
+          if (!err && (author.name || author.login)) {
             loadingOptions.userName = author.name || author.login;
+            localStorage.setItem('github.userName', loadingOptions.userName);
           }
           loadDocument_(github);
         });
@@ -1397,6 +1401,7 @@
     */
   function clearGithubCredentials() {
     localStorage.removeItem('github.credentials');
+    localStorage.removeItem('github.userName');
 
     var xhrRequest = new XMLHttpRequest();
     xhrRequest.open('POST', '../plugins-dispatcher/github-oauth/github_reset_access/', false);
@@ -1406,13 +1411,17 @@
   /**
    * Returns an object representing the file location
    * @param {string} url The url of the file.
+   *              (It should always be github url: github://getFileContents/:user/:repo/:branch/:path)
    * @returns {object} The file location descriptor
    */
   function getFileLocation(url) {
-    // Retrieve the repo details.
-    var parser = document.createElement('a');
-    parser.href = url.replace(/^[^:]*:/, 'http:');
-    var pathSplit = parser.pathname.split("/");
+    // Replacing all # chars because the fragment part of the url won't end up in this function and if there are
+    // # characters, they should be encoded
+    url = url.replace(new RegExp('#', 'g'), '%23');
+
+    var urlObj = new goog.Uri(url);
+    var path = urlObj.getPath();
+    var pathSplit = path.split('/');
 
     // In some browsers, the pathname starts with a "/".
     if (pathSplit[0] === "") {
