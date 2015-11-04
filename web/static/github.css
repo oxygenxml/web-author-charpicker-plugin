@@ -49,6 +49,7 @@
 @media only screen and (max-width: 550px) {
     .github-login-dialog {
         width: auto;
+        max-width: none;
     }
     .github-login-dialog label {
         text-align: left;
