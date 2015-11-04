@@ -1728,7 +1728,7 @@
       goog.dom.classlist.add(element, 'github-browsing-repo-preview');
       var details = url.match("github://getFileContent/([^/]*)/([^/]*)/([^/]*)/.*");
       element.innerHTML = '<span class="repo-icon"></span>' +
-        details[1] + '/' + details[2] + '<span class="github-repo-right vertical-align-children"><span class="branch-icon"></span>' + details[3] + '</span>';
+        details[1] + '/' + details[2] + '<span class="github-repo-right vertical-align-children"><span class="branch-icon"></span>' + decodeURIComponent(details[3]) + '</span>';
 
       var button = goog.dom.createDom('div', 'github-repo-edit');
       button.title = "Edit GitHub repository and branch";
@@ -1940,7 +1940,7 @@
   GithubFileBrowser.prototype.handleOpenRepo = function(element, event) {
     if (this.repoDetails && this.repoDetails.owner && this.repoDetails.repo && this.repoDetails.branch) {
       var normalizedUrl = 'github://getFileContent/' + this.repoDetails.owner + '/' +
-        this.repoDetails.repo + '/' + this.repoDetails.branch + '/';
+        this.repoDetails.repo + '/' + encodeURIComponent(this.repoDetails.branch) + '/';
       if (this.repoDetails.path) {
         // The user provided also a path.
         normalizedUrl = normalizedUrl + this.repoDetails.path;
