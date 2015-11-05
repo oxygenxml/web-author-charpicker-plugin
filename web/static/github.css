@@ -111,6 +111,7 @@
 }
 
 #gh-commit-diag-content {
+    text-align: left;
     max-width: 480px;
     line-height: 1.15em;
 }
