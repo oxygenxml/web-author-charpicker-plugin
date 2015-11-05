@@ -309,11 +309,13 @@
         });
       }
 
-      // Get a particular reference
-      // -------
-
+      /**
+       * Get a particular reference
+       * @param {string} ref The ref to get (It may look like heads/name so don't urlEncode)
+       * @param {function} cb The method to call on result
+       */
       this.getRef = function(ref, cb) {
-        _request('GET', repoPath + '/git/refs/' + encodeURIComponent(ref), null, function(err, res) {
+        _request('GET', repoPath + '/git/refs/' + ref, null, function(err, res) {
           if (err) {
             return cb(err);
           }
@@ -610,7 +612,7 @@
         this.getRef("heads/" + encodeURIComponent(oldBranch), function(err,ref) {
           if(err && cb) return cb(err);
           that.createRef({
-            ref: "refs/heads/" + encodeURIComponent(newBranch),
+            ref: "refs/heads/" + newBranch, // don't URIencode here
             sha: ref
           },cb);
         });
