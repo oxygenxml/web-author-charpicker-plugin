@@ -643,7 +643,7 @@
       }
 
       var commitDialog = '<div id="gh-commit-diag-content">' +
-          '<div class="gh-commit-info-prolog">' + userMessage + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, choose one of the following:</div>';
+          '<div class="gh-commit-info-prolog">' + userMessage + ' <a target="_blank" href = "' + err.diff.permalink_url + '">Click here</a> to see the changes. Afterwards, choose one of the following:</div>';
 
       commitDialog +=
             '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +

@@ -118,6 +118,10 @@
     border-radius: 4px;
 }
 
+.gh-commit-info-prolog a {
+  background-color: aliceblue;
+}
+
 #gh-commit-diag-content {
     text-align: left;
     max-width: 480px;
@@ -147,24 +151,12 @@
 }
 
 .gh-commit-diag-choice:hover {
-    border-color: #c7c7c7;
-}
-
-.gh-commit-diag-choice:active {
-    border-color: #b4b4b4;
+    background-color: #f2f2f2;
 }
 
 .gh-commit-diag-choice.gh-default-choice {
     border: 1px solid #204d74;
 }
-
-.gh-commit-diag-choice.gh-default-choice:hover {
-    border: 1px solid #296999;
-}
-
-.gh-commit-diag-choice.gh-default-choice:active {
-     border: 1px solid #204d74;
- }
 
 .gh-commit-diag-icon {
     background-size: contain;
