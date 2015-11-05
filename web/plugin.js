@@ -18,7 +18,9 @@
   GitHubErrorReporter.prototype.showError = function(title, bodyHtml, buttonConfiguration) {
     var dialog = this.getErrorDialog(buttonConfiguration);
     dialog.setTitle(title);
-    dialog.getElement().innerHTML = bodyHtml;
+    var dialogElement = dialog.getElement();
+    dialogElement.style.textAlign = 'center';
+    dialogElement.innerHTML = bodyHtml;
     dialog.show();
   };
 
