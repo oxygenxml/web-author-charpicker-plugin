@@ -239,16 +239,28 @@
         if (!ctx.branchAlreadyExists) {
           if (latestFile.sha === documentSha) {
             self.repo.commitToHead(ctx.branch, self.filePath, ctx.content, ctx.message, function(err, commit) {
-              if (!err) {
-                // Have committed, we save the document sha and head for the next commits
-                // The document is now on the committed branch
-                documentSha = commit.blobSha;
-                documentCommit = commit.sha;
-                initialDocument = ctx.content;
-
-                self.branch = ctx.branch;
+              if (err) {
+                return cb(err);
               }
-              cb(err);
+
+              // Have committed, we save the document sha and head for the next commits
+              // The document is now on the committed branch
+              documentSha = commit.blobSha;
+              documentCommit = commit.sha;
+              initialDocument = ctx.content;
+
+              self.branch = ctx.branch;
+              Github.apiRequest('GET', commit.head.url, null, function (err, response) {
+                if (err) {
+                  // If there was an error with getting the headUrl we wont propagate it further
+                  // because the commit succeeded. And we just won't have a url to the successful commit
+                  return cb();
+                }
+                cb(null, {
+                  branch: self.branch,
+                  headUrl: response.html_url
+                });
+              });
             });
           } else {
             self.startMergingCommit_(self.repo, ctx, latestFile.content, cb);
@@ -257,16 +269,27 @@
           // If the file doesn't exist on the different branch we can just create it without merging anything
           if (err === "not found") {
             self.repo.createFile(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function (err, result) {
-              if (!err) {
-                // Have committed, we save the document sha and head for the next commits
-                // The document is now on the committed branch
-                documentSha = result.content.sha;
-                documentCommit = result.commit.sha;
-                initialDocument = ctx.content;
-
-                self.branch = ctx.branch;
+              if (err) {
+                return cb(err);
               }
-              cb(err);
+              // Have committed, we save the document sha and head for the next commits
+              // The document is now on the committed branch
+              documentSha = result.content.sha;
+              documentCommit = result.commit.sha;
+              initialDocument = ctx.content;
+
+              self.branch = ctx.branch;
+              Github.apiRequest('GET', commit.head.url, null, function (err, response) {
+                if (err) {
+                  // If there was an error with getting the headUrl we wont propagate it further
+                  // because the commit succeeded. And we just won't have a url to the successful commit
+                  return cb();
+                }
+                cb(null, {
+                  branch: self.branch,
+                  headUrl: response.html_url
+                });
+              });
             });
           } else if (err) {
             cb(err);
@@ -550,12 +573,20 @@
    *
    * @param {function} cb The callback.
    * @param {object} err The error descriptor, if there was an error.
+   * @param {{branch: string, headUrl: string}=} result An object containing the branch name on which the commit succeded
+   *                      and a url to the commit on github.
    */
-  CommitAction.prototype.commitFinalized = function(cb, err) {
+  CommitAction.prototype.commitFinalized = function(cb, err, result) {
     if (!err) {
       this.editor.setDirty(false);
       this.setStatus('success');
-      errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+
+      if (result) {
+        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful on branch <a target="_blank" href="' + result.headUrl + '">' + result.branch + '</a>!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+      } else {
+        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+      }
+
       goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT, goog.bind(this.handleReloadOnNewBranch, this, false));
     } else {
       this.handleErrors(err);
