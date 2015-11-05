@@ -676,9 +676,10 @@
       // -------
 
       this.createFile = function(branch, path, content, message, cb) {
-        _request("PUT", repoPath + "/contents/" + encodeURI(path) + (branch ? "?ref=" + encodeURIComponent(branch) : ""), {
+        _request("PUT", repoPath + "/contents/" + encodeURI(path), {
           content: b64encode(content),
-          message: message
+          message: message,
+          branch: branch
         }, function(err, result) {
           if (err) return cb(err);
           cb(null, result);

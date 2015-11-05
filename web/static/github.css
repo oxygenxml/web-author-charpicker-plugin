@@ -110,20 +110,40 @@
 	background-image: url('Checkmark_green.svg');
 }
 
+.gh-commit-info-prolog {
+    margin-bottom: 10px;
+    background-color: lightyellow;
+    border: 1px solid #dadab4;
+    padding: 6px;
+    border-radius: 4px;
+}
+
 #gh-commit-diag-content {
     text-align: left;
     max-width: 480px;
     line-height: 1.15em;
+    overflow: hidden;
 }
 
 .gh-commit-diag-choice {
-    padding: 5px 0;
+    padding: 5px 0 0 0;
+
+    text-align: center;
+    float: left;
+    width: 32.5%;
+    margin: 5px 1% 5px 0;
+    box-sizing: border-box;
+    min-height: 85px;
+
     background-color: #fafafa;
-    border: 1px solid #ddd;
+    border: 1px solid #aeaeae;
     border-radius: 4px;
-    margin: 8px 0;
     overflow: hidden;
     cursor: pointer;
+}
+
+.gh-commit-diag-choice:last-child {
+    margin-right: 0;
 }
 
 .gh-commit-diag-choice:hover {
@@ -150,9 +170,9 @@
     background-size: contain;
     background-repeat: no-repeat;
     display: block;
-    width: 30px;
-    height: 1.2em;
-    float: left;
+    width: 35px;
+    height: 35px;
+    margin: 0 auto;
     background-position-x: 50%;
 }
 
@@ -173,9 +193,8 @@
 }
 
 .gh-commit-diag-title {
-    font-size: 1.1em;
-    text-decoration: underline;
-    margin-bottom: 8px;
+    font-size: 1em;
+    margin: 5px 0 2px 0;
 }
 
 .gh-commit-diag-descripion {

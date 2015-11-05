@@ -235,7 +235,6 @@
     var self = this;
     if (ctx.branchExists && ctx.hasOwnProperty('content')) {
       this.getLatestFileVersion(ctx.branch, self.repo, function (err, latestFile) {
-        if (err) {return cb(err);}
         // If this is a new branch or the document branch
         if (!ctx.branchAlreadyExists) {
           if (latestFile.sha === documentSha) {
@@ -255,9 +254,27 @@
             self.startMergingCommit_(self.repo, ctx, latestFile.content, cb);
           }
         } else {
-          // Committing on a different branch is an action which the user has to confirm
-          // Getting the head so we can show the user a diff, so he can make an informed decision
-          self.startMergingCommit_(self.repo, ctx, latestFile.content, cb, true);
+          // If the file doesn't exist on the different branch we can just create it without merging anything
+          if (err === "not found") {
+            self.repo.createFile(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message, function (err, result) {
+              if (!err) {
+                // Have committed, we save the document sha and head for the next commits
+                // The document is now on the committed branch
+                documentSha = result.content.sha;
+                documentCommit = result.commit.sha;
+                initialDocument = ctx.content;
+
+                self.branch = ctx.branch;
+              }
+              cb(err);
+            });
+          } else if (err) {
+            cb(err);
+          } else {
+            // Committing on a different branch is an action which the user has to confirm
+            // Getting the head so we can show the user a diff, so he can make an informed decision
+            self.startMergingCommit_(self.repo, ctx, latestFile.content, cb, true);
+          }
         }
       });
     }
@@ -603,76 +620,57 @@
     } else if (err.error == 409) {
       var result = err.autoMergeResult;
 
-      var commitAnywayIconClass = 'gh-commit-overwrite';
-      var userMessages = {
-        prolog: 'The commit may have conflicts.',
-        commitAnywayTitle: 'Commit anyway',
-        commitAnywayMessage: 'If the changes are not in conflict or if you want to overwrite the changes, you can commit anyway.'
-      };
+      var userMessage = 'The commit may have conflicts.';
 
       if (result && !result.differentBranch) {
         switch (result.resultType) {
         case 'CLEAN':
-          commitAnywayIconClass = 'gh-commit-merge';
-          userMessages = {
-            prolog: 'Someone else has edited this file since you last opened it.',
-            commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'The changes have been reviewed and I want to commit the merged files.'
-          };
+          userMessage = 'Someone else has edited this file since you last opened it.';
           break;
         case 'WITH_CONFLICTS':
-          commitAnywayIconClass = 'gh-commit-merge';
-          userMessages = {
-            prolog: 'Someone else has edited this file since you last opened it and there are conflicts.',
-            commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'Automatically solve the conflicts by ignoring the other version and commit using my version.'
-          };
+          userMessage = 'Someone else has edited this file since you last opened it and there are conflicts.';
           break;
         }
       } else {
         switch (result.resultType) {
         case 'CLEAN':
-          commitAnywayIconClass = 'gh-commit-merge';
-          userMessages = {
-            prolog: 'There is a previous version of this file that is different than the version you are trying to commit.',
-            commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'The changes have been reviewed and I want to commit the merged files.'
-          };
+          userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
           break;
         case 'WITH_CONFLICTS':
-          commitAnywayIconClass = 'gh-commit-merge';
-          userMessages = {
-            prolog: 'There is a previous version of this file that is different than the version you are trying to commit.',
-            commitAnywayTitle: 'Commit merged files',
-            commitAnywayMessage: 'Automatically solve the conflicts by ignoring the other version and commit using my version.'
-          };
+          userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
           break;
         }
       }
 
-      var commitDialog =
-          '<div id="gh-commit-diag-content">' +
-            '<div>' + userMessages.prolog + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, choose one of the following:</div>' +
-            '<div id="createFork" class="gh-commit-diag-choice gh-default-choice">' +
-              '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
-              '<div class="gh-commit-diag-title">Commit on a fresh branch</div>' +
-              '<div class="gh-commit-diag-descripion">Create a new branch with your version of the document. Later, after you solve the conflicts, you can merge with the initial branch.</div>' +
-            '</div>';
-      commitDialog +=
-            '<div id="commitAnyway" class="gh-commit-diag-choice">' +
-              '<span class="gh-commit-diag-icon ' + commitAnywayIconClass + '"></span>' +
-              '<div class="gh-commit-diag-title">' + userMessages.commitAnywayTitle + '</div>' +
-              '<div class="gh-commit-diag-descripion">' + userMessages.commitAnywayMessage + '</div>' +
-            '</div>';
-      commitDialog +=
-            '<div id="cancel" class="gh-commit-diag-choice">' +
-              '<span class="gh-commit-diag-icon gh-commit-cancel"></span>' +
-              '<div class="gh-commit-diag-title">Cancel</div>' +
-              '<div class="gh-commit-diag-descripion">Cancel the current commit operation. Your changes won\'t be committed to the repository.</div>' +
-            '</div>' +
-          '</div>';
+      var commitDialog = '<div id="gh-commit-diag-content">' +
+          '<div class="gh-commit-info-prolog">' + userMessage + ' Click <a target="_blank" href = "' + err.diff.permalink_url + '">here</a> to see the changes. Afterwards, choose one of the following:</div>';
 
-      errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog);
+      commitDialog +=
+            '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
+              '<div class="gh-commit-diag-title">Merge and commit</div>' +
+            '</div>';
+      commitDialog +=
+            '<div id="createFork" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
+              '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
+            '</div>';
+      commitDialog +=
+            '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
+              '<div class="gh-commit-diag-title">Commit only my changes</div>' +
+            '</div>';
+
+      commitDialog += '</div>';
+
+      errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog, sync.api.Dialog.ButtonConfiguration.CANCEL);
+
+      if (result.resultType == "WITH_CONFLICTS") {
+        var mergeAndCommitElement = document.querySelector('div#commitAnyway');
+        new sync.ui.CornerTooltip(mergeAndCommitElement,
+            '<div>Conflicts will be resolved using<br/>your version of the document.</div>'
+        );
+      }
 
       var choices = document.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
       for (var i = 0; i < choices.length; i++) {
@@ -726,8 +724,11 @@
       self.setStatus('loading');
       repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo, self.branch, self.ctx.content));
       break;
-    case 'cancel':
+    case 'overwriteChanges':
       errorReporter.hide();
+      self.setStatus('loading');
+      repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message,
+          goog.bind(self.finalizeCommit_, self, repo, self.ctx.branch, self.ctx.content));
       break;
     }
   };
