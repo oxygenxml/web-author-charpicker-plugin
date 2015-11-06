@@ -177,7 +177,7 @@
   /** @override */
   CommitAction.prototype.renderSmallIcon = function() {
     this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper',
-        goog.dom.createDom('div', 'github-icon-octocat-small'));
+      goog.dom.createDom('div', 'github-icon-octocat-small'));
     return this.iconWrapper;
   };
 
@@ -187,7 +187,7 @@
     return "Commit on GitHub";
   };
 
-    /** @override */
+  /** @override */
   CommitAction.prototype.getDescription = function() {
     return "Commit on GitHub";
   };
@@ -324,7 +324,7 @@
 
         if (resultType === 'CLEAN' || resultType === 'WITH_CONFLICTS') {
           repo.createCommit(ctx.branch, self.filePath, mergedFile, ctx.message,
-              goog.bind(self.onCommitCreated_, self, repo, differentBranch, resultType, cb));
+            goog.bind(self.onCommitCreated_, self, repo, differentBranch, resultType, cb));
         } else {
           repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
             if (err) {return cb(err);}
@@ -430,7 +430,7 @@
         errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
 
         goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
-            goog.bind(self.handleReloadOnNewBranch, self, true));
+          goog.bind(self.handleReloadOnNewBranch, self, true));
       });
     } else {
       this.setStatus('none');
@@ -599,9 +599,9 @@
 
     if (this.branch != branch || (documentOwner != user)) {
       /*
-      * currentURl looks like this: http://github.com/owner/repo/branch/blob/path/to/file
-      * We will replace owner with documentOwner and branch with this.branch
-      * */
+       * currentURl looks like this: http://github.com/owner/repo/branch/blob/path/to/file
+       * We will replace owner with documentOwner and branch with this.branch
+       * */
 
       var currentUrl = decodeURIComponent(sync.util.getURLParameter('url'));
       var urlParts = currentUrl.split('/' + branch + '/');
@@ -648,42 +648,42 @@
 
       if (result && !result.differentBranch) {
         switch (result.resultType) {
-        case 'CLEAN':
-          userMessage = 'Someone else has edited this file since you last opened it.';
-          break;
-        case 'WITH_CONFLICTS':
-          userMessage = 'Someone else has edited this file since you last opened it and there are conflicts.';
-          break;
+          case 'CLEAN':
+            userMessage = 'Someone else has edited this file since you last opened it.';
+            break;
+          case 'WITH_CONFLICTS':
+            userMessage = 'Someone else has edited this file since you last opened it and there are conflicts.';
+            break;
         }
       } else {
         switch (result.resultType) {
-        case 'CLEAN':
-          userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
-          break;
-        case 'WITH_CONFLICTS':
-          userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
-          break;
+          case 'CLEAN':
+            userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
+            break;
+          case 'WITH_CONFLICTS':
+            userMessage = 'There is a previous version of this file that is different than the version you are trying to commit.';
+            break;
         }
       }
 
       var commitDialog = '<div id="gh-commit-diag-content">' +
-          '<div class="gh-commit-info-prolog">' + userMessage + ' <a target="_blank" href = "' + err.diff.permalink_url + '">Click here</a> to see the changes. Afterwards, choose one of the following:</div>';
+        '<div class="gh-commit-info-prolog">' + userMessage + ' <a target="_blank" href = "' + err.diff.permalink_url + '">Click here</a> to see the changes. Afterwards, choose one of the following:</div>';
 
       commitDialog +=
-            '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
-              '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
-              '<div class="gh-commit-diag-title">Merge and commit</div>' +
-            '</div>';
+        '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
+        '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
+        '<div class="gh-commit-diag-title">Merge and commit</div>' +
+        '</div>';
       commitDialog +=
-            '<div id="createFork" class="gh-commit-diag-choice">' +
-              '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
-              '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
-            '</div>';
+        '<div id="createFork" class="gh-commit-diag-choice">' +
+        '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
+        '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
+        '</div>';
       commitDialog +=
-            '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
-              '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
-              '<div class="gh-commit-diag-title">Commit only my changes</div>' +
-            '</div>';
+        '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
+        '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
+        '<div class="gh-commit-diag-title">Commit only my changes</div>' +
+        '</div>';
 
       commitDialog += '</div>';
 
@@ -692,7 +692,7 @@
       if (result.resultType == "WITH_CONFLICTS") {
         var mergeAndCommitElement = document.querySelector('div#commitAnyway');
         new sync.ui.CornerTooltip(mergeAndCommitElement,
-            '<div>Conflicts will be resolved using<br/>your version of the document.</div>'
+          '<div>Conflicts will be resolved using<br/>your version of the document.</div>'
         );
       }
 
@@ -728,32 +728,32 @@
     var repo = opt_repo ? opt_repo : self.repo;
 
     switch (elementId) {
-    case 'createFork':
-      errorReporter.hide();
-      self.setStatus('loading');
-      self.ctx.branch = 'oxygen-webapp-' + Date.now();
-      self.createBranch_(repo, self.ctx, function (err) {
-        if (!err) {
-          // Committing on the newly created branch without merging. Just the current changes.
-          repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message,
+      case 'createFork':
+        errorReporter.hide();
+        self.setStatus('loading');
+        self.ctx.branch = 'oxygen-webapp-' + Date.now();
+        self.createBranch_(repo, self.ctx, function (err) {
+          if (!err) {
+            // Committing on the newly created branch without merging. Just the current changes.
+            repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message,
               goog.bind(self.finalizeCommit_, self, repo, self.ctx.branch, self.ctx.content));
-        } else {
-          self.setStatus('none');
-          errorReporter.showError(COMMIT_STATUS_TITLE, 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
-        }
-      });
-      break;
-    case 'commitAnyway':
-      errorReporter.hide();
-      self.setStatus('loading');
-      repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo, self.branch, self.ctx.content));
-      break;
-    case 'overwriteChanges':
-      errorReporter.hide();
-      self.setStatus('loading');
-      repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message,
+          } else {
+            self.setStatus('none');
+            errorReporter.showError(COMMIT_STATUS_TITLE, 'Could not create a new branch', sync.api.Dialog.ButtonConfiguration.OK);
+          }
+        });
+        break;
+      case 'commitAnyway':
+        errorReporter.hide();
+        self.setStatus('loading');
+        repo.updateCommit(commit, self.branch, goog.bind(self.finalizeCommit_, self, repo, self.branch, self.ctx.content));
+        break;
+      case 'overwriteChanges':
+        errorReporter.hide();
+        self.setStatus('loading');
+        repo.commitToHead(self.ctx.branch, self.filePath, self.ctx.content, self.ctx.message,
           goog.bind(self.finalizeCommit_, self, repo, self.ctx.branch, self.ctx.content));
-      break;
+        break;
     }
   };
 
@@ -827,7 +827,7 @@
           if (err) {
             self.setStatus('none');
             errorReporter.showError('Commit result',
-                'Failed to create file on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
+              'Failed to create file on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
             return;
           }
 
@@ -847,16 +847,16 @@
 
           self.setStatus('success');
           errorReporter.showError('Commit result',
-              'Commit successful on branch <a target="_blank" href="' + result.commit.html_url + '">' + self.ctx.branch + '</a>', sync.api.Dialog.ButtonConfiguration.OK);
+            'Commit successful on branch <a target="_blank" href="' + result.commit.html_url + '">' + self.ctx.branch + '</a>', sync.api.Dialog.ButtonConfiguration.OK);
 
           goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
-              goog.bind(self.handleReloadOnNewBranch, self, true));
+            goog.bind(self.handleReloadOnNewBranch, self, true));
         });
         return;
       } else if (err) {
         self.setStatus('none');
         errorReporter.showError('Commit result',
-            'We could not commit on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
+          'We could not commit on the forked repository.', sync.api.Dialog.ButtonConfiguration.OK);
         return;
       }
       if (latestFile.sha === documentSha) {
@@ -890,7 +890,7 @@
               errorReporter.showError('Commit result', msg, sync.api.Dialog.ButtonConfiguration.OK);
 
               goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT,
-                  goog.bind(self.handleReloadOnNewBranch, self, true));
+                goog.bind(self.handleReloadOnNewBranch, self, true));
             });
 
             return;
@@ -926,7 +926,7 @@
 
     if (status == 'success') {
       this.statusTimeout = setTimeout(
-          goog.bind(this.setStatus, this, 'none'), 3200);
+        goog.bind(this.setStatus, this, 'none'), 3200);
     }
   };
 
@@ -1024,7 +1024,7 @@
         if (key == 'cancel') {
           // Go to the dashboard view
           window.location.href = window.location.protocol + "//" + window.location.hostname +
-              (window.location.port ? ':' + window.location.port : '') + window.location.pathname;
+            (window.location.port ? ':' + window.location.port : '') + window.location.pathname;
         }
       });
     }
@@ -1035,13 +1035,13 @@
       if (typeof gotRepoAccess == 'undefined') {
         // gotRepoAccess is undefined, this means we didn't check for repo access and this dialog is an initial login dialog
         loginButtonContainer.innerHTML = 'To access files stored on the repository you must login using your GitHub account.' +
-            '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
-            '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
+          '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
+          '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Login with GitHub</span></a>';
       } else if (gotRepoAccess === false) {
         // gotRepoAccess is false, this means we checked for access so this file is either not found or not accessible,
         // so show a more meaningfull login dialog
         loginButtonContainer.innerHTML = '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
-            '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Re-login with GitHub</span></a>';
+          '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Re-login with GitHub</span></a>';
       }
     }
 
@@ -1061,16 +1061,16 @@
           }
 
           new sync.ui.CornerTooltip(errorMessageElement,
-              '<div>' +
-                'There are 2 possible reasons for this error:' +
-                '<ul>' +
-                  '<li>The file does not exist</li>' +
-                  '<li>You do not have access to read the file</li>' +
-                '</ul>' +
-                'You can <a href="' + contactInfo + '">contact the repository owner</a> to request access.<br/>' +
-                'Or <a href="https://github.com/" target="_blank">go to GitHub and login</a> with a user which has<br/> ' +
-                'read access and afterwards click the "Re-login with GitHub" button.' +
-              '</div>'
+            '<div>' +
+            'There are 2 possible reasons for this error:' +
+            '<ul>' +
+            '<li>The file does not exist</li>' +
+            '<li>You do not have access to read the file</li>' +
+            '</ul>' +
+            'You can <a href="' + contactInfo + '">contact the repository owner</a> to request access.<br/>' +
+            'Or <a href="https://github.com/" target="_blank">go to GitHub and login</a> with a user which has<br/> ' +
+            'read access and afterwards click the "Re-login with GitHub" button.' +
+            '</div>'
           );
         });
       }
@@ -1166,10 +1166,10 @@
         this.getCredentials(callback);
 
         new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
-            '<div>' +
-              'If you are the administrator of the application<br/> make sure the client ID and ' +
-              'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
-            '</div>'
+          '<div>' +
+          'If you are the administrator of the application<br/> make sure the client ID and ' +
+          'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
+          '</div>'
         );
 
       } else {
@@ -1282,7 +1282,7 @@
                 loginManager.setErrorMessage('The requested file was not found.');
               } else {
                 loginManager.setErrorMessage('We could not open this file. ' +
-                    'Make sure the repository owner gave you access.');
+                  'Make sure the repository owner gave you access.');
               }
 
               loginManager.setGotRepoAccess(!!repoAccess);
@@ -1306,8 +1306,8 @@
 
         // Show a spinner while the document is loading.
         workspace.docContainer.innerHTML =
-            '<img class="document-loading" src="' + (sync.util.isDevMode() ? '' : sync.api.Version + '-' ) +
-            'lib/jquery-mobile/images/ajax-loader.gif">';
+          '<img class="document-loading" src="' + (sync.util.isDevMode() ? '' : sync.api.Version + '-' ) +
+          'lib/jquery-mobile/images/ajax-loader.gif">';
 
         documentSha = file.sha;
         documentCommit = head.sha;
@@ -1441,7 +1441,7 @@
 
   /**
    * Clears the github credentials from the client and from the server
-    */
+   */
   function clearGithubCredentials() {
     localStorage.removeItem('github.credentials');
     localStorage.removeItem('github.userName');
@@ -1542,12 +1542,12 @@
    */
   function normalizeGitHubUrl(url) {
     return url.replace("https", "github")
-        .replace("http", "github")
-        .replace("/tree/", "/blob/")
-        .replace("/blob/", "/")
-        .replace("www.github.com", "getFileContent")
-        .replace("github.com", "getFileContent")
-        .replace("raw.githubusercontent.com", "getFileContent");
+      .replace("http", "github")
+      .replace("/tree/", "/blob/")
+      .replace("/blob/", "/")
+      .replace("www.github.com", "getFileContent")
+      .replace("github.com", "getFileContent")
+      .replace("raw.githubusercontent.com", "getFileContent");
   }
 
   /**
@@ -1561,7 +1561,7 @@
     }
     if (url.match("https?://.*")) {
       return url.indexOf('github.com') != -1 ||
-          url.indexOf('raw.githubusercontent.com') != -1;
+        url.indexOf('raw.githubusercontent.com') != -1;
     }
     return false;
   }
@@ -1651,7 +1651,7 @@
     }
   };
 
-    /** @override */
+  /** @override */
   GithubRepoChooser.prototype.disposeInternal = function() {
     if (this.eventHandler) {
       this.eventHandler.dispose();
@@ -1675,10 +1675,10 @@
   GithubRepoChooser.prototype.requestMatchingRows = function(token, maxMatches, matchHandler, opt_fullString) {
     if (this.repos) {
       var matches = this.repos.map(function(repo) {
-        return 'https://github.com/'+ repo.full_name;}
+          return 'https://github.com/'+ repo.full_name;}
       ).filter(function(repo) {
-        return repo.indexOf(token) != -1;
-      });
+          return repo.indexOf(token) != -1;
+        });
       goog.array.sort(matches);
       matchHandler(token, matches);
     } else {
@@ -1695,9 +1695,16 @@
    * @return {object} the repo descriptor, or null if the repo is not chosen from the list.
    */
   GithubRepoChooser.prototype.getRepoByUrl = function(url) {
-    return this.repos && this.repos.find(function(repo) {
-      return url.indexOf('https://github.com/' + repo.full_name) === 0;
-    })
+    var repo = null;
+    if (this.repos) {
+      for (var i = 0; i < this.repos.length; i++) {
+        if (url.indexOf('https://github.com/' + this.repos[i].full_name)) {
+          repo = this.repos[i];
+          break;
+        }
+      }
+    }
+    return repo;
   };
 
   /**
@@ -1716,7 +1723,7 @@
       });
     }
   };
-  
+
   /**
    * GitHub file browser.
    *
@@ -1794,7 +1801,7 @@
   GithubFileBrowser.prototype.renderRepoEditing = function(element) {
     if (!github) {
       goog.events.dispatchEvent(fileBrowser.getEventTarget(),
-          new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
+        new sync.api.FileBrowsingDialog.UserActionRequiredEvent("Need to configure the github branch url."));
       return;
     }
     goog.dom.classlist.remove(element, 'vertical-align-children');
@@ -1804,7 +1811,7 @@
       '<div class="github-repo-ac"><input type="text" placeholder="Enter or choose the GitHub URL"></div>' +
       '<div class="github-repo-preview-area">' +
       '</div>' +
-    '</div>';
+      '</div>';
 
     var input = element.querySelector('.github-repo-ac > input');
     this.repoChooser = new GithubRepoChooser(input);
@@ -1929,25 +1936,36 @@
         var option = goog.dom.createDom('option', {value: branches[i]}, branches[i]);
         select.appendChild(option);
       }
+
       // If the URL specifies a branch, or if we know the default branch, make sure to have it selected.
       var path_branch = null;
       if (this.repoDetails.rest) {
         var pathMatch = /\/([^\/]+)\/(.*)/.exec(this.repoDetails.rest);
         path_branch = pathMatch && pathMatch[2];
         if (path_branch) {
+          // Parse the branch or commit number.
+          var branchOrCommit = null;
           for (i = 0; i < branches.length; i++) {
-            if (path_branch.indexOf(branches[i]) == 0) {
+            if (path_branch.indexOf(branches[i] + '/') == 0) {
               select.selectedIndex = i;
-              // Parse the file path and display it.
-              this.repoDetails.isFile = pathMatch[1] == 'blob';
-              this.repoDetails.branch = branches[i];
-              if (pathElem && path_branch.length > branches[i].length) {
-                var path = path_branch.substring(branches[i].length + 1);
-                this.repoDetails.path = path;
-                pathElem.parentNode.style.display = 'block';
-                pathElem.textContent = path;
-              }
+              branchOrCommit = branches[i];
               break;
+            }
+          }
+          var details = /([^\/]+)(.*)/.exec(path_branch);
+          if (details != null) {
+            branchOrCommit = details[1];
+          }
+
+          if (branchOrCommit) {
+            // Parse the file path and display it.
+            this.repoDetails.isFile = pathMatch[1] == 'blob';
+            this.repoDetails.branch = branchOrCommit;
+            if (pathElem && path_branch.length > branchOrCommit.length) {
+              var path = path_branch.substring(branchOrCommit.length + 1);
+              this.repoDetails.path = path;
+              pathElem.parentNode.style.display = 'block';
+              pathElem.textContent = path;
             }
           }
         }
@@ -2031,14 +2049,14 @@
     // handle the user action required event.
     var eventTarget = fileBrowser.getEventTarget();
     goog.events.listen(eventTarget,
-        sync.api.FileBrowsingDialog.EventTypes.USER_ACTION_REQUIRED,
-        function () {
-          // authenticate the user.
-          var loginManager = new GitHubLoginManager();
-          // Calling authenticateUser with the reset flag set to true to make sure we request a new login flow.
-          // We should only end up here if we are not authorized or if the logged in user has removed our application access from GitHub
-          loginManager.authenticateUser(goog.bind(fileBrowser.refresh,fileBrowser), true);
-        });
+      sync.api.FileBrowsingDialog.EventTypes.USER_ACTION_REQUIRED,
+      function () {
+        // authenticate the user.
+        var loginManager = new GitHubLoginManager();
+        // Calling authenticateUser with the reset flag set to true to make sure we request a new login flow.
+        // We should only end up here if we are not authorized or if the logged in user has removed our application access from GitHub
+        loginManager.authenticateUser(goog.bind(fileBrowser.refresh,fileBrowser), true);
+      });
   };
 
   var fileBrowser = new GithubFileBrowser();
@@ -2048,20 +2066,20 @@
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(
-  	'../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+    '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
 
   var githubCreateAction = new sync.api.CreateDocumentAction(fileBrowser);
   githubCreateAction.setLargeIcon(
-      '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+    '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
   githubCreateAction.setDescription('Create a file on your GitHub repository');
   githubCreateAction.setActionId('github-create-action');
   githubCreateAction.setActionName('Github');
- 
+
   workspace.getActionsManager().registerOpenAction(
-      githubOpenAction);
+    githubOpenAction);
   workspace.getActionsManager().registerCreateAction(
-      githubCreateAction);
+    githubCreateAction);
 }());
