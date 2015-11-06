@@ -670,32 +670,27 @@
       var commitDialog = '<div id="gh-commit-diag-content">' +
         '<div class="gh-commit-info-prolog">' + userMessage + ' <a target="_blank" href = "' + err.diff.permalink_url + '">Click here</a> to see the changes. Afterwards, choose one of the following:</div>';
 
+      if (result.resultType == 'CLEAN') {
+        commitDialog +=
+            '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
+              '<div class="gh-commit-diag-title">Merge and commit</div>' +
+            '</div>';
+      }
       commitDialog +=
-        '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
-        '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
-        '<div class="gh-commit-diag-title">Merge and commit</div>' +
-        '</div>';
+            '<div id="createFork" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
+              '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
+            '</div>';
       commitDialog +=
-        '<div id="createFork" class="gh-commit-diag-choice">' +
-        '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
-        '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
-        '</div>';
-      commitDialog +=
-        '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
-        '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
-        '<div class="gh-commit-diag-title">Commit only my changes</div>' +
-        '</div>';
+            '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
+              '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
+              '<div class="gh-commit-diag-title">Commit only my changes</div>' +
+            '</div>';
 
       commitDialog += '</div>';
 
       errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog, sync.api.Dialog.ButtonConfiguration.CANCEL);
-
-      if (result.resultType == "WITH_CONFLICTS") {
-        var mergeAndCommitElement = document.querySelector('div#commitAnyway');
-        new sync.ui.CornerTooltip(mergeAndCommitElement,
-          '<div>Conflicts will be resolved using<br/>your version of the document.</div>'
-        );
-      }
 
       var choices = document.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
       for (var i = 0; i < choices.length; i++) {
