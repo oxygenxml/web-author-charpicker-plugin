@@ -279,16 +279,9 @@
               initialDocument = ctx.content;
 
               self.branch = ctx.branch;
-              Github.apiRequest('GET', commit.head.url, null, function (err, response) {
-                if (err) {
-                  // If there was an error with getting the headUrl we wont propagate it further
-                  // because the commit succeeded. And we just won't have a url to the successful commit
-                  return cb();
-                }
-                cb(null, {
-                  branch: self.branch,
-                  headUrl: response.html_url
-                });
+              cb(null, {
+                branch: self.branch,
+                headUrl: result.commit.html_url
               });
             });
           } else if (err) {
@@ -351,7 +344,7 @@
             });
           });
         }
-      } else if (xhr.readyState == 4) {
+      } else if (xhr.readyState == 4 && xhr.status >= 100) {
         // If the merge failed, just commit without auto-merging and have the user choose what to do to solve the conflicts
         repo.createCommit(ctx.branch, self.filePath, ctx.content, ctx.message, function (err, commit) {
           if (err) {return cb(err);}
@@ -1413,7 +1406,8 @@
           state: response.state,
           error: response.error
         });
-      } else if (xhrRequest.readyState == 4) {
+      } else if (xhrRequest.readyState == 4 && xhrRequest.status >= 100) {
+        // When the request status is < 100 it means the request was terminated abruptly..
         callback({message: "OAuth client_id or access_token are not available"}, null);
       }
     };
