@@ -288,7 +288,7 @@
     height: 16px;
     background-size: 16px 16px;
     background: no-repeat 50% 50%;
-    background-image: url("../../static/images/Error16.png");
+    background-image: url("../../app/images/Error16.png");
     display:inline-block;
     margin-right: 5px;
 }
