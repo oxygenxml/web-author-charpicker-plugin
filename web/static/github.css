@@ -19,6 +19,12 @@
 .github-input {
     width: 100%;
     padding: 0 3px;
+    background-color: #FAFAFA;
+    font-family: Roboto, arial, sans-serif;
+}
+textarea.github-input {
+    padding: 4px 3px;
+    min-height: 80px;
 }
 #github-oauth-button {
     display: block;
@@ -45,7 +51,11 @@
     text-align: right;
     display: block;
 }
-
+.github-commit-dialog {
+    font-family: Roboto, arial, sans-serif;
+    color: #3E3E3E;
+    width: 450px;
+}
 @media only screen and (max-width: 550px) {
     .github-login-dialog {
         width: auto;
@@ -57,6 +67,9 @@
     .github-login-dialog input {
         width: 100%;
         display: block;
+    }
+    .github-commit-dialog {
+        width: auto;
     }
 }
 
@@ -130,6 +143,7 @@
 }
 
 .gh-commit-diag-choice {
+    vertical-align: top;
     padding: 5px 0 0 0;
 
     text-align: center;
