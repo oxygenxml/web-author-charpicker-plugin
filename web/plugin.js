@@ -215,7 +215,8 @@
 
     var dialogHtml = '<div class="github-commit-dialog">';
     dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label></div>';
-    dialogHtml += '<div><label>Commit on branch:<input class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
+    dialogHtml += '<div><label>Commit on branch:<input autocapitalize="none" autocorrect="off" ' +
+      'class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
     dialogHtml += '</div>';
     var el = this.dialog.getElement();
     el.innerHTML = dialogHtml;
@@ -1677,7 +1678,7 @@
       var matches = this.repos.map(function(repo) {
           return 'https://github.com/'+ repo.full_name;}
       ).filter(function(repo) {
-          return repo.indexOf(token) != -1;
+          return repo.indexOf(token.toLowerCase()) != -1;
         });
       goog.array.sort(matches);
       matchHandler(token, matches);
@@ -1808,7 +1809,7 @@
     goog.dom.classlist.remove(element, 'github-browsing-repo-preview');
 
     element.innerHTML = '<div>' +
-      '<div class="github-repo-ac"><input type="text" placeholder="Enter or choose the GitHub URL"></div>' +
+      '<div class="github-repo-ac"><input autocapitalize="none" autocorrect="off" type="text" placeholder="Enter or choose the GitHub URL"></div>' +
       '<div class="github-repo-preview-area">' +
       '</div>' +
       '</div>';
