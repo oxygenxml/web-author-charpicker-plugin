@@ -1361,7 +1361,22 @@
           return cb(err);
         }
         repo.getHead(branch, function (err, head) {
-          if (err) {
+          // If the head is not found this might be a commit (perhaps taken from history)
+          if (err && err.error === 404) {
+            repo.getCommit(branch, function (err, commit) {
+              if (err) {
+                return cb(err);
+              }
+
+              cb(null, {
+                file: file,
+                head: {
+                  sha: commit.sha
+                }
+              });
+            });
+            return;
+          } else if (err) {
             return cb(err);
           }
           cb(null, {

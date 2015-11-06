@@ -437,8 +437,8 @@
       // For a given file path, get the corresponding sha (blob for files, tree for dirs)
       // -------
 
-      this.getCommit = function(branch, sha, cb) {
-        _request("GET", repoPath + "/git/commits/"+sha, null, function(err, commit) {
+      this.getCommit = function(sha, cb) {
+        _request("GET", repoPath + "/git/commits/" + sha, null, function(err, commit) {
           if (err) return cb(err);
           cb(null, commit);
         });
