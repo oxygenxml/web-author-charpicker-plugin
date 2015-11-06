@@ -1699,7 +1699,7 @@
     var repo = null;
     if (this.repos) {
       for (var i = 0; i < this.repos.length; i++) {
-        if (url.indexOf('https://github.com/' + this.repos[i].full_name)) {
+        if (url.indexOf('https://github.com/' + this.repos[i].full_name) == 0) {
           repo = this.repos[i];
           break;
         }

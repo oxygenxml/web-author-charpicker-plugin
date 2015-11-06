@@ -206,7 +206,6 @@
     width: 100%;
 }
 .github-repo-edit {
-    display:none;
     background-size: 16px 16px;
     position: absolute;
     right:0;
@@ -217,9 +216,6 @@
     border-color: #ccc;
 }
 
-.file-browser-repo-config-area:hover > .github-repo-edit {
-    display: inline-block;
-}
 .github-browsing-repo-preview {
 	white-space: nowrap;
 }
