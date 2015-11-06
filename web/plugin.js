@@ -2066,15 +2066,13 @@
   registerFileBrowserListeners(fileBrowser);
   var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
 
-  githubOpenAction.setLargeIcon(
-    '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+  githubOpenAction.setLargeIcon(sync.util.computeHdpiIcon('../plugin-resources/github-static/Github70.png'));
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
 
   var githubCreateAction = new sync.api.CreateDocumentAction(fileBrowser);
-  githubCreateAction.setLargeIcon(
-    '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+  githubCreateAction.setLargeIcon(sync.util.computeHdpiIcon('../plugin-resources/github-static/Github70.png'));
   githubCreateAction.setDescription('Create a file on your GitHub repository');
   githubCreateAction.setActionId('github-create-action');
   githubCreateAction.setActionName('Github');
