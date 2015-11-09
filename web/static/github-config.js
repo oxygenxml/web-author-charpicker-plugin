@@ -15,6 +15,17 @@ window.addEventListener('message', function (event) {
     if (!newClientId || !newClientSecret) {
       event.source.postMessage({done: false, message: 'Both fields are mandatory.'}, origin);
       return;
+    } else {
+      newClientId = newClientId.trim();
+      newClientSecret = newClientSecret.trim();
+
+      if (newClientId.length >= newClientSecret.length) {
+        event.source.postMessage({
+          done: false,
+          message: 'Make sure you copy the client ID and client Secret into the correct fields.'
+        }, origin);
+        return;
+      }
     }
 
     // Send them to the config servlet
@@ -23,7 +34,7 @@ window.addEventListener('message', function (event) {
       // Let the admin page know the result
       // Make sure to set the targetOrigin to origin otherwise the admin page will ignore the message
       if (xhr.readyState == 4 && xhr.status == 200) {
-        event.source.postMessage({done: true, message: 'New credentials set successfuly.'}, origin);
+        event.source.postMessage({done: true, message: 'New credentials set successfully. (Server restart not required)'}, origin);
       } else if (xhr.readyState == 4) {
         event.source.postMessage({done: false, message: 'Failed to set new credentials.'}, origin);
       }
@@ -38,7 +49,7 @@ window.addEventListener('message', function (event) {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        event.source.postMessage({done: true, message: 'Credentials reset succesfully.'}, origin);
+        event.source.postMessage({done: true, message: 'Credentials reset successfully. (Server restart not required)'}, origin);
       } else if (xhr.readyState == 4) {
         event.source.postMessage({done: false, message: 'Failed to reset credentials.'}, origin);
       }

@@ -1155,10 +1155,11 @@
     getGithubClientIdOrToken(goog.bind(function (err, credentials) {
       if (err || credentials.error) {
         // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-        this.setErrorMessage('The GitHub plugin is not configured properly.' +
+        this.setErrorMessage(
             '<div>' +
-              'If you are the administrator of the application<br/> make sure the client ID and ' +
-              'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
+              'The GitHub plugin is not configured properly.' +
+              'If you are the administrator of the application make sure the client ID and ' +
+              'client Secret are properly set in the <a target="_blank" href="admin.html#Plugins">administration page</a>.' +
             '</div>');
         this.setOauthProps(null);
         this.resetCredentials();

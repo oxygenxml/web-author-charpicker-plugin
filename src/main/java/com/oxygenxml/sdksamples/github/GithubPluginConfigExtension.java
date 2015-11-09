@@ -102,22 +102,32 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    */
   @Override
   public String getOptionsForm() {
-    return "<div style='font-family:robotolight, Arial, Helvetica, sans-serif;font-size:0.85em;font-weight: lighter'>"
-            + "<form style='text-align:left;line-height: 1.7em;'>"
+    String clientId = GitHubOauthServlet.clientId;
+    if (clientId == null) {
+      clientId = "";
+    }
+    
+    String clientSecret = GitHubOauthServlet.clientSecret;
+    if (clientSecret == null) {
+      clientSecret = "";
+    }
+    
+    return "<div style='font-family: robotolight, Arial, Helvetica, sans-serif;font-size:0.9em;font-weight: lighter;'>"
+            + "<form style='text-align:left;line-height: 1.7em;font-weight:bold;color:#505050;'>"
               + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
                 + "Client ID: "
-                + "<input name='client_id' type='text' style='float:right' value='" + GitHubOauthServlet.clientId + "'/>"
+                + "<input name='client_id' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientId + "'/>"
               + "</label>"
               + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
                 + "Client Secret:"
-                + "<input name='client_secret' type='text' style='float:right' value='" + GitHubOauthServlet.clientSecret +"'/>"
+                + "<input name='client_secret' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
               + "</label>"
             + "</form>"
             
-            + "<div style='background-color: lightyellow;border: 1px solid #dadab4;padding:0 5px 0 5px'>"
-              + "<p>The github plugin requires a client_id and client_secret to use OAuth authentication.</p>"
-              + "<p>To obtain a client_id and client_secret go to your github <a target='_blank' href='https://github.com/settings/developers'>developer applications page</a> and register a new application.</p>"
-              + "<p>The Authorization callback URL must be set to: {webapp-context}/plugins-dispatcher/github-oauth/callback. example:<br/><span style='text-decoration:underline'>http://domain/oxygen-webapp/plugins-dispatcher/github-oauth/callback</p>"
+            + "<div style='color:#333;background-color: lightyellow;border: 1px solid #dadab4;padding:0 5px 0 5px'>"
+              + "<p style='margin:10px 0'>The github plugin requires a client_id and client_secret to use OAuth authentication.</p>"
+              + "<p style='margin:10px 0'>To obtain a client_id and client_secret go to your github <a target='_blank' href='https://github.com/settings/applications/new'>developer applications page</a> and register a new application.</p>"
+              + "<p style='margin:10px 0'>The Authorization callback URL must be set to: ${webapp-context}/plugins-dispatcher/github-oauth/callback<br/>example:<br/><span style='text-decoration:underline'>http://${domain}:8080/oxygen-webapp/plugins-dispatcher/github-oauth/callback</p>"
             + "</div>"
           + "</div>"
           
