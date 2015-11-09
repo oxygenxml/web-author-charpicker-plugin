@@ -25,6 +25,7 @@
 textarea.github-input {
     padding: 4px 3px;
     min-height: 80px;
+    max-width: 100%;
 }
 #github-oauth-button {
     display: block;
