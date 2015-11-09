@@ -116,11 +116,11 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
             + "<form style='text-align:left;line-height: 1.7em;font-weight:bold;color:#505050;'>"
               + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
                 + "Client ID: "
-                + "<input name='client_id' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientId + "'/>"
+                + "<input placeholder='Client ID' name='client_id' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientId + "'/>"
               + "</label>"
               + "<label style='margin-bottom:6px;display:block;overflow:hidden'>"
                 + "Client Secret:"
-                + "<input name='client_secret' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
+                + "<input placeholder='Client Secret' name='client_secret' type='text' style='color:#606060;background-color:#FAFAFA;box-sizing:border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
               + "</label>"
             + "</form>"
             
