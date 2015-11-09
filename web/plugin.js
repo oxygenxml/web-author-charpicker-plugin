@@ -1155,19 +1155,15 @@
     getGithubClientIdOrToken(goog.bind(function (err, credentials) {
       if (err || credentials.error) {
         // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
-        this.setErrorMessage('The GitHub plugin is not configured properly.');
+        this.setErrorMessage('The GitHub plugin is not configured properly.' +
+            '<div>' +
+              'If you are the administrator of the application<br/> make sure the client ID and ' +
+              'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
+            '</div>');
         this.setOauthProps(null);
         this.resetCredentials();
 
         this.getCredentials(callback);
-
-        new sync.ui.CornerTooltip(this.loginDialog.dialog.getElement().querySelector('.github-login-dialog-error'),
-          '<div>' +
-          'If you are the administrator of the application<br/> make sure the client ID and ' +
-          'client Secret are properly<br/> set in the <a target="_blank" href="admin.html">administration page</a>.' +
-          '</div>'
-        );
-
       } else {
         if (credentials.accessToken) {
           localStorage.setItem('github.credentials', JSON.stringify({
@@ -1256,6 +1252,7 @@
           loadDocument_(github);
         });
       } else {
+        loadingOptions.userName = urlAuthor;
         loadDocument_(github);
       }
     }
