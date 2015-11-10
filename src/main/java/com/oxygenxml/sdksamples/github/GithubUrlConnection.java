@@ -75,74 +75,97 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
-        // The github api requests the content of the files to be base64 encoded
-        byte[] content = toByteArray();
-        String encodedContent = Base64.encodeBytes(content);
-        
-        // The url of the delegateConnection happens to be exactly what the GitHub api for creating/updating a file requires.
-        // It is built in GithubUrlStreamHandler.openConnectionInContext
-        URL apiCallUrl = delegateConnection.getURL();
-
-        // Making a GET request to see if the file exists already
-        HttpURLConnection connToCheckIfFileExists = (HttpURLConnection) apiCallUrl.openConnection();
-        connToCheckIfFileExists.setRequestProperty("Authorization", "token " + accessToken);
-        connToCheckIfFileExists.setRequestMethod("GET");
-        
-        Integer responseCode = null;
-        HashMap<String, Object> fileExistsResult = null;
-        
         try {
-          responseCode = connToCheckIfFileExists.getResponseCode();
-          fileExistsResult = GithubUtil
-              .parseJSON(GithubUtil.inputStreamToString(connToCheckIfFileExists
-                      .getInputStream()));          
-        } catch (IOException e) {
-          String message = e.getMessage();
-          if (message != null && message.startsWith("404 Not Found")) {
-            // If the file does not exist urlConnectionToCheckIfFileExists.getResponseCode() throws an IOException
-            responseCode = 404;
-          } else {
-            // If a different error occurred or if the exception was thrown by inputStreamToString we will set the responseCode to 500
-            // This way the third if branch below will be triggered and an IOException thrown.
-            responseCode = 500;
-          }
-        }
-
-        String apiRequestBody;
-        
-        // If we didn't find the file we will create one
-        if (responseCode == 404) {
-          apiRequestBody = 
-              "{"
-              + "\"message\":\"Creating new file from template.\","
-              + "\"content\":\"" + encodedContent + "\""
-            + "}";
-        } 
-        // Otherwise we will update the existing file
-        else if (fileExistsResult != null) {
-          // To update a file the GitHub api requires the sha of the updated file.
-          String sha = (String) fileExistsResult.get("sha");
+          // The github api requests the content of the files to be base64 encoded
+          byte[] content = toByteArray();
+          String encodedContent = Base64.encodeBytes(content);
           
-          apiRequestBody = 
-              "{"
-              + "\"message\":\"Overwriting file.\","
-              + "\"content\":\"" + encodedContent + "\","
-              + "\"sha\":\"" + sha + "\""
-            + "}";
-        } else {
-          throw new IOException("Could not create or update file on GitHub");
-        }
-        
-        HttpURLConnection urlConnection = (HttpURLConnection) apiCallUrl.openConnection();
-        urlConnection.setRequestProperty("Content-Type", "application/json");
-        urlConnection.setRequestProperty("Authorization", "token " + accessToken);
-        urlConnection.setRequestMethod("PUT");
-        urlConnection.setDoOutput(true);
-        
-        OutputStream outputStream = urlConnection.getOutputStream();
-        outputStream.write(apiRequestBody.getBytes());
-        outputStream.flush();
-        outputStream.close();
+          // The url of the delegateConnection happens to be exactly what the GitHub api for creating/updating a file requires.
+          // It is built in GithubUrlStreamHandler.openConnectionInContext
+          URL apiCallUrl = delegateConnection.getURL();
+
+          // Making a GET request to see if the file exists already
+          HttpURLConnection connToCheckIfFileExists = (HttpURLConnection) apiCallUrl.openConnection();
+          connToCheckIfFileExists.setRequestProperty("Authorization", "token " + accessToken);
+          connToCheckIfFileExists.setRequestMethod("GET");
+          
+          Integer responseCode = null;
+          HashMap<String, Object> fileExistsResult = null;
+          
+          try {
+            responseCode = connToCheckIfFileExists.getResponseCode();
+            fileExistsResult = GithubUtil
+                .parseJSON(GithubUtil.inputStreamToString(connToCheckIfFileExists
+                        .getInputStream()));          
+          } catch (IOException e) {
+            String message = e.getMessage();
+            if (message != null && message.startsWith("404 Not Found")) {
+              // If the file does not exist urlConnectionToCheckIfFileExists.getResponseCode() throws an IOException
+              responseCode = 404;
+            } else {
+              // If a different error occurred or if the exception was thrown by inputStreamToString we will set the responseCode to 500
+              // This way the third if branch below will be triggered and an IOException thrown.
+              responseCode = 500;
+            }
+          }
+
+          // We need to send the branch as a property of the JSON request body
+          // We can take it from the apiCallUrl. It's the ref query param
+          String branch = null;
+          String[] queryParams = apiCallUrl.getQuery().split("&");
+          for (int i = 0; i < queryParams.length - 1; i++) {
+            String[] propValue = queryParams[i].split("=");
+            if (propValue.length == 2 && propValue[0].equals("ref")) {
+              branch = propValue[1];
+              break;
+            }
+          }
+          
+          if (branch == null) {
+            // This should never happen
+            throw new IOException("Could not create or update file on GitHub, missing branch.");
+          }
+          
+          String apiRequestBody;
+          // If we didn't find the file we will create one
+          if (responseCode == 404) {
+            apiRequestBody = 
+                "{"
+                + "\"message\":\"Creating new file from template.\","
+                + "\"content\":\"" + encodedContent + "\","
+                + "\"branch\":\"" + branch + "\""
+              + "}";
+          } 
+          // Otherwise we will update the existing file
+          else if (fileExistsResult != null) {
+            // To update a file the GitHub api requires the sha of the updated file.
+            String sha = (String) fileExistsResult.get("sha");
+            
+            apiRequestBody = 
+                "{"
+                + "\"message\":\"Overwriting file.\","
+                + "\"content\":\"" + encodedContent + "\","
+                + "\"sha\":\"" + sha + "\","
+                + "\"branch\":\"" + branch + "\""
+              + "}";
+          } else {
+            throw new IOException("Could not create or update file on GitHub");
+          }
+          
+          HttpURLConnection urlConnection = (HttpURLConnection) apiCallUrl.openConnection();
+          urlConnection.setRequestProperty("Content-Type", "application/json");
+          urlConnection.setRequestProperty("Authorization", "token " + accessToken);
+          urlConnection.setRequestMethod("PUT");
+          urlConnection.setDoOutput(true);
+          
+          OutputStream outputStream = urlConnection.getOutputStream();
+          outputStream.write(apiRequestBody.getBytes());
+          outputStream.flush();
+          
+          outputStream.close();
+        } catch (IOException e) {
+          filterClientSecret(e);
+        } 
       }
     };
   }
@@ -187,10 +210,26 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
             WebappMessage.MESSAGE_TYPE_CUSTOM, "Authentication required",
             "Authentication required", true));
       } else {
-        throw e;
+        filterClientSecret(e);
       }
     }
     return filesList;
   }
   
+  /**
+   * Filters out the client_secret from the message of an IOException.
+   * @param e The exception from which to filter out.
+   * @throws IOException Thrown again, but this time it does not contain any client_secret info.
+   */
+  private void filterClientSecret(IOException e) throws IOException {
+    // We should never send the client_secret to the client. So if the error 
+    // message contains a url with the client_secret we'll trim it out
+    String message = e.getMessage();
+    int indexOfClientSecret = message.indexOf("client_secret");
+    if (indexOfClientSecret != -1) {
+      throw new IOException(message.substring(0, indexOfClientSecret));
+    } else {
+      throw e;
+    }
+  }
 }
