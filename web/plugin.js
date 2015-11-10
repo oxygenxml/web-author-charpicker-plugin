@@ -1152,7 +1152,15 @@
    * @param {boolean=} reset Set to true if we want to get a new access token
    */
   GitHubLoginManager.prototype.authenticateUser = function(callback, reset) {
-    getGithubClientIdOrToken(goog.bind(function (err, credentials) {
+    // If we can create a valid github instance, use it
+    github = this.createGitHub();
+    if (github) {
+      var alreadyGotGithub = true;
+      callback(github);
+    }
+
+    // But we should also make sure that our github instance is not outdated (invalid client_id/access_token)
+    getGithubClientIdOrToken(reset, goog.bind(function (err, credentials) {
       if (err || credentials.error) {
         // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
         this.setErrorMessage(
@@ -1172,8 +1180,21 @@
             auth: "oauth"
           }));
 
-          this.setOauthProps(credentials.clientId, credentials.state);
+          // Update our github instance with the potentially new accessToken
           github = this.createGitHub();
+
+          var currentOauthProps = JSON.parse(localStorage.getItem('github.oauthProps'));
+          if (currentOauthProps &&
+              currentOauthProps.clientId === credentials.clientId &&
+              currentOauthProps.state === credentials.state &&
+              // If we already could make a github instance it means we called callback so we can just return;
+              alreadyGotGithub) {
+              return;
+          } else {
+            // If we got new oauthProps we will update them and call the callback
+            this.setOauthProps(credentials.clientId, credentials.state);
+          }
+
           callback(github);
         } else {
           // If the server didn't respond with a accessToken that means we should get a new one by starting the oauth
@@ -1185,7 +1206,7 @@
           this.getCredentials(callback);
         }
       }
-    }, this), reset);
+    }, this));
   };
 
   /**
@@ -1385,10 +1406,10 @@
   /**
    * Gets the github access token or client_id
    *
-   * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
    * @param {boolean=} reset If true, will trigger a new OAuth flow for getting a new access token (called with true when the access token expires)
+   * @param {function(err: Object, credentials: {accessToken: String, clientId: String, state: String, error: String})} callback The method to call on result
    */
-  function getGithubClientIdOrToken(callback, reset) {
+  function getGithubClientIdOrToken(reset, callback) {
     if (reset) {
       localStorage.removeItem('github.credentials');
       localStorage.removeItem('github.oauthProps');
@@ -1421,10 +1442,17 @@
       }
     };
 
+    var redirectTo = location.href;
+    if (callOnReturn) {
+      redirectTo = location.protocol + "//" +
+          location.hostname + (location.port ? ':' + location.port : '') +
+          location.pathname + location.search + '#' + callOnReturn
+    }
+
     // Send the current url. It will be needed to redirect back to this page
     // Also send the oauth related props so that we can synchronize with the server, in case we need new credentials
     xhrRequest.send(JSON.stringify({
-      redirectTo: window.location.href,
+      redirectTo: redirectTo,
       reset: reset,
 
       accessToken: accessToken,
@@ -2055,16 +2083,51 @@
 
   var fileBrowser = new GithubFileBrowser();
 
+  /**
+   * The name of the action to call when this page is loaded again at the end of an oauth flow.
+   * @type {string}
+   */
+  var callOnReturn = null;
+
   // register all the listeners on the file browser.
   registerFileBrowserListeners(fileBrowser);
-  var githubOpenAction = new sync.actions.OpenAction(fileBrowser);
+
+  /** @override */
+  function GithubOpenAction() {
+    sync.actions.OpenAction.apply(this, arguments);
+    // GithubFileBrowser.superClass_.saveFile.apply(this, arguments);
+  }
+  goog.inherits(GithubOpenAction, sync.actions.OpenAction);
+
+  GithubOpenAction.prototype.actionPerformed = function () {
+    // When an Oauth flow will finish the open action will be invoked
+    callOnReturn = 'github.open';
+    GithubOpenAction.superClass_.actionPerformed.apply(this, arguments);
+  };
+
+  var githubOpenAction = new GithubOpenAction(fileBrowser);
 
   githubOpenAction.setLargeIcon(sync.util.computeHdpiIcon('../plugin-resources/github-static/Github70.png'));
   githubOpenAction.setDescription('Open a document from your GitHub repository');
   githubOpenAction.setActionId('github-open-action');
   githubOpenAction.setActionName("GitHub");
 
-  var githubCreateAction = new sync.api.CreateDocumentAction(fileBrowser);
+  /** @override */
+  function GithubCreateDocumentAction() {
+    sync.api.CreateDocumentAction.apply(this, arguments);
+    // GithubFileBrowser.superClass_.saveFile.apply(this, arguments);
+  }
+  goog.inherits(GithubCreateDocumentAction, sync.api.CreateDocumentAction);
+
+  GithubCreateDocumentAction.prototype.actionPerformed = function () {
+    // When an Oauth flow will finish the create action will be invoked
+    callOnReturn = 'github.create';
+    // Make sure the user is authenticated.
+    var loginManager = new GitHubLoginManager();
+    loginManager.authenticateUser(goog.bind(GithubCreateDocumentAction.superClass_.actionPerformed, this));
+  };
+
+  var githubCreateAction = new GithubCreateDocumentAction(fileBrowser);
   githubCreateAction.setLargeIcon(sync.util.computeHdpiIcon('../plugin-resources/github-static/Github70.png'));
   githubCreateAction.setDescription('Create a file on your GitHub repository');
   githubCreateAction.setActionId('github-create-action');
@@ -2074,4 +2137,17 @@
     githubOpenAction);
   workspace.getActionsManager().registerCreateAction(
     githubCreateAction);
+
+  // Invoke the callOnReturn action if one was set
+  goog.events.listenOnce(workspace, sync.api.Workspace.EventType.DASHBOARD_LOADED, function (e) {
+    switch (location.hash) {
+    case '#github.open':
+      githubOpenAction.actionPerformed();
+      break;
+    case '#github.create':
+      githubCreateAction.actionPerformed();
+      break;
+    }
+  });
+
 }());
