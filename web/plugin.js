@@ -605,12 +605,12 @@
        * */
 
       var currentUrl = decodeURIComponent(sync.util.getURLParameter('url'));
-      var urlParts = currentUrl.split('/' + branch + '/');
+      var urlParts = currentUrl.split('/' + encodeURIComponent(branch) + '/');
 
       var urlSplit = urlParts[0].split('/' + user + '/');
       var firstPart = urlSplit[0] + '/' + documentOwner + '/' + urlSplit[1];
 
-      var newUrl = firstPart + '/' + this.branch + '/' + urlParts[1];
+      var newUrl = firstPart + '/' + encodeURIComponent(this.branch) + '/' + urlParts[1];
       var webappUrl = sync.util.serializeQueryString(newUrl, sync.util.getOpenLinkUrlParams());
 
       this.editor.setDirty(false);
