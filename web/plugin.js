@@ -2143,9 +2143,15 @@
     switch (location.hash) {
     case '#github.open':
       githubOpenAction.actionPerformed();
+
+      // Remove the fragment part of the url because users may want tot copy the url to give to someone else
+      location.hash = '';
       break;
     case '#github.create':
       githubCreateAction.actionPerformed();
+
+      // Remove the fragment part of the url because users may want tot copy the url to give to someone else
+      location.hash = '';
       break;
     }
   });
