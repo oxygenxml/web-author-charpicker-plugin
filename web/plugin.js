@@ -1166,7 +1166,7 @@
         this.setErrorMessage(
             '<div>' +
               'The GitHub plugin is not configured properly.' +
-              'If you are the administrator of the application make sure the Client ID and ' +
+              'If you are the administrator of the application make sure the Client ID and the ' +
               'Client Secret are properly set in the <a target="_blank" href="admin.html#Plugins">administration page</a>.' +
             '</div>');
         this.setOauthProps(null);
