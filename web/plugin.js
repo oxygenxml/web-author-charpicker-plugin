@@ -576,9 +576,9 @@
       this.setStatus('success');
 
       if (result) {
-        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful on branch <a target="_blank" href="' + result.headUrl + '">' + result.branch + '</a>!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful on branch <a target="_blank" href="' + result.headUrl + '">' + result.branch + '</a></span>', sync.api.Dialog.ButtonConfiguration.OK);
       } else {
-        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful!</span>', sync.api.Dialog.ButtonConfiguration.OK);
+        errorReporter.showError(COMMIT_STATUS_TITLE, '<span id="github-commit-success-indicator">Commit successful</span>', sync.api.Dialog.ButtonConfiguration.OK);
       }
 
       goog.events.listenOnce(errorReporter.errDialog.dialog, goog.ui.Dialog.EventType.SELECT, goog.bind(this.handleReloadOnNewBranch, this, false));
