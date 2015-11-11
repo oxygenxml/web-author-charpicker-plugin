@@ -2039,7 +2039,7 @@
       }
       localStorage.setItem('github.latestUrl', normalizedUrl);
       this.setRootUrl(this.extractRootUrl_(normalizedUrl));
-      this.openUrl(normalizedUrl, false, event);
+      this.openUrl(normalizedUrl, this.repoDetails.isFile, event);
     } else {
       if (!this.repoDetails) {
         this.showErrorMessage('No repository was selected');

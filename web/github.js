@@ -549,7 +549,24 @@
         _request('GET', repoPath + '/git/refs/heads/' + encodeURIComponent(branch), null, function (err, response) {
           if (err) {return cb(err);}
 
-          cb(null, response.object);
+          var final_response = null;
+          if (response instanceof Array) {
+            // The API may return an array with branches that start with the given string.
+            for (var i = 0; i < response.length; i++) {
+              if (response[i].ref == 'refs/heads/' + branch) {
+                final_response = response[i];
+                break;
+              }
+            }
+          } else {
+            final_response = response;
+          }
+
+          if (final_response) {
+            cb(null, final_response.object);
+          } else {
+            cb({error: 404, message: "Branch not found"});
+          }
         });
       };
 
