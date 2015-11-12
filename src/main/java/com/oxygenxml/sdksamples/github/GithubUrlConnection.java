@@ -116,7 +116,8 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
           for (int i = 0; i < queryParams.length - 1; i++) {
             String[] propValue = queryParams[i].split("=");
             if (propValue.length == 2 && propValue[0].equals("ref")) {
-              branch = propValue[1];
+              // We wil put the branch as a JSON property and we don't need to have it URL encoded there.
+              branch = URLUtil.decodeURIComponent(propValue[1]);
               break;
             }
           }
