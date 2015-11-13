@@ -45,6 +45,9 @@ textarea.github-input {
     max-height: 138px;
     overflow-x: hidden;
 }
+.github-commit-branches-list .goog-menuitem {
+    padding: 2px 2px 2px 8px;
+}
 @media only screen and (max-device-width : 1024px) {
     .github-commit-branches-list .goog-menuitem-content {
         font-size: 1.15em !important;
