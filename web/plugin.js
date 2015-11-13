@@ -2095,7 +2095,6 @@
   /** @override */
   function GithubOpenAction() {
     sync.actions.OpenAction.apply(this, arguments);
-    // GithubFileBrowser.superClass_.saveFile.apply(this, arguments);
   }
   goog.inherits(GithubOpenAction, sync.actions.OpenAction);
 
@@ -2115,7 +2114,6 @@
   /** @override */
   function GithubCreateDocumentAction() {
     sync.api.CreateDocumentAction.apply(this, arguments);
-    // GithubFileBrowser.superClass_.saveFile.apply(this, arguments);
   }
   goog.inherits(GithubCreateDocumentAction, sync.api.CreateDocumentAction);
 

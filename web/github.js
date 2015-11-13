@@ -48,6 +48,9 @@
     // I'm not proud of this and neither should you be if you were responsible for the XMLHttpRequest spec.
 
     function _request(method, path, data, cb, raw, sync) {
+      // # is a valid character for use in a file name on GitHub.
+      path = path.replace(new RegExp('#', 'g'), '%23');
+
       function getURL() {
         var url = path.indexOf('//') >= 0 ? path : API_URL + path;
         return url + ((/\?/).test(url) ? '&' : '?') + (new Date()).getTime();
