@@ -16,17 +16,42 @@
     height: 16px;
     vertical-align: middle;
 }
-.github-input {
+.github-input,
+.github-commit-branches-list input{
     width: 100%;
     padding: 0 3px;
     background-color: #FAFAFA;
     font-family: Roboto, arial, sans-serif;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    line-height: initial;
 }
 textarea.github-input {
     padding: 4px 3px;
     min-height: 80px;
     max-width: 100%;
 }
+.github-commit-branches-list {
+    line-height: initial;
+}
+.github-commit-branches-list span.goog-combobox-button {
+    display: none;
+}
+.github-commit-branches-list span.goog-combobox {
+    border: none;
+}
+.github-commit-branches-list .goog-menu-vertical {
+    max-height: 138px;
+    overflow-x: hidden;
+}
+@media only screen and (max-device-width : 1024px) {
+    .github-commit-branches-list .goog-menuitem-content {
+        font-size: 1.15em !important;
+        padding: 5px 0;
+    }
+}
+
 #github-oauth-button {
     display: block;
     border-radius: 6px;

@@ -147,6 +147,12 @@
     this.status = 'none';
     this.githubToolbarButton = null;
     this.statusTimeout = null;
+
+    /**
+     * The list of branches for the current document's owner and repository
+     * @type {Array<string>}
+     */
+    this.branchesList = null;
   };
   goog.inherits(CommitAction, sync.actions.AbstractAction);
 
@@ -215,13 +221,39 @@
 
     var dialogHtml = '<div class="github-commit-dialog">';
     dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label></div>';
-    dialogHtml += '<div><label>Commit on branch:<input autocapitalize="none" autocorrect="off" ' +
-      'class="github-input" name="branch" type="text" value="' + this.branch + '"/></label></div>';
+    dialogHtml += '<div><label>Commit on branch:<div class="github-commit-branches-list"><input autocapitalize="none" autocorrect="off" ' +
+      'class="github-input" name="branch" type="text" value="' + this.branch + '"/></div></label></div>';
     dialogHtml += '</div>';
     var el = this.dialog.getElement();
     el.innerHTML = dialogHtml;
 
+    if (this.branchesList) {
+      console.log('got thehem');
+      displayBranchesSelect.call(this);
+    } else {
+      var repo = github.getRepo(fileLocation.user, fileLocation.repo);
+      repo.getBranches(goog.bind(function (err, branches) {
+        if (!err && this.dialog && this.dialog.isVisible()) {
+          branches = branches.map(function (branch) {
+            return {value: branch, title: branch};
+          });
+
+          this.branchesList = branches;
+          displayBranchesSelect.call(this);
+        }
+      }, this));
+    }
     return this.dialog;
+
+    function displayBranchesSelect() {
+      var container = this.dialog.getElement().querySelector('.github-commit-branches-list');
+      container.innerHTML = '';
+
+      var branchEditableCombo = new sync.view.EditableCombo(this.branchesList);
+
+      branchEditableCombo.render(container);
+      branchEditableCombo.setValue(this.branch);
+    }
   };
 
 
@@ -546,7 +578,7 @@
       var el = this.dialog.getElement();
       ctx = {
         message: el.querySelector('[name="message"]').value,
-        branch: el.querySelector('[name="branch"]').value
+        branch: el.querySelector('.github-commit-branches-list input').value
       };
 
       // A branch must be provided!
