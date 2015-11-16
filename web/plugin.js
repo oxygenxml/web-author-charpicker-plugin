@@ -269,6 +269,10 @@
       this.getLatestFileVersion(ctx.branch, self.repo, function (err, latestFile) {
         // If this is a new branch or the document branch
         if (!ctx.branchAlreadyExists) {
+          if (err) {
+            return cb(err);
+          }
+
           if (latestFile.sha === documentSha) {
             self.repo.commitToHead(ctx.branch, self.filePath, ctx.content, ctx.message, function(err, commit) {
               if (err) {
@@ -1211,7 +1215,8 @@
         this.setOauthProps(null);
         this.resetCredentials();
 
-        this.getCredentials(callback);
+        // On firefox the login dialog appears slightly to the bottom-right if we don't wait here
+        setTimeout(goog.bind(this.getCredentials, this, callback), 0);
       } else {
         if (credentials.accessToken) {
           localStorage.setItem('github.credentials', JSON.stringify({
@@ -1242,7 +1247,9 @@
 
           // We don't have an access token yet, so use the clientId and state to start the oauth flow
           this.setOauthProps(credentials.clientId, credentials.state);
-          this.getCredentials(callback);
+
+          // On firefox the login dialog appears slightly to the bottom-right if we don't wait here
+          setTimeout(goog.bind(this.getCredentials, this, callback), 0);
         }
       }
     }, this));
