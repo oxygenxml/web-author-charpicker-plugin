@@ -228,7 +228,6 @@
     el.innerHTML = dialogHtml;
 
     if (this.branchesList) {
-      console.log('got thehem');
       displayBranchesSelect.call(this);
     } else {
       var repo = github.getRepo(fileLocation.user, fileLocation.repo);
@@ -355,7 +354,7 @@
         var mergedFile = this.responseText;
         var resultType = this.getResponseHeader('OXY-Merge-Result');
 
-        if (resultType === 'CLEAN' || resultType === 'WITH_CONFLICTS') {
+        if (resultType === 'CLEAN') {
           repo.createCommit(ctx.branch, self.filePath, mergedFile, ctx.message,
             goog.bind(self.onCommitCreated_, self, repo, differentBranch, resultType, cb));
         } else {
@@ -576,8 +575,16 @@
     var ctx = null;
     if (key == 'ok') {
       var el = this.dialog.getElement();
+
+      var userToNotify = sync.util.getURLParameter('gh-notify');
+      var issueNumber = sync.util.getURLParameter('gh-issue');
+
       ctx = {
-        message: el.querySelector('[name="message"]').value,
+        message: (userToNotify ? '@' + userToNotify + ' ' : '') +  // Add @username annotation to let github notify
+                                                                   // the user about this commit
+                 (issueNumber ? '#' + issueNumber + ' ' : '') +    // Add #issueNumber annotation to let github notify
+                                                                   // anyone who is watching the specified issue
+                 el.querySelector('[name="message"]').value,
         branch: el.querySelector('.github-commit-branches-list input').value
       };
 
@@ -589,7 +596,7 @@
       // save ctx it for the fork and commit button
       this.ctx = ctx;
 
-      this.performCommit(ctx, cb)
+      this.performCommit(ctx, cb);
     }
     return ctx;
   };

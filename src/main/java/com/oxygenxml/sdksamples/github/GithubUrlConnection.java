@@ -51,6 +51,9 @@ public class GithubUrlConnection extends FilterURLConnection implements FileBrow
       delegateConnection.setRequestProperty("Authorization", "token " + accessToken);
     }
     this.urlPathPart = urlPathPart;
+    
+    // Setting the version of the API for stability
+    delegateConnection.setRequestProperty("Accept", "application/vnd.github.v3+json");
   }
   
   @Override
