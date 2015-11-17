@@ -57,7 +57,7 @@ textarea.github-input {
 
 #github-oauth-button {
     display: block;
-    border-radius: 6px;
+    border-radius: 4px;
     background-color: #5d5d5d;
     color: #fff;
     border: 1px solid rgba(0,0,0,0.2);
@@ -153,11 +153,10 @@ textarea.github-input {
 }
 
 .gh-commit-info-prolog {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     background-color: lightyellow;
     border: 1px solid #dadab4;
     padding: 6px;
-    border-radius: 4px;
 }
 
 .gh-commit-info-prolog a {
@@ -166,7 +165,7 @@ textarea.github-input {
 
 #gh-commit-diag-content {
     text-align: center;
-    max-width: 480px;
+    max-width: 450px;
     line-height: 1.15em;
     overflow: hidden;
 }
@@ -177,14 +176,13 @@ textarea.github-input {
 
     text-align: center;
     display: inline-block;
-    width: 32.5%;
-    margin: 5px 0.5% 5px 0;
+    max-width: 115px;
+    margin-right: 12px;
     box-sizing: border-box;
-    min-height: 85px;
+    min-height: 103px;
 
     background-color: #fafafa;
     border: 1px solid #aeaeae;
-    border-radius: 4px;
     overflow: hidden;
     cursor: pointer;
 }
@@ -375,5 +373,19 @@ textarea.github-input {
 @media only screen and (max-width: 550px) {
     .github-repo-right {
         display: none;
+    }
+
+    .gh-commit-diag-choice {
+        min-height: inherit;
+        max-width: none;
+        width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 12px;
+    }
+
+    .gh-commit-diag-choice:last-child {
+        margin: 0 auto;
     }
 }
