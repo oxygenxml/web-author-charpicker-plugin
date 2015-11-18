@@ -735,7 +735,25 @@
 
       errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog, sync.api.Dialog.ButtonConfiguration.CANCEL);
 
-      var choices = document.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
+      var dialogElement = errorReporter.errDialog.getElement();
+
+      var commitMerge = dialogElement.querySelector('.gh-commit-merge');
+      if (commitMerge) {
+        commitMerge.style.backgroundImage = 'url("' +
+            sync.util.computeHdpiIcon('../plugin-resources/github-static/git_merge36.png') + '")';
+      }
+      var commitOnBranch = dialogElement.querySelector('.gh-commit-fresh');
+      if (commitOnBranch) {
+        commitOnBranch.style.backgroundImage = 'url("' +
+            sync.util.computeHdpiIcon('../plugin-resources/github-static/git_branch36.png') + '")';
+      }
+      var commitMine = dialogElement.querySelector('.gh-commit-overwrite');
+      if (commitMine) {
+        commitMine.style.backgroundImage = 'url("' +
+            sync.util.computeHdpiIcon('../plugin-resources/github-static/git_commit36.png') + '")';
+      }
+
+      var choices = dialogElement.querySelectorAll('#gh-commit-diag-content > .gh-commit-diag-choice');
       for (var i = 0; i < choices.length; i++) {
         choices[i].addEventListener('click', goog.bind(this.handleCommitIsNotAFastForward, this, err.commit, choices[i].getAttribute('id'), repo));
       }

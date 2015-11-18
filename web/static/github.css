@@ -209,18 +209,6 @@ textarea.github-input {
     background-position-x: 50%;
 }
 
-.gh-commit-fresh {
-    background-image: url('git-branch.svg');
-}
-
-.gh-commit-overwrite {
-    background-image: url('git-commit.svg');
-}
-
-.gh-commit-merge {
-    background-image: url('git-merge.svg');
-}
-
 .gh-commit-cancel {
     background-image: url('x.svg');
 }
