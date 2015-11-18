@@ -1799,7 +1799,7 @@
    * @param {HTMLElement} input The input from which to read the value.
    */
   GithubRepoChooser.prototype.setRepo = function(input) {
-    var repoUrl = input.value;
+    var repoUrl = input.value.trim();
     if (repoUrl != this.repoUrl) {
       this.repoUrl = repoUrl;
       this.dispatchEvent({
