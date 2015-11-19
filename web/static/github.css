@@ -43,6 +43,7 @@ textarea.github-input {
 }
 .github-commit-branches-list .goog-menu-vertical {
     max-height: 138px;
+    padding: 10px 0;
     overflow-x: hidden;
 }
 .github-commit-branches-list .goog-menuitem {
@@ -65,6 +66,15 @@ textarea.github-input {
 }
 .github-commit-shortcut input {
     vertical-align: bottom;
+    float: left;
+}
+@media only screen and (max-width: 450px) {
+    .github-commit-shortcut {
+        line-height: 1.5;
+        max-width: 35%;
+        height: 35px;
+        bottom: 6px;
+    }
 }
 
 #github-oauth-button {
