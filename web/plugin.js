@@ -134,6 +134,7 @@
    * @constructor
    */
   var CommitAction = function(editor, github, fileLocation) {
+    sync.actions.AbstractAction.call(this);
     this.editor = editor;
 
     this.github = github;
@@ -155,6 +156,18 @@
     this.branchesList = null;
   };
   goog.inherits(CommitAction, sync.actions.AbstractAction);
+
+  /**
+   * The key stroke which should invoke the commit action.
+   * @type {string}
+   */
+  CommitAction.SHORTCUT = 'M1 S';
+
+  /**
+   * The id of the commit action used by the actions manager.
+   * @type {string}
+   */
+  CommitAction.ID = 'Github/Commit';
 
   /**
    * Gets the content of the file asynchronously.
@@ -223,7 +236,22 @@
     dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label></div>';
     dialogHtml += '<div><label>Commit on branch:<div class="github-commit-branches-list"><input autocapitalize="none" autocorrect="off" ' +
       'class="github-input" name="branch" type="text" value="' + this.branch + '"/></div></label></div>';
+
+    var checked = localStorage.getItem('github.shortcut');
+    if (checked && checked == 'true' || !checked) {
+      checked = 'checked';
+    } else {
+      checked = '';
+    }
+    var hotKey = goog.userAgent.MAC ? "&#8984;" : "Ctrl";
+
+    dialogHtml +=
+          '<label class="github-commit-shortcut">' +
+            '<input id="gh-commit-sh-check" type="checkbox" ' + checked + '/> Open this dialog with ' + hotKey + '+S' +
+          '</label>';
+
     dialogHtml += '</div>';
+
     var el = this.dialog.getElement();
     el.innerHTML = dialogHtml;
 
@@ -242,6 +270,16 @@
         }
       }, this));
     }
+
+    var shortcutCheckbox = this.dialog.getElement().querySelector('#gh-commit-sh-check');
+    goog.events.listen(shortcutCheckbox, goog.events.EventType.CLICK, goog.bind(function (event) {
+      // Update the shortcut
+      setCommitActionShortcut(this.editor, event.target.checked ? CommitAction.SHORTCUT : null);
+
+      // Save the change in localstorage to make it persistent
+      localStorage.setItem('github.shortcut', event.target.checked);
+    }, this));
+
     return this.dialog;
 
     function displayBranchesSelect() {
@@ -723,7 +761,7 @@
       commitDialog +=
             '<div id="createFork" class="gh-commit-diag-choice">' +
               '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
-              '<div class="gh-commit-diag-title">Commit my changes on a new branch</div>' +
+              '<div class="gh-commit-diag-title">Commit on a new branch</div>' +
             '</div>';
       commitDialog +=
             '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
@@ -991,13 +1029,15 @@
    * @override
    */
   CommitAction.prototype.actionPerformed = function(cb) {
-    if (this.status != 'loading') {
-      this.setStatus('none');
-      var dialog = this.getDialog();
-      var commitFinalizedCallback = goog.bind(this.commitFinalized, this, cb);
-      dialog.onSelect(goog.bind(this.detailsProvided, this, commitFinalizedCallback));
-      this.showDialog();
-    } else {
+    try {
+      if (this.status != 'loading') {
+        this.setStatus('none');
+        var dialog = this.getDialog();
+        var commitFinalizedCallback = goog.bind(this.commitFinalized, this, cb);
+        dialog.onSelect(goog.bind(this.detailsProvided, this, commitFinalizedCallback));
+        this.showDialog();
+      }
+    } finally {
       cb();
     }
   };
@@ -1407,11 +1447,21 @@
             id: 'github-toolbar-button'
           }, 'GitHub');
 
+          var commitShortcut = localStorage.getItem('github.shortcut');
+          if (commitShortcut && commitShortcut == 'true' || !commitShortcut) {
+            // If the commit shortcut is enabled or if we should use the default value
+            commitShortcut = CommitAction.SHORTCUT;
+          } else if (commitShortcut && commitShortcut == 'false') {
+            commitShortcut = null;
+          }
+
+          console.log(commitShortcut);
+
           var commitAction = new CommitAction(editor, github, fileLocation);
           commitAction.setGithubToolbarButton(githubToolbarButton);
 
           // Add the github commit and logout actions to the main toolbar
-          var commitActionId = installCommitAction(editor, commitAction);
+          var commitActionId = installCommitAction(editor, commitAction, commitShortcut);
           var logOutActionId = installLogoutAction(editor, new LogOutAction(editor));
 
           addToolbarToBuiltinToolbar(e.actionsConfiguration, {
@@ -1592,20 +1642,24 @@
    *
    * @param {sync.api.Editor} editor The editor
    * @param {sync.actions.AbstractAction} commitAction The commit-to-github action.
+   * @param {string} shortcut String representing the key combination which triggers this action
    * @returns {string}
    */
-  function installCommitAction(editor, commitAction) {
-    // Disable the Ctrl+S shortcut.
-    var noopAction = new sync.actions.NoopAction('M1 S');
-    editor.getActionsManager().registerAction('DoNothing', noopAction);
-
-    // Remove the save action from the toolbar
+  function installCommitAction(editor, commitAction, shortcut) {
+    // Remove the save action from the toolbar (remove the ctrl + s == save document shortcut)
     editor.getActionsManager().unregisterAction('Author/Save');
 
-    var actionId = 'Github/Commit';
-    editor.getActionsManager().registerAction(actionId, commitAction);
+    editor.getActionsManager().registerAction(CommitAction.ID, commitAction, shortcut);
+    return CommitAction.ID;
+  }
 
-    return actionId;
+  /**
+   * Sets the key stroke shortcut for the commit action.
+   * @param {sync.api.Editor} editor The editor.
+   * @param {string} shortcut String representing the key-stroke which invokes the commit action.
+   */
+  function setCommitActionShortcut(editor, shortcut) {
+    editor.getActionsManager().setActionShortcut(CommitAction.ID, shortcut);
   }
 
   /**

@@ -20,7 +20,7 @@
 .github-commit-branches-list input{
     width: 100%;
     padding: 0 3px;
-    background-color: #FAFAFA;
+    background-color: #F7F7F7;
     font-family: Roboto, arial, sans-serif;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -53,6 +53,18 @@ textarea.github-input {
         font-size: 1.15em !important;
         padding: 5px 0;
     }
+}
+.github-commit-shortcut {
+    max-width: 47%;
+    color: #909090;
+    font-size: 0.7em;
+    height: 20px;
+    position: absolute;
+    bottom: 21px;
+    left: 21px;
+}
+.github-commit-shortcut input {
+    vertical-align: bottom;
 }
 
 #github-oauth-button {
@@ -172,17 +184,16 @@ textarea.github-input {
 
 .gh-commit-diag-choice {
     vertical-align: top;
-    padding: 5px 0 0 0;
+    padding: 5px 0;
 
     text-align: center;
     display: inline-block;
     max-width: 115px;
     margin-right: 12px;
     box-sizing: border-box;
-    min-height: 103px;
 
-    background-color: #fafafa;
-    border: 1px solid #aeaeae;
+    background-color: #F7F7F7;
+    border: 1px solid #CEC8C8;
     overflow: hidden;
     cursor: pointer;
 }
@@ -196,7 +207,7 @@ textarea.github-input {
 }
 
 .gh-commit-diag-choice.gh-default-choice {
-    border: 1px solid #204d74;
+    border: 1px solid #FFBC70;
 }
 
 .gh-commit-diag-icon {
