@@ -30,6 +30,9 @@ import ro.sync.merge.MergeResult.ResultType;
  */
 public class GitHubOauthServlet extends WebappServletPluginExtension{
   
+  /**
+   * The name of the http-header in which we'll show the commit result type.
+   */
   private static final String MERGE_RESULT_HEADER = "OXY-Merge-Result";
 
   /**
@@ -171,9 +174,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
   }
   
   /**
-   * Merges the 
-   * @param httpRequest
-   * @param httpResponse
+   * Returns a string representing the "threewaymerge" result of three strings sent from the client.
+   * @param httpRequest The HTTP request object
+   * @param httpResponse The HTTP response object
    * @throws IOException
    */
   private void handleGithubMergeCommit(HttpServletRequest httpRequest,
