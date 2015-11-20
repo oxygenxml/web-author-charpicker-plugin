@@ -398,3 +398,8 @@ textarea.github-input {
         margin: 0 auto;
     }
 }
+.gh-location-tooltip {
+    padding: 10px;
+    min-width: inherit;
+    line-height: 1.25em;
+}

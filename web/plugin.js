@@ -1442,6 +1442,23 @@
         loadingOptions.content = fileContent;
         editor.load(loadingOptions);
 
+        goog.events.listenOnce(workspace, sync.api.Workspace.EventType.EDITOR_LOADED, function(e) {
+          try {
+            var tooltip = new goog.ui.AdvancedTooltip(document.querySelector('#titleDiv'));
+            tooltip.setHtml(
+                '<div class="tooltip-hovercard gh-location-tooltip">' +
+                  'Github owner: ' + fileLocation.user + '<br/>' +
+                  'Repository: ' + fileLocation.repo + '<br/>' +
+                  'Branch: ' + fileLocation.branch + '<br/>' +
+                  'Path: ' + fileLocation.filePath +
+                '</div>'
+            );
+            tooltip.setHotSpotPadding(new goog.math.Box(20, 20, 20, 20));
+          } catch (e) {
+            console.log('Failed to set the document title tooltip');
+          }
+        });
+
         goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
           var githubToolbarButton = goog.dom.createDom('div', {
             id: 'github-toolbar-button'
@@ -1454,8 +1471,6 @@
           } else if (commitShortcut && commitShortcut == 'false') {
             commitShortcut = null;
           }
-
-          console.log(commitShortcut);
 
           var commitAction = new CommitAction(editor, github, fileLocation);
           commitAction.setGithubToolbarButton(githubToolbarButton);
