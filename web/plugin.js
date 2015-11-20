@@ -1447,13 +1447,17 @@
             var tooltip = new goog.ui.AdvancedTooltip(document.querySelector('#titleDiv'));
             tooltip.setHtml(
                 '<div class="tooltip-hovercard gh-location-tooltip">' +
-                  'Github owner: ' + fileLocation.user + '<br/>' +
-                  'Repository: ' + fileLocation.repo + '<br/>' +
-                  'Branch: ' + fileLocation.branch + '<br/>' +
-                  'Path: ' + fileLocation.filePath +
+                  'Document Location:' +
+                  '<div>' +
+                    'Github owner: ' + fileLocation.user + '<br/>' +
+                    'Repository: ' + fileLocation.repo + '<br/>' +
+                    'Branch: ' + fileLocation.branch + '<br/>' +
+                    'Path: ' + fileLocation.filePath +
+                  '</div>' +
                 '</div>'
             );
             tooltip.setHotSpotPadding(new goog.math.Box(20, 20, 20, 20));
+            tooltip.setShowDelayMs(100);
           } catch (e) {
             console.log('Failed to set the document title tooltip');
           }
