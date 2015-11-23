@@ -1447,7 +1447,7 @@
             var tooltip = new goog.ui.AdvancedTooltip(document.querySelector('#titleDiv'));
             tooltip.setHtml(
                 '<div class="tooltip-hovercard gh-location-tooltip">' +
-                  'Document Location:' +
+                  'Document Information:' +
                   '<div>' +
                     'GitHub Owner: ' + fileLocation.user + '<br/>' +
                     'Repository: ' + fileLocation.repo + '<br/>' +
