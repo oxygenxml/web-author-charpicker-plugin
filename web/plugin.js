@@ -1449,7 +1449,7 @@
                 '<div class="tooltip-hovercard gh-location-tooltip">' +
                   'Document Location:' +
                   '<div>' +
-                    'Github owner: ' + fileLocation.user + '<br/>' +
+                    'GitHub Owner: ' + fileLocation.user + '<br/>' +
                     'Repository: ' + fileLocation.repo + '<br/>' +
                     'Branch: ' + fileLocation.branch + '<br/>' +
                     'Path: ' + fileLocation.filePath +
