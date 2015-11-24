@@ -247,7 +247,7 @@
 
     dialogHtml +=
           '<label class="github-commit-shortcut">' +
-            '<input id="gh-commit-sh-check" type="checkbox" ' + checked + '/> Open this dialog with ' + hotKey + '+S' +
+            '<input id="gh-commit-sh-check" tabIndex="-1" type="checkbox" ' + checked + '/> Open this dialog with ' + hotKey + '+S' +
           '</label>';
 
     dialogHtml += '</div>';
