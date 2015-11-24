@@ -325,6 +325,7 @@ textarea.github-input {
 .github-repo-ac > input {
     border-radius: 0;
     width: 100%;
+    background-color: white;
 }
 .github-repo-ac > .ac-renderer {
     max-height: 200px;
