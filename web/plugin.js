@@ -280,6 +280,16 @@
       localStorage.setItem('github.shortcut', event.target.checked);
     }, this));
 
+    var ctrlEnterCommitKey = goog.events.listen(this.dialog.getElement().querySelector('textarea[name=message]'), goog.events.EventType.KEYUP,
+        goog.bind(function (e) {
+          if (e.keyCode === goog.events.KeyCodes.ENTER && e.ctrlKey) {
+            goog.events.unlistenByKey(ctrlEnterCommitKey);
+            e.stopPropagation();
+            this.dialog.dispatchEvent(new goog.ui.Dialog.Event('ok', 'Ok'));
+            this.dialog.hide();
+          }
+        }, this));
+
     return this.dialog;
 
     function displayBranchesSelect() {
