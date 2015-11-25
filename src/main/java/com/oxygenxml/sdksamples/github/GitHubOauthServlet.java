@@ -208,6 +208,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         httpResponse.setHeader(MERGE_RESULT_HEADER, "FAILED");
       }
       
+      httpResponse.setCharacterEncoding("UTF-8");
       httpResponse.setStatus(HttpServletResponse.SC_OK);
       httpResponse.getWriter().write(mergedString);
       httpResponse.flushBuffer();
