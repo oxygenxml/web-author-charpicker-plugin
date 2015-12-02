@@ -30,10 +30,12 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   
   @Override
   public void init() throws ServletException {
+    // Calling super init to enable the automatic saving of options on disk.
     super.init();
  
     Map<String, String> defaultOptions = new HashMap<String, String>();
     
+    // Set as default values the initial values from GIthubOauthServlet
     if (GitHubOauthServlet.clientId != null) {
       defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);  
     }
@@ -41,6 +43,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
       defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
     }
     
+    // Setting the default options, otherwise the doDelete method won't do anything.
     setDefaultOptions(defaultOptions);
     
     // If the options are set by the user in the admin page they will be returned from getOption.
@@ -73,10 +76,13 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+    // Calling super doDelete to set the options and save them on disk
     super.doDelete(req, resp);
+    
     GitHubOauthServlet.clientId = getDefaultOptions().get(CLIENT_ID);
     GitHubOauthServlet.clientSecret = getDefaultOptions().get(CLIENT_SECRET);
     
+    // The client_id and client_secret have changed so we need all the users to re-login.
     GitHubPlugin.accessTokens.clear();
   }
   
@@ -132,7 +138,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
             + "</form>"
           + "</div>"
           
-          // Load the logic for this config page
+          // Load the logic for this config page (This is optional, if we didn't add this the options would be selected using the name attribute of the inputs)
           + "<script src='../plugin-resources/github-static/github-config.js'></script>";
   }
   

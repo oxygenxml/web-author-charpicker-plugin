@@ -1,5 +1,8 @@
-// Add a listener for communication with the admin page
-window.addEventListener('message', function (event) {
+// Set the onmessage listener to handle the setting of new options.
+// We MUST use the onmessage method (don't use addEventListener) to everwrite the default handler which automatically takes the
+// options from the form using the input name attribute as the name for options.
+window.onmessage = function (event) {
+
   var action = event.data.action;
   var origin = event.origin;
   
@@ -58,4 +61,4 @@ window.addEventListener('message', function (event) {
     xhr.send('');
     break;
   }
-});
+};
