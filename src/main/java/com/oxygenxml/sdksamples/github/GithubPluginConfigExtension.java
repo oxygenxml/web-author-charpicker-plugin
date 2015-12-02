@@ -129,17 +129,14 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
             + "<form style='text-align:left;line-height: 1.7em;font-weight:bold;color:#505050;'>"
               + "<label style='margin-top:6px;display:block;overflow:hidden'>"
                 + "Client ID: "
-                + "<input placeholder='Client ID' name='client_id' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientId + "'/>"
+                + "<input placeholder='Client ID' name='" + CLIENT_ID + "' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientId + "'/>"
               + "</label>"
               + "<label style='margin-top:6px;display:block;overflow:hidden'>"
                 + "Client Secret:"
-                + "<input placeholder='Client Secret' name='client_secret' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
+                + "<input placeholder='Client Secret' name='" + CLIENT_SECRET + "' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
               + "</label>"
             + "</form>"
-          + "</div>"
-          
-          // Load the logic for this config page (This is optional, if we didn't add this the options would be selected using the name attribute of the inputs)
-          + "<script src='../plugin-resources/github-static/github-config.js'></script>";
+          + "</div>";
   }
   
   /**
@@ -153,6 +150,5 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     } else {
       return "{\"client_id\":\"\",\"client_secret\":\"\"}";
     }
-    
   }
 }
