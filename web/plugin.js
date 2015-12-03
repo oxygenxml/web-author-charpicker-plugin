@@ -1902,7 +1902,7 @@
     var latestUrl = localStorage.getItem('github.latestUrl');
     sync.api.FileBrowsingDialog.call(this, {
       initialUrl: latestUrl,
-      rootUrl: this.extractRootUrl_(latestUrl)
+      root: this.extractRootUrl_(latestUrl)
     });
     this.branchesForUrl = {};
     // The model of the selected repository in editing mode.
