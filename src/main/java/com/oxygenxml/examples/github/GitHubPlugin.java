@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.github;
+package com.oxygenxml.examples.github;
 
 import java.io.File;
 import java.util.HashMap;

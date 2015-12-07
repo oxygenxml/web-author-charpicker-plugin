@@ -1,13 +1,6 @@
 <component>
 	<fileSets>
 		<fileSet>
-			<directory>etc</directory>
-			<outputDirectory>/etc</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
 			<directory>web</directory>
 			<outputDirectory>/web</outputDirectory>
 			<includes>
@@ -29,11 +22,6 @@
 		<file>
 			<source>README.md</source>
 			<outputDirectory>/</outputDirectory>
-		</file>
-		<file>
-			<source>extension.xml</source>
-			<outputDirectory>/</outputDirectory>
-			<filtered>true</filtered>
 		</file>
 	</files>
 

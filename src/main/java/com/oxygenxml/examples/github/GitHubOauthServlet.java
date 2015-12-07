@@ -1,4 +1,4 @@
-package com.oxygenxml.sdksamples.github;
+package com.oxygenxml.examples.github;
 
 import java.io.IOException;
 import java.io.InputStream;

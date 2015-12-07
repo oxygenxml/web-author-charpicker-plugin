@@ -3,22 +3,22 @@
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
 
 <plugin
- id="com.oxygenxml.sdksamples.github.GitHubPlugin"
+ id="com.oxygenxml.examples.github.GitHubPlugin"
  name="GitHubPlugin"
  description="A plugin to enable the editing and committing of files from a GitHub repository."
  version="${project.version}"
  vendor="SyncRO"
- class="com.oxygenxml.sdksamples.github.GitHubPlugin">
+ class="com.oxygenxml.examples.github.GitHubPlugin">
  <runtime>
   <librariesFolder name="lib"/>
   <library name="target/classes"/>
  </runtime>
  
  <extension type="URLHandler" 
-    class="com.oxygenxml.sdksamples.github.GithubURLStreamHandlerPluginExtension"/>
+    class="com.oxygenxml.examples.github.GithubURLStreamHandlerPluginExtension"/>
  <extension type="WebappServlet" 
-    class="com.oxygenxml.sdksamples.github.GitHubOauthServlet"/>
+    class="com.oxygenxml.examples.github.GitHubOauthServlet"/>
  <extension type="WebappStaticResourcesFolder" path="web/static/" href="github-static"/>
  <extension type="WebappServlet" role="config"
-    class="com.oxygenxml.sdksamples.github.GithubPluginConfigExtension"/>
+    class="com.oxygenxml.examples.github.GithubPluginConfigExtension"/>
 </plugin>
