@@ -1434,9 +1434,7 @@
         var head = result.head;
 
         // Show a spinner while the document is loading.
-        workspace.docContainer.innerHTML =
-          '<img class="document-loading" src="' + (sync.util.isDevMode() ? '' : sync.api.Version + '-' ) +
-          'lib/jquery-mobile/images/ajax-loader.gif">';
+        sync.util.showDocumentLoading(workspace.docContainer);
 
         documentSha = file.sha;
         documentCommit = head.sha;
