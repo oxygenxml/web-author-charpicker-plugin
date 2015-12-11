@@ -76,7 +76,7 @@
     if (!this.dialog) {
       this.dialog = workspace.createDialog();
       this.dialog.setTitle('Log out');
-      this.dialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.YES_NO);
+      this.dialog.setButtonConfiguration([{key: 'yes', caption: 'Logout'}, {key: 'no', caption: 'Cancel'}]);
 
       var dialogHtml = '<div>';
       dialogHtml += '<div>Are you sure you want to log-out? All uncommitted changes will be lost.</div>';
@@ -227,6 +227,7 @@
   CommitAction.prototype.getDialog = function() {
     if (!this.dialog) {
       this.dialog = workspace.createDialog();
+      this.dialog.setButtonConfiguration([{key: 'ok', caption: 'Commit'}, {key: 'cancel', caption: 'Cancel'}]);
     }
 
     // Update the innerHTML every time because it depends on this.branch which might change
@@ -1949,7 +1950,6 @@
     var url = this.getCurrentFolderUrl();
     if (url) {
       element.title = "Github repository";
-      element.style.position = 'relative';
       goog.dom.classlist.add(element, 'vertical-align-children');
       goog.dom.classlist.add(element, 'github-browsing-repo-preview');
       var details = url.match("github://getFileContent/([^/]*)/([^/]*)/([^/]*)/.*");
@@ -1960,7 +1960,9 @@
       button.title = "Edit GitHub repository and branch";
       goog.dom.appendChild(element, button);
       goog.events.listen(button, goog.events.EventType.CLICK,
-        goog.bind(this.switchToRepoConfig, this, element))
+        goog.bind(this.switchToRepoConfig, this, element));
+
+      this.dialog.setPreferredSize(null, 500);
     }
   };
 
@@ -1985,6 +1987,8 @@
     var previewArea = element.querySelector('.github-repo-preview-area');
     goog.events.listen(this.repoChooser, 'github-repo-chosen',
       goog.bind(this.repositoryChosen_, this, previewArea));
+
+    this.dialog.setPreferredSize(null, 300);
   };
 
   /**
