@@ -160,8 +160,9 @@ textarea.github-input {
 #github-toolbar-button.loading {
 	content: '';
 	width: 26px;
-    height: 24px;   
-	background-image: url('spinner.svg');
+    height: 24px;
+    background-image: url('spinner.svg');
+    background-size: contain;
 }
 #gh-settings-branch-select.github-loading {
     background-repeat: no-repeat;
@@ -313,7 +314,11 @@ textarea.github-input {
 .github-repo-preview-area {
     position: relative;
     width: 100%;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
+
     min-height: 150px;
     border: 1px solid #c8c1c1;
     padding: 5px;
