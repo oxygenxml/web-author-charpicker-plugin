@@ -35,21 +35,23 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
  
     Map<String, String> defaultOptions = new HashMap<String, String>();
     
-    // Set as default values the initial values from GIthubOauthServlet
-    if (GitHubOauthServlet.clientId != null) {
-      defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);  
-    }
-    if (GitHubOauthServlet.clientSecret != null) {
-      defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
-    }
+    // Set the initial values from GithubOauthServlet as default values.
+    defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);  
+    defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
     
     // Setting the default options, otherwise the doDelete method won't do anything.
     setDefaultOptions(defaultOptions);
     
+    String clientId = getOption(CLIENT_ID, GitHubOauthServlet.clientId);
+    String clientSecret = getOption(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
+    
     // If the options are set by the user in the admin page they will be returned from getOption.
     // And we will overwrite the ones already set from the github-plugin.properties file.
-    setOption(CLIENT_ID, getOption(CLIENT_ID, GitHubOauthServlet.clientId));
-    setOption(CLIENT_SECRET, getOption(CLIENT_SECRET, GitHubOauthServlet.clientSecret));
+    setOption(CLIENT_ID, clientId);
+    setOption(CLIENT_SECRET, clientSecret);
+    
+    GitHubOauthServlet.clientId = clientId;
+    GitHubOauthServlet.clientSecret = clientSecret;
     
     try {
       saveOptions();
