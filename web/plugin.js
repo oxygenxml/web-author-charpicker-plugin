@@ -1194,10 +1194,11 @@
    *
    * @param {String=} clientId The Github client_id property
    * @param {String=} state The Github state property
+   * @param {String=} apiUrl The url prefix of the GitHub api.
    */
-  GitHubLoginManager.prototype.setOauthProps = function (clientId, state) {
+  GitHubLoginManager.prototype.setOauthProps = function (clientId, state, apiUrl) {
     var scopes = 'public_repo,repo';
-    if (clientId && state) {
+    if (clientId && state && apiUrl) {
       this.oauthProps = {
         clientId: clientId,
         state: state,
@@ -1290,7 +1291,8 @@
         if (credentials.accessToken) {
           localStorage.setItem('github.credentials', JSON.stringify({
             token: credentials.accessToken,
-            auth: "oauth"
+            auth: "oauth",
+            apiUrl: credentials.apiUrl
           }));
 
           // Update our github instance with the potentially new accessToken
@@ -1305,7 +1307,7 @@
               return;
           } else {
             // If we got new oauthProps we will update them and call the callback
-            this.setOauthProps(credentials.clientId, credentials.state);
+            this.setOauthProps(credentials.clientId, credentials.state, credentials.apiUrl);
           }
 
           callback(github);
@@ -1315,7 +1317,7 @@
           localStorage.removeItem('github.credentials');
 
           // We don't have an access token yet, so use the clientId and state to start the oauth flow
-          this.setOauthProps(credentials.clientId, credentials.state);
+          this.setOauthProps(credentials.clientId, credentials.state, credentials.apiUrl);
 
           // On firefox the login dialog appears slightly to the bottom-right if we don't wait here
           setTimeout(goog.bind(this.getCredentials, this, callback), 0);
@@ -1573,6 +1575,7 @@
         var response = JSON.parse(xhrRequest.responseText);
 
         callback(null, {
+          apiUrl: response.api_url,
           accessToken: response.access_token,
           clientId: response.client_id,
           state: response.state,

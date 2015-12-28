@@ -59,6 +59,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * Constant for the github oauth error key
    */
   private static final String ERROR = "error";
+
   
   /** 
    * The Github clientId
@@ -68,6 +69,11 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * The Github clientSecret
    */
   static String clientSecret = null;
+  /**
+   * The prefix for all api requests. 
+   * If not set it will be: https://api.github.com.
+   */
+  static String apiUrl = null;
   
   @Override
   public String getPath() {
@@ -329,7 +335,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     if (accessToken != null && tokenIsStillValid(accessToken)) {
       GitHubPlugin.accessTokens.put(session.getId(), accessToken);
         
-      httpResponse.getWriter().write("{\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
+      httpResponse.getWriter().write("{\"api_url\":\"" + apiUrl + "\",\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
       return true;
     } else {
@@ -396,7 +402,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     } else {
       try {
         logger.debug("SENDING CLIENT_ID");
-        httpResponse.getWriter().write("{\"client_id\":\"" + clientId + "\",\"state\":\"" + state + "\"}");
+        httpResponse.getWriter().write("{\"client_id\":\"" + clientId + "\",\"state\":\"" + state + "\",\"api_url\":\"" + apiUrl + "\"}");
         httpResponse.flushBuffer();
       } catch (IOException e) {
         logger.error(e.getMessage());

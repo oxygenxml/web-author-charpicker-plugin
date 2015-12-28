@@ -21,12 +21,21 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   /**
    * The name of the client id options property
    */
-  private final String CLIENT_ID = "client_id";
+  private final String CLIENT_ID = "github.client_id";
   
   /**
    * The name of the client secret options property
    */
-  private final String CLIENT_SECRET = "client_secret";
+  private final String CLIENT_SECRET = "github.client_secret";
+  
+  /**
+   * The name of the apiUrl option property.
+   */
+  private final String API_URL = "github.api_url";
+  /**
+   * The default value for the apiUrl.
+   */
+  private final String defaultApiUrl = "https://api.github.com";
   
   @Override
   public void init() throws ServletException {
@@ -38,20 +47,19 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     // Set the initial values from GithubOauthServlet as default values.
     defaultOptions.put(CLIENT_ID, GitHubOauthServlet.clientId);  
     defaultOptions.put(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
+    // By default this plugin will connect to github.com.
+    defaultOptions.put(API_URL, defaultApiUrl);
     
     // Setting the default options, otherwise the doDelete method won't do anything.
     setDefaultOptions(defaultOptions);
     
     String clientId = getOption(CLIENT_ID, GitHubOauthServlet.clientId);
     String clientSecret = getOption(CLIENT_SECRET, GitHubOauthServlet.clientSecret);
-    
-    // If the options are set by the user in the admin page they will be returned from getOption.
-    // And we will overwrite the ones already set from the github-plugin.properties file.
-    setOption(CLIENT_ID, clientId);
-    setOption(CLIENT_SECRET, clientSecret);
+    String apiUrl = getOption(API_URL, defaultApiUrl);
     
     GitHubOauthServlet.clientId = clientId;
     GitHubOauthServlet.clientSecret = clientSecret;
+    GitHubOauthServlet.apiUrl = apiUrl;
     
     try {
       saveOptions();
@@ -83,18 +91,17 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     
     GitHubOauthServlet.clientId = getDefaultOptions().get(CLIENT_ID);
     GitHubOauthServlet.clientSecret = getDefaultOptions().get(CLIENT_SECRET);
+    GitHubOauthServlet.apiUrl = getDefaultOptions().get(API_URL);
     
     // The client_id and client_secret have changed so we need all the users to re-login.
     GitHubPlugin.accessTokens.clear();
   }
   
   /**
-   * Overriding to make sure that the client_id and client_secret are updated in the GithubOauthServlet as well
+   * Overriding to make sure that the apiUrl, client_id and client_secret are updated in the GithubOauthServlet as well
    */
   @Override
   protected void setOption(String key, String value) {
-    super.setOption(key, value);
-
     if (CLIENT_ID.equals(key)) {
       GitHubOauthServlet.clientId = value;
     }
@@ -102,6 +109,15 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     if (CLIENT_SECRET.equals(key)) {
       GitHubOauthServlet.clientSecret = value;
     }
+    
+    if (API_URL.equals(key)) {
+      if (value.endsWith("/")) {
+        value = value.substring(0, value.length() - 1);
+      }
+      GitHubOauthServlet.apiUrl = value;
+    }
+    
+    super.setOption(key, value);
   }
   
   /**
@@ -118,6 +134,11 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     String clientSecret = GitHubOauthServlet.clientSecret;
     if (clientSecret == null) {
       clientSecret = "";
+    }
+
+    String apiUrl = GitHubOauthServlet.apiUrl;
+    if (apiUrl == null) {
+      apiUrl = "";
     }
     
     return "<div style='font-family: robotolight, Arial, Helvetica, sans-serif;font-size:0.9em;font-weight: lighter;'>"
@@ -137,6 +158,10 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
                 + "Client Secret:"
                 + "<input placeholder='Client Secret' name='" + CLIENT_SECRET + "' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + clientSecret +"'/>"
               + "</label>"
+              + "<label style='margin-top:6px;display:block;overflow:hidden'>"
+                + "Api URL: <span style='font-weight:normal;font-size:0.85em'>(Your GitHub Enterprise deployment URL)</span>"
+                + "<input placeholder='Change this only if you are using GitHub Enterprise.' name='" + API_URL + "' type='text' style='color:#606060;background-color:#FAFAFA;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;width:100%;border-radius:4px;border:1px solid #C8C1C1;padding:6px 4px' value='" + apiUrl +"'/>"
+              + "</label>"
             + "</form>"
           + "</div>";
   }
@@ -147,10 +172,10 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    */
   @Override
   public String getOptionsJson() {
-    if (GitHubOauthServlet.clientId != null && GitHubOauthServlet.clientSecret != null) {
-      return "{\"client_id\":\"" + GitHubOauthServlet.clientId + "\",\"client_secret\":\"" + GitHubOauthServlet.clientSecret + "\"}";  
-    } else {
-      return "{\"client_id\":\"\",\"client_secret\":\"\"}";
-    }
+    return "{" + 
+      "\"" + API_URL + "\":\"" + GitHubOauthServlet.apiUrl != null ? GitHubOauthServlet.apiUrl : "" + "\"," + 
+      "\"" + CLIENT_ID + "\":\"" + GitHubOauthServlet.clientId != null ? GitHubOauthServlet.clientId : "" + "\"," + 
+      "\"" + CLIENT_SECRET + "\":\"" + GitHubOauthServlet.clientSecret != null ? GitHubOauthServlet.clientSecret : "" + "\""
+    + "}";
   }
 }
