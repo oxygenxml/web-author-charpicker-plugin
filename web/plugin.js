@@ -234,8 +234,12 @@
     this.dialog.setTitle('Commit on GitHub');
 
     var dialogHtml = '<div class="github-commit-dialog">';
-    dialogHtml += '<div><label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label></div>';
-    dialogHtml += '<div><label>Commit on branch:<div class="github-commit-branches-list"><input autocapitalize="none" autocorrect="off" ' +
+    dialogHtml +=
+        '<div class="gh-commit-message-details">' +
+          '<label>Commit Message: <textarea class="github-input" name="message" autofocus="autofocus"></textarea></label>' +
+          '<select class="commit-history"></select>' +
+        '</div>';
+    dialogHtml += '<div><label>Commit on branch:<div class="branches-list github-commit-combo-list"><input autocapitalize="none" autocorrect="off" ' +
       'class="github-input" name="branch" type="text" value="' + this.branch + '"/></div></label></div>';
 
     var checked = localStorage.getItem('github.shortcut');
@@ -244,7 +248,7 @@
     } else {
       checked = '';
     }
-    var hotKey = goog.userAgent.MAC ? "&#8984;" : "Ctrl";
+    var hotKey = goog.userAgent.MAC || goog.userAgent.IPAD || goog.userAgent.IPHONE ? "&#8984;" : "Ctrl";
 
     dialogHtml +=
           '<label class="github-commit-shortcut">' +
@@ -291,10 +295,12 @@
           }
         }, this));
 
+    this.setupCommitHistory_();
+
     return this.dialog;
 
     function displayBranchesSelect() {
-      var container = this.dialog.getElement().querySelector('.github-commit-branches-list');
+      var container = this.dialog.getElement().querySelector('.branches-list');
       container.innerHTML = '';
 
       var branchEditableCombo = new sync.view.EditableCombo(this.branchesList);
@@ -304,6 +310,38 @@
     }
   };
 
+  /**
+   * Adds a commit history select element to the commit dialog.
+   * @private
+   */
+  CommitAction.prototype.setupCommitHistory_ = function () {
+    var commitHistory = localStorage.getItem('github.commit.history');
+    commitHistory = commitHistory ? JSON.parse(commitHistory) : null;
+
+    var commitHistoryElement = this.dialog.getElement().querySelector('.commit-history');
+    if (commitHistory && commitHistory.length > 0) {
+      commitHistoryElement.style.display = 'initial';
+      commitHistoryElement.innerHTML = '';
+
+      // Adding an id to the first option to make sure it's displayed as the first
+      // selected element even if it has display: none
+      commitHistoryElement.add(goog.dom.createDom('option', {'id': 'commit-history-msg'},
+          'Choose a previously entered comment'));
+      for (var i = 0; i < commitHistory.length; i++) {
+        // The value of option must be a string otherwise an exception is thrown
+        commitHistoryElement.add(goog.dom.createDom('option', null, "" + commitHistory[i]));
+      }
+
+      goog.events.listen(commitHistoryElement, goog.events.EventType.CHANGE, goog.bind(function (e) {
+        if (commitHistoryElement.selectedIndex !== 0) {
+          this.dialog.getElement().querySelector('textarea[name=message]').value =
+              commitHistoryElement.options[commitHistoryElement.selectedIndex].text;
+        }
+      }, this));
+    } else {
+      commitHistoryElement.style.display = 'none';
+    }
+  };
 
   /**
    * Tries to commit if all the details needed for a commit were gathered.
@@ -632,13 +670,16 @@
       var userToNotify = sync.util.getURLParameter('gh-notify');
       var issueNumber = sync.util.getURLParameter('gh-issue');
 
+      var commitMessage = el.querySelector('[name="message"]').value;
+      this.addCommitMessageToHistory_(commitMessage);
+
       ctx = {
         message: (userToNotify ? '@' + userToNotify + ' ' : '') +  // Add @username annotation to let github notify
                                                                    // the user about this commit
                  (issueNumber ? '#' + issueNumber + ' ' : '') +    // Add #issueNumber annotation to let github notify
                                                                    // anyone who is watching the specified issue
-                 el.querySelector('[name="message"]').value,
-        branch: el.querySelector('.github-commit-branches-list input').value
+                 commitMessage,
+        branch: el.querySelector('.branches-list input').value
       };
 
       // A branch must be provided!
@@ -652,6 +693,32 @@
       this.performCommit(ctx, cb);
     }
     return ctx;
+  };
+
+  /**
+   * Adds the given commit message to localstorage for later use.
+   * @param {string} commitMessage The commit message to add.
+   * @private
+   */
+  CommitAction.prototype.addCommitMessageToHistory_ = function (commitMessage) {
+    if (!commitMessage) {
+      return;
+    }
+    var commitHistory = localStorage.getItem('github.commit.history');
+    commitHistory = commitHistory ? JSON.parse(commitHistory) : [];
+
+    var commitMessageIndex = commitHistory.indexOf(commitMessage);
+    if (commitMessageIndex === -1) {
+      commitHistory.unshift(commitMessage);
+    } else {
+      // If this message was used before we move it at the beginning of the array;
+      commitHistory.splice(commitMessageIndex, 1);
+      commitHistory.unshift(commitMessage);
+    }
+    if (commitHistory.length > 10) {
+      commitHistory.pop();
+    }
+    localStorage.setItem('github.commit.history', JSON.stringify(commitHistory));
   };
 
   /**
@@ -764,18 +831,18 @@
 
       if (result.resultType == 'CLEAN') {
         commitDialog +=
-            '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice">' +
+            '<div id="commitAnyway" class="gh-commit-diag-choice gh-default-choice" title="All changes will be merged into one file and commited afterwards.">' +
               '<span class="gh-commit-diag-icon gh-commit-merge"></span>' +
               '<div class="gh-commit-diag-title">Merge and commit</div>' +
             '</div>';
       }
       commitDialog +=
-            '<div id="createFork" class="gh-commit-diag-choice">' +
+            '<div id="createFork" class="gh-commit-diag-choice" title="A new branch will be created and this document will be created on that branch.">' +
               '<span class="gh-commit-diag-icon gh-commit-fresh"></span>' +
               '<div class="gh-commit-diag-title">Commit on a new branch</div>' +
             '</div>';
       commitDialog +=
-            '<div id="overwriteChanges" class="gh-commit-diag-choice">' +
+            '<div id="overwriteChanges" class="gh-commit-diag-choice" title="Only your changes will be commited, discarding any other changes.">' +
               '<span class="gh-commit-diag-icon gh-commit-overwrite"></span>' +
               '<div class="gh-commit-diag-title">Commit only my changes</div>' +
             '</div>';

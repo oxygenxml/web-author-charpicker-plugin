@@ -16,8 +16,11 @@
     height: 16px;
     vertical-align: middle;
 }
+.gh-commit-message-details {
+    line-height: normal;
+}
 .github-input,
-.github-commit-branches-list input{
+.github-commit-combo-list input{
     width: 100%;
     padding: 0 3px;
     background-color: #F7F7F7;
@@ -28,29 +31,30 @@
     line-height: initial;
 }
 textarea.github-input {
+    margin-top: 5px;
     padding: 4px 3px;
     min-height: 80px;
     max-width: 100%;
 }
-.github-commit-branches-list {
+.github-commit-combo-list {
     line-height: initial;
 }
-.github-commit-branches-list span.goog-combobox-button {
+.github-commit-combo-list span.goog-combobox-button {
     display: none;
 }
-.github-commit-branches-list span.goog-combobox {
+.github-commit-combo-list span.goog-combobox {
     border: none;
 }
-.github-commit-branches-list .goog-menu-vertical {
+.github-commit-combo-list .goog-menu-vertical {
     max-height: 138px;
     padding: 10px 0;
     overflow-x: hidden;
 }
-.github-commit-branches-list .goog-menuitem {
+.github-commit-combo-list .goog-menuitem {
     padding: 2px 2px 2px 8px;
 }
 @media only screen and (max-device-width : 1024px) {
-    .github-commit-branches-list .goog-menuitem-content {
+    .github-commit-combo-list .goog-menuitem-content {
         font-size: 1.15em !important;
         padding: 5px 0;
     }
@@ -416,4 +420,12 @@ textarea.github-input {
     line-height: 1.35em;
     padding: 2px 7px;
     font-weight: normal;
+}
+.commit-history {
+    width: 100%;
+    padding: 0;
+}
+/* Hide the "Choose a previously entered comment" option */
+.commit-history > option:first-child {
+    display: none;
 }
