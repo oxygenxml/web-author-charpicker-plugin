@@ -91,8 +91,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       try {
         properties.load(configFileStream);
         
-        clientId = properties.getProperty("client_id");
-        clientSecret = properties.getProperty("client_secret");
+        clientId = properties.getProperty("client_id", null);
+        clientSecret = properties.getProperty("client_secret", null);
+        apiUrl = properties.getProperty("api_url", null);
         
         try {
           // We call addListener with reflection in case this servlet will run on a container with a servlet-api < 3.0
