@@ -35,7 +35,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   /**
    * The default value for the apiUrl.
    */
-  private final String defaultApiUrl = "https://api.github.com";
+  private final String defaultApiUrl = null;
   
   @Override
   public void init() throws ServletException {
@@ -114,6 +114,9 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
       if (value.endsWith("/")) {
         value = value.substring(0, value.length() - 1);
       }
+      if ("https://api.github.com".equals(value)) {
+        value = null;
+      }
       GitHubOauthServlet.apiUrl = value;
     }
     
@@ -138,7 +141,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
 
     String apiUrl = GitHubOauthServlet.apiUrl;
     if (apiUrl == null) {
-      apiUrl = "";
+      apiUrl = "https://api.github.com";
     }
     
     return "<div style='font-family: robotolight, Arial, Helvetica, sans-serif;font-size:0.9em;font-weight: lighter;'>"
@@ -173,9 +176,9 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
   @Override
   public String getOptionsJson() {
     return "{" + 
-      "\"" + API_URL + "\":\"" + GitHubOauthServlet.apiUrl != null ? GitHubOauthServlet.apiUrl : "" + "\"," + 
-      "\"" + CLIENT_ID + "\":\"" + GitHubOauthServlet.clientId != null ? GitHubOauthServlet.clientId : "" + "\"," + 
-      "\"" + CLIENT_SECRET + "\":\"" + GitHubOauthServlet.clientSecret != null ? GitHubOauthServlet.clientSecret : "" + "\""
+      "\"" + API_URL + "\":\"" + (GitHubOauthServlet.apiUrl != null ? GitHubOauthServlet.apiUrl : "https://api.github.com") + "\"," + 
+      "\"" + CLIENT_ID + "\":\"" + (GitHubOauthServlet.clientId != null ? GitHubOauthServlet.clientId : "") + "\"," + 
+      "\"" + CLIENT_SECRET + "\":\"" + (GitHubOauthServlet.clientSecret != null ? GitHubOauthServlet.clientSecret : "") + "\""
     + "}";
   }
 }

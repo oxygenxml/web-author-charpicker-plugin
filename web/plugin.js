@@ -227,6 +227,7 @@
   CommitAction.prototype.getDialog = function() {
     if (!this.dialog) {
       this.dialog = workspace.createDialog();
+      this.dialog.setPreferredSize(500, 305);
       this.dialog.setButtonConfiguration([{key: 'ok', caption: 'Commit'}, {key: 'cancel', caption: 'Cancel'}]);
     }
 
@@ -282,7 +283,9 @@
       setCommitActionShortcut(this.editor, event.target.checked ? CommitAction.SHORTCUT : null);
 
       // Save the change in localstorage to make it persistent
-      localStorage.setItem('github.shortcut', event.target.checked);
+      try {
+        localStorage.setItem('github.shortcut', event.target.checked);
+      } catch (e) {}
     }, this));
 
     var ctrlEnterCommitKey = goog.events.listen(this.dialog.getElement().querySelector('textarea[name=message]'), goog.events.EventType.KEYUP,
@@ -718,7 +721,10 @@
     if (commitHistory.length > 10) {
       commitHistory.pop();
     }
-    localStorage.setItem('github.commit.history', JSON.stringify(commitHistory));
+
+    try {
+      localStorage.setItem('github.commit.history', JSON.stringify(commitHistory));
+    } catch (e) {}
   };
 
   /**
@@ -1264,14 +1270,19 @@
    * @param {String=} apiUrl The url prefix of the GitHub api.
    */
   GitHubLoginManager.prototype.setOauthProps = function (clientId, state, apiUrl) {
+    apiUrl = apiUrl || 'https://github.com';
+
     var scopes = 'public_repo,repo';
     if (clientId && state && apiUrl) {
       this.oauthProps = {
         clientId: clientId,
         state: state,
-        oauthUrl: 'https://github.com/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
+        oauthUrl: apiUrl + '/login/oauth/authorize?client_id=' + clientId + '&state=' + state + '&scope=' + scopes
       };
-      localStorage.setItem('github.oauthProps', JSON.stringify(this.oauthProps));
+
+      try {
+        localStorage.setItem('github.oauthProps', JSON.stringify(this.oauthProps));
+      } catch (e) {}
     } else {
       this.oauthProps = null;
       localStorage.removeItem('github.oauthProps');
@@ -1342,12 +1353,18 @@
     // But we should also make sure that our github instance is not outdated (invalid client_id/access_token)
     getGithubClientIdOrToken(reset, goog.bind(function (err, credentials) {
       if (err || credentials.error) {
+        var errSufix = '';
+        if (credentials && credentials.error && credentials.error.indexOf('#HGCR')) {
+          errSufix = ' (HGCR)'
+        }
+
         // Clear the oauth props so we won't show the login with github button (The github oauth flow is not available)
         this.setErrorMessage(
             '<div>' +
               'The GitHub plugin is not configured properly.' +
               'If you are the administrator of the application make sure the Client ID and the ' +
               'Client Secret are properly set in the <a target="_blank" href="admin.html#Plugins">administration page</a>.' +
+              errSufix +
             '</div>');
         this.setOauthProps(null);
         this.resetCredentials();
@@ -1356,11 +1373,15 @@
         setTimeout(goog.bind(this.getCredentials, this, callback), 0);
       } else {
         if (credentials.accessToken) {
-          localStorage.setItem('github.credentials', JSON.stringify({
-            token: credentials.accessToken,
-            auth: "oauth",
-            apiUrl: credentials.apiUrl
-          }));
+          try {
+            var apiUrl = credentials.apiUrl ? credentials.apiUrl + '/api/v3' : null;
+
+            localStorage.setItem('github.credentials', JSON.stringify({
+              token: credentials.accessToken,
+              auth: "oauth",
+              apiUrl: apiUrl
+            }));
+          } catch (e) {}
 
           // Update our github instance with the potentially new accessToken
           github = this.createGitHub();
@@ -1453,7 +1474,10 @@
         user.show(null, function (err, author) {
           if (!err && (author.name || author.login)) {
             loadingOptions.userName = author.name || author.login;
-            localStorage.setItem('github.userName', loadingOptions.userName);
+
+            try {
+              localStorage.setItem('github.userName', loadingOptions.userName);
+            } catch (e) {}
           }
           loadDocument_(github);
         });
@@ -2256,7 +2280,11 @@
         // The user provided also a path.
         normalizedUrl = normalizedUrl + this.repoDetails.path;
       }
-      localStorage.setItem('github.latestUrl', normalizedUrl);
+
+      try {
+        localStorage.setItem('github.latestUrl', normalizedUrl);
+      } catch (e) {}
+
       this.setRootUrl(this.extractRootUrl_(normalizedUrl));
       this.openUrl(normalizedUrl, this.repoDetails.isFile, event);
     } else {

@@ -31,6 +31,7 @@
     line-height: initial;
 }
 textarea.github-input {
+    resize: none;
     margin-top: 5px;
     padding: 4px 3px;
     min-height: 80px;

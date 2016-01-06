@@ -335,7 +335,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     if (accessToken != null && tokenIsStillValid(accessToken)) {
       GitHubPlugin.accessTokens.put(session.getId(), accessToken);
         
-      httpResponse.getWriter().write("{\"api_url\":\"" + apiUrl + "\",\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
+      httpResponse.getWriter().write(
+              "{" + (apiUrl != null ? "\"api_url\":\"" + apiUrl + "\"," : "") + 
+              "\"state\":\"" + state + "\",\"client_id\":\"" + clientId + "\",\"access_token\":\"" + accessToken + "\"}");
       httpResponse.flushBuffer();
       return true;
     } else {
@@ -357,8 +359,10 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     boolean tokenIsStillValid = true;
     try {
       // Send the client_id and client_secret as well because we want to use the 5000 requests quota not the free one
-      URL apiUrl = new URL("https://api.github.com/user?client_id=" + clientId + "&client_secret=" + clientSecret);
-      HttpURLConnection apiConnection = (HttpURLConnection) apiUrl.openConnection();
+      URL fullApiUrl = new URL(
+          (apiUrl != null ? apiUrl : "https://api.github.com") + 
+          "/user?client_id=" + clientId + "&client_secret=" + clientSecret);
+      HttpURLConnection apiConnection = (HttpURLConnection) fullApiUrl.openConnection();
       apiConnection.setRequestProperty("Authorization", "token " + accessToken);
       int responseCode = apiConnection.getResponseCode();
       
@@ -402,7 +406,9 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
     } else {
       try {
         logger.debug("SENDING CLIENT_ID");
-        httpResponse.getWriter().write("{\"client_id\":\"" + clientId + "\",\"state\":\"" + state + "\",\"api_url\":\"" + apiUrl + "\"}");
+        httpResponse.getWriter().write(
+            "{" + (apiUrl != null ? "\"api_url\":\"" + apiUrl + "\"," : "") + 
+            "\"client_id\":\"" + clientId + "\",\"state\":\"" + state + "\"}");
         httpResponse.flushBuffer();
       } catch (IOException e) {
         logger.error(e.getMessage());
@@ -541,7 +547,8 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
    * @throws IOException
    */
   private String getAccessTokenFromGithub(String code) throws IOException {
-    URL githubAccessTokenUrl = new URL("https://github.com/login/oauth/access_token");
+    URL githubAccessTokenUrl = new URL(
+        (apiUrl != null ? apiUrl : "https://github.com") + "/login/oauth/access_token");
     HttpURLConnection conn = (HttpURLConnection) githubAccessTokenUrl.openConnection();
     
     logger.debug("Opened git access token conn");
