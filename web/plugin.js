@@ -203,7 +203,7 @@
 
   /** @override */
   CommitAction.prototype.getDisplayName = function() {
-    return "Commit on GitHub";
+    return "Commit";
   };
 
   /** @override */
@@ -1561,7 +1561,8 @@
 
         goog.events.listenOnce(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function(e) {
           var githubToolbarButton = goog.dom.createDom('div', {
-            id: 'github-toolbar-button'
+            'id': 'github-toolbar-button',
+            'title': 'GitHub'
           }, '');
 
           var commitShortcut = localStorage.getItem('github.shortcut');
