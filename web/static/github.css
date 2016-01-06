@@ -310,14 +310,7 @@ textarea.github-input {
     text-overflow: ellipsis;
 }
 
-.github-repo-preview-area > .github-repo-placeholder {
-    position: absolute;
-    top: 50%;
-    /* left: 50%; */
-    width: 100%;
-    text-align: center;
-    margin-top: -10px;
-}
+
 .github-repo-preview-area {
     position: relative;
     width: 100%;
@@ -328,7 +321,20 @@ textarea.github-input {
 
     min-height: 150px;
     border: 1px solid #c8c1c1;
+}
+.github-repo-preview-area > div {
     padding: 5px;
+}
+.github-repo-preview-area > .github-repo-placeholder {
+    position: absolute;
+    top: 50%;
+    /* left: 50%; */
+    width: 100%;
+    text-align: center;
+    margin-top: -10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .github-repo-ac {
