@@ -102,6 +102,10 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
    */
   @Override
   protected void setOption(String key, String value) {
+    if ("".equals(value)) {
+      value = null;
+    }
+    
     if (CLIENT_ID.equals(key)) {
       GitHubOauthServlet.clientId = value;
     }
@@ -111,7 +115,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     }
     
     if (API_URL.equals(key)) {
-      if (value.endsWith("/")) {
+      if (value!= null && value.endsWith("/")) {
         value = value.substring(0, value.length() - 1);
       }
       if ("https://api.github.com".equals(value)) {
@@ -147,7 +151,8 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     return "<div style='font-family: robotolight, Arial, Helvetica, sans-serif;font-size:0.9em;font-weight: lighter;'>"
             + "<div style='color:#333;background-color: lightyellow;border: 1px solid #dadab4;padding:0 5px 0 5px'>"
               + "<p style='margin:8px 0'>The GitHub plugin requires a Client ID and a Client Secret to use OAuth authentication.</p>"
-              + "<p style='margin:8px 0'>To obtain them go to your GitHub <a target='_blank' href='https://github.com/settings/applications/new'>developer applications page</a> and register a new application.</p>"
+              + "<p style='margin:8px 0'>To obtain them go to your GitHub developer applications page <a target='_blank' href='https://github.com/settings/applications/new'>(https://github.com/settings/applications/new)</a> and register a new application.</p>"
+              + "<p style='margin:8px 0'>If you are using GitHub Enterprise register a new application by going to <span style='text-decoration:underline'>${github-enterprise url}/settings/applications/new</span></p>"
               + "<p style='margin:8px 0'>The Authorization callback URL must be set to: ${webapp-context}/plugins-dispatcher/github-oauth/callback"
               + "<p style='margin:8px 0'>Example:<br/><span style='text-decoration:underline'>http://${domain}:8080/oxygen-webapp/plugins-dispatcher/github-oauth/callback</p>"
             + "</div>"
