@@ -79,7 +79,7 @@
       this.dialog.setButtonConfiguration([{key: 'yes', caption: 'Logout'}, {key: 'no', caption: 'Cancel'}]);
 
       var dialogHtml = '<div>';
-      dialogHtml += '<div>Are you sure you want to log-out? All uncommitted changes will be lost.</div>';
+      dialogHtml += '<div>Are you sure you want to log-out?<br/>All uncommitted changes will be lost.</div>';
       dialogHtml += '</div>';
 
       this.dialog.getElement().innerHTML = dialogHtml;
@@ -105,6 +105,7 @@
     }, this));
 
     this.showDialog();
+    this.dialog.setPreferredSize(320, 185);
   };
 
   /** @override */
