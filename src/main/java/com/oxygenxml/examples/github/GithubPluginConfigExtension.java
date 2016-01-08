@@ -77,7 +77,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     super.doPut(req, resp);
     
     // Removing all access tokens to force all users to relogin
-    GitHubPlugin.accessTokens.clear();
+    GitHubPlugin.accessTokens.invalidateAll();
   }
   
   /**
@@ -94,7 +94,7 @@ public class GithubPluginConfigExtension extends PluginConfigExtension {
     GitHubOauthServlet.apiUrl = getDefaultOptions().get(API_URL);
     
     // The client_id and client_secret have changed so we need all the users to re-login.
-    GitHubPlugin.accessTokens.clear();
+    GitHubPlugin.accessTokens.invalidateAll();
   }
   
   /**

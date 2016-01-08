@@ -3,15 +3,12 @@ package com.oxygenxml.examples.github;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,18 +92,6 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
         clientSecret = properties.getProperty("client_secret", null);
         apiUrl = properties.getProperty("api_url", null);
         
-        try {
-          // We call addListener with reflection in case this servlet will run on a container with a servlet-api < 3.0
-          ServletContext servletContext = getServletConfig().getServletContext();
-          Method method = ServletContext.class.getMethod("addListener", java.lang.Class.class);
-          method.setAccessible(true);
-          method.invoke(servletContext, HttpSessionObserver.class);
-        } catch (NoSuchMethodException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalAccessException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (InvocationTargetException e) {
-        }
       } catch (IOException e) {
         logger.warn("Could not read the github-plugin.properties file. The user must set the client_id and client_secret from the admin page.");
       }
@@ -343,7 +328,7 @@ public class GitHubOauthServlet extends WebappServletPluginExtension{
       return true;
     } else {
       // If the accessToken is not null but not valid we will remove it so that we can get a new one
-      GitHubPlugin.accessTokens.remove(session.getId());
+      GitHubPlugin.accessTokens.invalidate(session.getId());
       session.removeAttribute(ACCESS_TOKEN);
       
       return false;
