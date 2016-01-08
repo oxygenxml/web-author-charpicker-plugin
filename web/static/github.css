@@ -111,7 +111,6 @@ textarea.github-input {
 .github-commit-dialog {
     font-family: Roboto, arial, sans-serif;
     color: #3E3E3E;
-    width: 450px;
 }
 @media only screen and (max-width: 550px) {
     .github-login-dialog {

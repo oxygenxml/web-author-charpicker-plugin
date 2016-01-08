@@ -22,6 +22,8 @@
     dialogElement.style.textAlign = 'center';
     dialogElement.innerHTML = bodyHtml;
     dialog.show();
+
+    dialog.setPreferredSize(350, null);
   };
 
   /**
@@ -651,7 +653,7 @@
    */
   CommitAction.prototype.getBranchingError_ = function(err, ctx) {
     if (err) {
-      if (err.error === 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
+      if (err.error == 422 && err.request.responseText.indexOf("Reference already exists") !== -1) {
         // The branch already exists, so we can commit on it.
         err = null;
         ctx.branchAlreadyExists = true;
@@ -2051,8 +2053,6 @@
       goog.dom.appendChild(element, button);
       goog.events.listen(button, goog.events.EventType.CLICK,
         goog.bind(this.switchToRepoConfig, this, element));
-
-      this.dialog.setPreferredSize(null, 500);
     }
   };
 
