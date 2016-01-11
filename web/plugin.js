@@ -22,8 +22,6 @@
     dialogElement.style.textAlign = 'center';
     dialogElement.innerHTML = bodyHtml;
     dialog.show();
-
-    dialog.setPreferredSize(350, null);
   };
 
   /**
@@ -861,6 +859,7 @@
       errorReporter.showError(COMMIT_STATUS_TITLE, commitDialog, sync.api.Dialog.ButtonConfiguration.CANCEL);
 
       var dialogElement = errorReporter.errDialog.getElement();
+      errorReporter.errDialog.setPreferredSize(450, null);
 
       var commitMerge = dialogElement.querySelector('.gh-commit-merge');
       if (commitMerge) {
@@ -966,7 +965,7 @@
             if (err && err.error === 404) {
               // Maybe this was a commit ref instead of a branch ref. Let's try.
               forkedRepo.createRef({
-                "ref": "refs/heads/" + ctx.branch,
+                "ref": "refs/heads/" + self.ctx.branch,
                 "sha": self.branch
               }, function(err) {
                 err = self.getBranchingError_(err, self.ctx);
