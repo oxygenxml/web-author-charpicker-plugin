@@ -9,7 +9,7 @@ import ro.sync.exml.plugin.Plugin;
 import ro.sync.exml.plugin.PluginDescriptor;
 
 /**
- * Plugin that represents the GitHub connector for oXygen XML WebApp.
+ * Plugin that represents the GitHub connector for oXygen XML Web Author.
  */
 public class GitHubPlugin extends Plugin {
   /**

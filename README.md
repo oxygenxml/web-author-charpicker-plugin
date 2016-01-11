@@ -1,12 +1,12 @@
-WebApp GitHub connector
+oXygen XML Web Author GitHub connector
 =======================
-This plugin enables oXygen XML WebApp to open and commit files on GitHub.
+This plugin enables oXygen XML Web Author to open and commit files on GitHub.
         
 Open
 ----
 
 
-In order to open a github file, you should use the dedicated action that appears on the oXygen XML WebApp's dashboard.
+In order to open a github file, you should use the dedicated action that appears on the oXygen XML Web Author's dashboard.
 
 Commit
 ------
