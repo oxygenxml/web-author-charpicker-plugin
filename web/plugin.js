@@ -189,15 +189,21 @@
 
   /** @override */
   CommitAction.prototype.renderLargeIcon = function() {
-    this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper',
-      goog.dom.createDom('div', 'github-icon-octocat-large'));
+    var commitActionIcon = goog.dom.createDom('div', 'github-icon-octocat-large');
+    commitActionIcon.style.backgroundImage =
+        'url("' + sync.util.computeHdpiIcon('../plugin-resources/github-static/LogoToolbar.png') + '")';
+
+    this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper', commitActionIcon);
     return this.iconWrapper;
   };
 
   /** @override */
   CommitAction.prototype.renderSmallIcon = function() {
-    this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper',
-      goog.dom.createDom('div', 'github-icon-octocat-small'));
+    var commitActionIcon = goog.dom.createDom('div', 'github-icon-octocat-small');
+    commitActionIcon.style.backgroundImage =
+        'url("' + sync.util.computeHdpiIcon('../plugin-resources/github-static/CommitToolbar.png') + '")';
+
+    this.iconWrapper = goog.dom.createDom('div', 'github-icon-wrapper', commitActionIcon);
     return this.iconWrapper;
   };
 
@@ -1122,11 +1128,6 @@
     }
   };
 
-  /** @override */
-  CommitAction.prototype.getDescription = function() {
-    return "Commit on GitHub";
-  };
-
   /**
    * Loads the github-specific CSS.
    */
@@ -1220,6 +1221,7 @@
         loginButtonContainer.innerHTML = '<a title="Click to login using your GitHub account" href="' + this.oauthProps.oauthUrl +
           '" id="github-oauth-button"><span class="github-icon-octocat-large"></span><span class="github-oauth-text">Re-login with GitHub</span></a>';
       }
+      loginButtonContainer.querySelector('.github-icon-octocat-large').style.backgroundImage = 'url("' + sync.util.computeHdpiIcon('../plugin-resources/github-static/LogoToolbar.png') + '")';
     }
 
     var errorMessageElement = this.loginDialog.getElement().querySelector('.github-login-dialog-error');
@@ -1570,6 +1572,8 @@
             'id': 'github-toolbar-button',
             'title': 'GitHub'
           }, '');
+          githubToolbarButton.style.backgroundImage =
+              'url("' + sync.util.computeHdpiIcon('../plugin-resources/github-static/LogoToolbar.png') + '")';
 
           var commitShortcut = localStorage.getItem('github.shortcut');
           if (commitShortcut && commitShortcut == 'true' || !commitShortcut) {
