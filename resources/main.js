@@ -4,11 +4,7 @@ goog.require('goog.i18n.CharPickerData');
 goog.require('goog.i18n.uChar.LocalNameFetcher');
 goog.require('goog.ui.CharPicker');
 
-
-charpicker.Main = function() {
-};
-
-charpicker.Main.prototype.init = function() {
+window["initCharPicker"] = function() {
    var picker = new goog.ui.CharPicker(new goog.i18n.CharPickerData(),
         new goog.i18n.uChar.LocalNameFetcher(),
         ["\uD869\uDED6", "a", "b", "c"], 10, 1);
@@ -17,8 +13,8 @@ charpicker.Main.prototype.init = function() {
 
     // Action on selection
     var selectionAction = function() {
-      parent.goog.dom.setTextContent(parent.goog.dom.getElement('pp_value'),
-          picker.getSelectedChar());
+      var parent = window.parent;
+      parent.document.getElementById('pp_value').textContent = picker.getSelectedChar();
     };
 
     // Get selected locale from the char picker.

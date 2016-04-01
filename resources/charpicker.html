@@ -12,8 +12,11 @@ See the COPYING file for details.
   <meta charset=utf-8>
 
   <!-- only required css for char picker -->
+    
+  <!-- build:css -->
   <link rel="stylesheet" href="charpicker.css">
   <link rel="stylesheet" href="common.css">
+  <!-- endbuild -->
 
   <style>
     #p1_value {
@@ -39,14 +42,9 @@ See the COPYING file for details.
   <script>
     goog.require('charpicker.Main');
   </script>
+  <!-- endbuild -->
   <script>
-    new charpicker.Main().init();
+    initCharPicker();
   </script>
-  <!-- build -->
-  </p>
-
-  <!--<p>
-    <input type="button" value="Dispose" onclick="picker.dispose()">
-  </p>-->
 </body>
 </html>

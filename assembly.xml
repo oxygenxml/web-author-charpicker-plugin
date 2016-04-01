@@ -12,18 +12,24 @@
 			<directory>web</directory>
 			<outputDirectory>/web</outputDirectory>
 			<includes>
-				<include>charpicker.html</include>
-				<include>InsertFromCharactersMap24.png</include>
-				<include>InsertFromCharactersMap24@2x.png</include>
-				<include>charpicker.min.js</include>
-				<include>charpicker.min.css</include>
+				<include>plugin.js</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>resources</directory>
+			<directory>target/</directory>
 			<outputDirectory>/resources</outputDirectory>
 			<includes>
-				<include>**/*</include>
+				<include>charpicker.html</include>
+				<include>js/script.min.js</include>
+				<include>css/styles.min.css</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>resources/</directory>
+			<outputDirectory>/resources</outputDirectory>
+			<includes>
+				<include>InsertFromCharactersMap24.png</include>
+				<include>InsertFromCharactersMap24@2x.png</include>
 			</includes>
 		</fileSet>
 	</fileSets>
