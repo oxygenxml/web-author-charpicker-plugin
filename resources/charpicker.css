@@ -9,21 +9,25 @@
 /* Author: cibu@google.com (Cibu Johny) */
 
 .goog-char-picker {
-  background-color: #ddd;
+  /*background-color: #ddd;
   padding: 16px;
-  border: 1px solid #777;
+  border: 1px solid #777;*/
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 /* goog.ui.HoverCard */
 .goog-char-picker-hovercard {
-  border: solid 5px #ffcc33;
-  min-width: 64px;
+  /*border: solid 2px #ffcc33;*/
+  border: solid 2px #337ab7;
+  min-width: 50px;
   max-width: 160px;
-  padding: 16px;
+  padding: 5px;
   background-color: white;
   text-align: center;
   position: absolute;
   visibility: hidden;
+  z-index: 99;
 }
 
 .goog-char-picker-name {
@@ -45,13 +49,14 @@
 .goog-char-picker-grid-container {
   border: 1px solid #777;
   background-color: #fff;
-  width: 272px;
+  width: 370px;
+  height: 300px;
 }
 
 .goog-char-picker-grid {
-  overflow: hidden;
-  height: 250px;
-  width: 250px;
+  overflow: scroll;
+  height: 300px;
+  width: 100%;
   position: relative;
 }
 
@@ -60,6 +65,7 @@
   overflow: hidden;
 }
 .goog-stickwrap {
+  display: none;
   width: 17px;
   height: 250px;
   float: right;
@@ -67,6 +73,7 @@
 }
 
 .goog-char-picker-recents {
+  /*display:none;*/
   border: 1px solid #777;
   background-color: #fff;
   height: 25px;
@@ -105,6 +112,19 @@
  */
 .goog-char-picker-grid .goog-flat-button {
   position: relative;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 2em;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+}
+
+/*.goog-char-picker-grid .goog-flat-button {
+  position: relative;
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -113,11 +133,13 @@
   text-align: center;
   cursor: pointer;
   outline: none;
-}
+}*/
 
 .goog-char-picker-grid .goog-flat-button-hover,
 .goog-char-picker-grid .goog-flat-button-focus {
-  background-color: #ffcc33;
+  /*background-color: #ffcc33;*/
+  background-color: #337ab7;
+  color: white;
 }
 
 /*
@@ -202,5 +224,38 @@
   border-top: 1px solid #ccc;
   margin: 2px 0;
   padding: 0;
+}
+
+
+.char-select-this-button:hover {
+  /*background-color: #ffcc33;*/
+  /*background-color: #337ab7;*/
+  background-color: #d6e9f8;
+  /*color: white;*/
+}
+
+#simplePickerGrid .recentCharactersGrid {
+  height: 130px;
+  width: 198px;
+  font-size: 1.5em;
+}
+#simplePickerGrid .goog-flat-button {
+   position: relative;
+   width: 32px;
+   height: 32px;
+   line-height: 32px;
+   font-size: 1.5em;
+   border-bottom: 1px solid #ddd;
+   border-right: 1px solid #ddd;
+   text-align: center;
+   cursor: pointer;
+   outline: none;
+ }
+#simplePickerGrid {
+  overflow: hidden;
+  height: auto;
+  width: 231px;
+  border-bottom: 1px solid lightgray;
+  position: relative;
 }
 
