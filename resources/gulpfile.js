@@ -4,7 +4,10 @@ var gulp = require('gulp');
 
 var debug = require('gulp-debug');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var closureCompiler = require('gulp-closure-compiler');
+var cleanCSS = require('gulp-clean-css');
+var rename = require('gulp-rename');
 
 var targetLocation = "../target";
  // Concatenate JS Files
@@ -35,8 +38,12 @@ gulp.task('replacehtml', function() {
     .pipe(gulp.dest(targetLocation));
 });
 
-var cleanCSS = require('gulp-clean-css');
-var rename = require('gulp-rename');
+gulp.task('uglifyplugin', function() {
+    return gulp.src('../web/plugin.js')
+        .pipe(uglify())
+        .pipe(rename('plugin.min.js'))
+        .pipe(gulp.dest('../web/uglified'));
+});
 
 gulp.task('minify-css', function(){
     return gulp.src('*.css')

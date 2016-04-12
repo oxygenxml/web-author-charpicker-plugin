@@ -9,16 +9,12 @@
 /* Author: cibu@google.com (Cibu Johny) */
 
 .goog-char-picker {
-  /*background-color: #ddd;
-  padding: 16px;
-  border: 1px solid #777;*/
   padding-left: 10px;
   padding-right: 10px;
 }
 
 /* goog.ui.HoverCard */
 .goog-char-picker-hovercard {
-  /*border: solid 2px #ffcc33;*/
   border: solid 2px #337ab7;
   min-width: 50px;
   max-width: 160px;
@@ -50,12 +46,13 @@
   border: 1px solid #777;
   background-color: #fff;
   width: 370px;
-  height: 300px;
+  height: 280px;
+  margin-bottom:10px;
 }
 
 .goog-char-picker-grid {
-  overflow: scroll;
-  height: 300px;
+  overflow-y: scroll;
+  height: 280px;
   width: 100%;
   position: relative;
 }
@@ -73,7 +70,6 @@
 }
 
 .goog-char-picker-recents {
-  /*display:none;*/
   border: 1px solid #777;
   background-color: #fff;
   height: 25px;
@@ -83,10 +79,7 @@
 }
 
 .goog-char-picker-notice {
-  font-size: x-small;
-  height: 16px;
-  color: GrayText;
-  margin: 0 0 16px 0;
+  display: none;
 }
 
 /*
@@ -94,10 +87,13 @@
  */
 
 .goog-char-picker-uplus {
+  font-size: 20px;
 }
 
 .goog-char-picker-input-box {
   width: 96px;
+  font-size: 20px;
+  height: 28px;
 }
 
 .label-input-label {
@@ -105,6 +101,48 @@
 }
 
 .goog-char-picker-okbutton {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: top;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  background-color: #e6e6e6;
+  border: 1px solid lightgray;
+  /*border-radius: 4px;*/
+}
+.goog-char-picker-okbutton:focus,
+.goog-char-picker-okbutton:active:focus
+/*.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus*/ {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.goog-char-picker-okbutton:hover,
+.goog-char-picker-okbutton:focus {
+  color: #333;
+  text-decoration: none;
+  background-color: #d9d9d9;
+}
+.goog-char-picker-okbutton:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 
 /*
@@ -123,21 +161,8 @@
   outline: none;
 }
 
-/*.goog-char-picker-grid .goog-flat-button {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-}*/
-
 .goog-char-picker-grid .goog-flat-button-hover,
 .goog-char-picker-grid .goog-flat-button-focus {
-  /*background-color: #ffcc33;*/
   background-color: #337ab7;
   color: white;
 }
@@ -166,9 +191,9 @@
   outline: none;
   padding: 0;
   position: absolute;
-  max-height: 400px;
+  max-height: 260px;
   overflow-y: auto;
-  overflow-x: hide;
+  overflow-x: hidden;
 }
 
 /*
@@ -238,6 +263,7 @@
   height: 130px;
   width: 198px;
   font-size: 1.5em;
+  margin-bottom: 0px;
 }
 #simplePickerGrid .goog-flat-button {
    position: relative;
@@ -255,7 +281,161 @@
   overflow: hidden;
   height: auto;
   width: 231px;
-  border-bottom: 1px solid lightgray;
+  /*border-top: 1px solid lightgray;
+  border-left: 1px solid lightgray;*/
+  /*margin: 0px 5px 0px 5px;*/
+  margin: 0px;
   position: relative;
 }
 
+.goog-menu-button {
+  /* Client apps may override the URL at which they serve the image. */
+  /*background: #ddd url(//ssl.gstatic.com/editor/button-bg.png) repeat-x top left;*/
+  border: 0;
+  color: #000;
+  cursor: pointer;
+  list-style: none;
+  margin: 2px;
+  outline: none;
+  padding: 0;
+  text-decoration: none;
+  vertical-align: middle;
+}
+.goog-menu-button:hover {
+  background-color: #e6e6e6;
+}
+.goog-menu-button.goog-menu-button-open {
+  background-color: #d4d4d4;
+  box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+}
+.goog-menu-button-dropdown {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+/* Pseudo-rounded corners. */
+.goog-menu-button-outer-box,
+.goog-menu-button-inner-box {
+  border-style: solid;
+  border-color: #aaa;
+  vertical-align: top;
+}
+.goog-menu-button-outer-box {
+  margin: 0;
+  border-width: 1px 0;
+  padding: 0;
+}
+.goog-menu-button-inner-box {
+  margin: 0 -1px;
+  border-width: 0 1px;
+  padding: 6px 8px;
+}
+
+/*.goog-char-picker :not(.goog-char-picker-grid-container)
+:not(.goog-menu-button)
+.goog-char-picker .goog-char-picker-grid-container,
+.goog-char-picker .goog-char-picker-uplus,
+.goog-char-picker .goog-char-picker-input-box,
+.goog-char-picker .goog-char-picker-okbutton {
+  display: none;
+}*/
+.goog-char-picker {
+  /*background-color: lightblue;*/
+}
+
+/* char picker notice div*/
+/*.goog-char-picker div:nth-child(4){
+    display: none;
+}*/
+/* span for "recent characters" */
+.goog-char-picker span:nth-child(5){
+    display: none;
+}
+/* recent characters container div */
+.goog-char-picker div:nth-child(6){
+    display: none;
+}
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+#charpickeriframe {
+  width:400px;
+  height:400px;
+  border:none;
+}
+#charpickeriframe body {
+  margin: 0px;
+}
+#special_characters {
+  margin-left: 10px;
+  font-size: 24px;
+  width: 200px;
+  height: 35px;
+}
+#removeLastChar {
+  vertical-align: top;
+  height: 41px;
+  font-size: 20px;
+  line-height: 0px;
+  font-weight: bold;
+}
+#pickermenu {
+  padding: 0px;
+}
+
+#moreSymbolsButton {
+  margin-top: 2px;
+  border-top: 1px solid #e6e6e6;
+  padding: 5px 20px 4px 20px;
+}
+
+@media (max-height: 560px) {
+  #charpickeriframe {
+    height: 270px;
+  }
+  #charPicker {
+    padding: 6px 12px;
+  }
+  #moreSymbolsButton .goog-menuitem-content{
+    font-size: 1.1em;
+  }
+}
+/* media query for the iframe contents when the screen is less than 480px height */
+@media (max-height: 300px) {
+  .goog-char-picker-grid {
+    height: 180px;
+  }
+  .goog-char-picker-grid-container {
+    height: 180px;
+  }
+  .goog-menu-button-inner-box {
+    padding: 3px 4px;
+  }
+  .goog-char-picker-menu {
+    height: 160px;
+  }
+}
+
+@media (max-width: 600px) {
+  #charPicker {
+    padding: 6px 6px;
+  }
+  #moreSymbolsButton .goog-menuitem-content{
+    font-size: 1.1em;
+  }
+}

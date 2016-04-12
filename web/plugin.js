@@ -27,7 +27,9 @@
 
         var displayRecentCharacters = function () {
             //todo: fill up the default chars
-            var defaultRecentCharacters = ["\u00e9", "\u2665", "❤", "\uD834\uDD1E", "\u00A9", "\u00a9", "\u1f44c", "a", "b", "c", "3", "6", "a", "b", "c", "3", "6"];
+            //var defaultRecentCharacters = ["\u00e9", "\u2665", "❤", "\uD834\uDD1E", "\u00A9", "\u00a9", "\u1f44c", "a", "b", "c", "3", "6", "a", "b", "c", "3", "6"];
+            var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
+                "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
             /* selector for targeting the recent characters container */
             var selector = '.recentCharactersGrid';
             var container = document.querySelector(selector);
@@ -49,7 +51,7 @@
 
             /* adjust the character array so it is the desired length.
              Fill it up with default recent characters if needed.  */
-            var maxChars = 20;
+            var maxChars = 21;
             if (characters.length < maxChars) {
                 characters = characters.concat(defaultRecentCharacters);
                 characters = removeDuplicates(characters).slice(0, maxChars);
@@ -68,11 +70,12 @@
         }
 
 
-        InsertFromMenuAction = function (editor) {
+        var InsertFromMenuAction = function (editor) {
             this.editor = editor;
             this.dialog = workspace.createDialog();
             this.dialog.setTitle('Insert Special Characters');
-            this.dialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK_CANCEL);
+            //button configuration deprecated, line useless todo delete line
+            //this.dialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK_CANCEL);
         };
         InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
         InsertFromMenuAction.prototype.getDisplayName = function () {
@@ -89,15 +92,39 @@
             if(document.querySelector('#charpickeriframe') === null) {
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
-                    'style': 'width:400px;height:400px;border:none;',
                     'src': '../plugin-resources/char-picker/charpicker.html'
                 });
+                this.dialog.getElement().id = 'charPicker';
                 this.dialog.getElement().appendChild(charPickerIframe);
-                this.dialog.getElement().innerHTML += '<div>Insert characters:<input type="text" name="charsToBeInserted" id="special_characters" style="margin-left:10px;"/></div>';
+                this.dialog.getElement().innerHTML += '<div><span>Insert characters:</span>' +
+                    '<input type="text" name="charsToBeInserted" id="special_characters" onClick="this.setSelectionRange(0, this.value.length)" readonly/>' +
+                    '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value="" >&#x2190;</button>' +
+                    '</div>';
+
+                var textarea = document.getElementById('special_characters');
+                textarea.scrollTop = textarea.scrollHeight;
+                /*this.dialog.getElement().getElementById('removeLastChar');*/
+                goog.events.listen(this.dialog.getElement().querySelector('#removeLastChar'), goog.events.EventType.CLICK, function(){
+                    var preview = document.getElementById('special_characters');
+                    preview.value = '';
+                    charsToBeInserted.pop();
+                    for(var i=0;i<charsToBeInserted.length;i++){
+                        preview.value += charsToBeInserted[i];
+                    }
+                });
             }
-            // if dialog has been populated already just reset the textbox
+            // if dialog has been populated already just reset the textboxes
             else {
                 this.dialog.getElement().querySelector('#special_characters').value = '';
+                var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
+                var iframeContent = (iframe.contentWindow || iframe.contentDocument);
+                if (iframeContent.document) {
+                    iframeContent = iframeContent.document;
+                    iframeContent.querySelector('.goog-char-picker-input-box').value = '';
+                }
+                else {
+                    console.log('failed to get iframe contents');
+                }
             }
 
 
@@ -161,12 +188,19 @@
             // moreSymbols.setEnabled(false);
             this.csmenu.addChild(moreSymbols, true);
 
+            console.log('getting more symbols');
+            console.log(moreSymbols.getElement());
+
+            moreSymbols.setId('moreSymbolsButton');
+
+
             // todo move the dialog action performed
             var charPickerDialog = new InsertFromMenuAction(this.editor);
             goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, //goog.bind(displayDialog, this));
                 goog.bind(charPickerDialog.displayDialog, charPickerDialog));
 
             this.csmenu.render(document.body);
+            goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
 
             // add the characters grid before the "more symbols..." button
             var parentElement = this.csmenu.getElement();
