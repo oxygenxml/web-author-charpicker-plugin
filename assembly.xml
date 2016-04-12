@@ -9,7 +9,7 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>web</directory>
+			<directory>web/uglified</directory>
 			<outputDirectory>/web</outputDirectory>
 			<includes>
 				<include>plugin.js</include>
@@ -22,12 +22,14 @@
 				<include>charpicker.html</include>
 				<include>js/script.min.js</include>
 				<include>css/styles.min.css</include>
+				<include>plugin.css</include>
 			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>resources/</directory>
 			<outputDirectory>/resources</outputDirectory>
 			<includes>
+				<include>backwardDelete.svg</include>
 				<include>InsertFromCharactersMap24.png</include>
 				<include>InsertFromCharactersMap24@2x.png</include>
 			</includes>

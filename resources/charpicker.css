@@ -1,12 +1,3 @@
-/*
- * Copyright 2009 The Closure Library Authors. All Rights Reserved.
- *
- * Use of this source code is governed by the Apache License, Version 2.0.
- * See the COPYING file for details.
- */
-
-/* Author: pupius@google.com (Daniel Pupius) */
-/* Author: cibu@google.com (Cibu Johny) */
 
 .goog-char-picker {
   padding-left: 10px;
@@ -58,24 +49,14 @@
 }
 
 .goog-stick {
-  width: 1px;
-  overflow: hidden;
+  display: none;
 }
 .goog-stickwrap {
   display: none;
-  width: 17px;
-  height: 250px;
-  float: right;
-  overflow: auto;
 }
 
 .goog-char-picker-recents {
-  border: 1px solid #777;
-  background-color: #fff;
-  height: 25px;
-  width: 275px;
-  margin: 0 0 16px 0;
-  position: relative;
+  display: none;
 }
 
 .goog-char-picker-notice {
@@ -104,6 +85,7 @@
   display: inline-block;
   padding: 6px 12px;
   margin-bottom: 0;
+  margin-left: 2px;
   font-size: 14px;
   font-weight: normal;
   line-height: 1.42857143;
@@ -118,16 +100,12 @@
   -ms-user-select: none;
   user-select: none;
   background-image: none;
-  background-color: #e6e6e6;
+  background-color: white;
   border: 1px solid lightgray;
-  /*border-radius: 4px;*/
+  border-radius: 4px;
 }
 .goog-char-picker-okbutton:focus,
-.goog-char-picker-okbutton:active:focus
-/*.btn.active:focus,
-.btn.focus,
-.btn:active.focus,
-.btn.active.focus*/ {
+.goog-char-picker-okbutton:active:focus {
   outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -136,13 +114,7 @@
 .goog-char-picker-okbutton:focus {
   color: #333;
   text-decoration: none;
-  background-color: #d9d9d9;
-}
-.goog-char-picker-okbutton:active {
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  background-color: #e6e6e6;
 }
 
 /*
@@ -210,15 +182,6 @@
   white-space: nowrap;
 }
 
-.goog-char-picker-menu2 .goog-menuitem {
-  color: #000;
-  list-style: none;
-  margin: 0;
-  /* 28px on the left for icon or checkbox; 10ex on the right for shortcut. */
-  padding: 1px 32px 1px 8px;
-  white-space: nowrap;
-}
-
 .goog-char-picker-menu .goog-subtitle {
   color: #fff !important;
   background-color: #666;
@@ -259,43 +222,12 @@
   /*color: white;*/
 }
 
-#simplePickerGrid .recentCharactersGrid {
-  height: 130px;
-  width: 198px;
-  font-size: 1.5em;
-  margin-bottom: 0px;
-}
-#simplePickerGrid .goog-flat-button {
-   position: relative;
-   width: 32px;
-   height: 32px;
-   line-height: 32px;
-   font-size: 1.5em;
-   border-bottom: 1px solid #ddd;
-   border-right: 1px solid #ddd;
-   text-align: center;
-   cursor: pointer;
-   outline: none;
- }
-#simplePickerGrid {
-  overflow: hidden;
-  height: auto;
-  width: 231px;
-  /*border-top: 1px solid lightgray;
-  border-left: 1px solid lightgray;*/
-  /*margin: 0px 5px 0px 5px;*/
-  margin: 0px;
-  position: relative;
-}
-
 .goog-menu-button {
-  /* Client apps may override the URL at which they serve the image. */
-  /*background: #ddd url(//ssl.gstatic.com/editor/button-bg.png) repeat-x top left;*/
   border: 0;
   color: #000;
   cursor: pointer;
   list-style: none;
-  margin: 2px;
+  margin: 2px 5px 3px 1px;
   outline: none;
   padding: 0;
   text-decoration: none;
@@ -306,7 +238,6 @@
 }
 .goog-menu-button.goog-menu-button-open {
   background-color: #d4d4d4;
-  box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
 }
 .goog-menu-button-dropdown {
   display: inline-block;
@@ -336,29 +267,8 @@
   border-width: 0 1px;
   padding: 6px 8px;
 }
-
-/*.goog-char-picker :not(.goog-char-picker-grid-container)
-:not(.goog-menu-button)
-.goog-char-picker .goog-char-picker-grid-container,
-.goog-char-picker .goog-char-picker-uplus,
-.goog-char-picker .goog-char-picker-input-box,
-.goog-char-picker .goog-char-picker-okbutton {
-  display: none;
-}*/
-.goog-char-picker {
-  /*background-color: lightblue;*/
-}
-
-/* char picker notice div*/
-/*.goog-char-picker div:nth-child(4){
-    display: none;
-}*/
 /* span for "recent characters" */
 .goog-char-picker span:nth-child(5){
-    display: none;
-}
-/* recent characters container div */
-.goog-char-picker div:nth-child(6){
     display: none;
 }
 .caret {
@@ -372,49 +282,10 @@
   border-right: 4px solid transparent;
   border-left: 4px solid transparent;
 }
-
-#charpickeriframe {
-  width:400px;
-  height:400px;
-  border:none;
-}
-#charpickeriframe body {
-  margin: 0px;
-}
-#special_characters {
-  margin-left: 10px;
-  font-size: 24px;
-  width: 200px;
-  height: 35px;
-}
-#removeLastChar {
-  vertical-align: top;
-  height: 41px;
-  font-size: 20px;
-  line-height: 0px;
-  font-weight: bold;
-}
 #pickermenu {
   padding: 0px;
 }
 
-#moreSymbolsButton {
-  margin-top: 2px;
-  border-top: 1px solid #e6e6e6;
-  padding: 5px 20px 4px 20px;
-}
-
-@media (max-height: 560px) {
-  #charpickeriframe {
-    height: 270px;
-  }
-  #charPicker {
-    padding: 6px 12px;
-  }
-  #moreSymbolsButton .goog-menuitem-content{
-    font-size: 1.1em;
-  }
-}
 /* media query for the iframe contents when the screen is less than 480px height */
 @media (max-height: 300px) {
   .goog-char-picker-grid {
@@ -430,12 +301,7 @@
     height: 160px;
   }
 }
-
-@media (max-width: 600px) {
-  #charPicker {
-    padding: 6px 6px;
-  }
-  #moreSymbolsButton .goog-menuitem-content{
-    font-size: 1.1em;
-  }
-}
+/*
+body {
+  margin: 0px;
+}*/

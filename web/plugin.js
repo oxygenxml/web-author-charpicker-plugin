@@ -26,8 +26,6 @@
         }
 
         var displayRecentCharacters = function () {
-            //todo: fill up the default chars
-            //var defaultRecentCharacters = ["\u00e9", "\u2665", "❤", "\uD834\uDD1E", "\u00A9", "\u00a9", "\u1f44c", "a", "b", "c", "3", "6", "a", "b", "c", "3", "6"];
             var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
                 "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
             /* selector for targeting the recent characters container */
@@ -63,7 +61,7 @@
             /* add the characters to the container */
             for (i = 0; i < characters.length; i++) {
                 document.querySelector(selector).appendChild(goog.dom.createDom('div', {
-                        'class': 'goog-inline-block goog-flat-button char-select-this-button'
+                        'class': 'goog-inline-block goog-flat-button char-select-button'
                     },
                     characters[i]));
             }
@@ -86,7 +84,7 @@
             return myIconUrl;
         };
         InsertFromMenuAction.prototype.displayDialog = function () {
-            charsToBeInserted = [];
+            window.charsToBeInserted = [];
             // todo check this condition
             // if dialog has not been opened yet, load it
             if(document.querySelector('#charpickeriframe') === null) {
@@ -97,8 +95,8 @@
                 this.dialog.getElement().id = 'charPicker';
                 this.dialog.getElement().appendChild(charPickerIframe);
                 this.dialog.getElement().innerHTML += '<div><span>Insert characters:</span>' +
-                    '<input type="text" name="charsToBeInserted" id="special_characters" onClick="this.setSelectionRange(0, this.value.length)" readonly/>' +
-                    '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value="" >&#x2190;</button>' +
+                    '<input type="text" name="charsToBeInserted" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
+                    '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value=""></button>' +
                     '</div>';
 
                 var textarea = document.getElementById('special_characters');
@@ -220,7 +218,6 @@
                 goog.events.EventType.CLICK,
                 function (e) {
                     //console.log(e.target);
-                    //char-select-this-button
                     if (goog.dom.classlist.contains(e.target, 'goog-flat-button')) {
                         editor.getActionsManager().invokeOperation(
                             'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
@@ -271,24 +268,24 @@
 
         var insertFromMenu = new InsertFromMenuAction(editor);
         editor.getActionsManager().registerAction('insertfrommenu', insertFromMenu);
-        addToDitaToolbar(editor);
+        addToFrameworkToolbar(editor);
 
-        function addToDitaToolbar(editor) {
+        function addToFrameworkToolbar(editor) {
             goog.events.listen(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function (e) {
                 var actionsConfig = e.actionsConfiguration;
 
-                var ditaToolbar = null;
+                var frameworkToolbar = null;
                 if (actionsConfig.toolbars) {
                     for (var i = 0; i < actionsConfig.toolbars.length; i++) {
                         var toolbar = actionsConfig.toolbars[i];
-                        if (toolbar.name == "DITA") {
-                            ditaToolbar = toolbar;
+                        if (toolbar.name !== "Review" && toolbar.name !== "Builtin") {
+                            frameworkToolbar = toolbar;
                         }
                     }
                 }
 
-                if (ditaToolbar) {
-                    ditaToolbar.children.push({
+                if (frameworkToolbar) {
+                    frameworkToolbar.children.push({
                             id: 'insertfrommenu',
                             type: "action"
                         });
@@ -298,8 +295,6 @@
                 }
             });
         };
-
-        sync.util.loadCSSFile("../plugin-resources/char-picker/charpicker.css");
-        sync.util.loadCSSFile("../plugin-resources/char-picker/common.css");
+        sync.util.loadCSSFile("../plugin-resources/char-picker/plugin.css");
     })
 })();

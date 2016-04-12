@@ -2,12 +2,12 @@
 var gulp = require('gulp');
 // Include plugins
 
-var debug = require('gulp-debug');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var closureCompiler = require('gulp-closure-compiler');
 var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
+const zip = require('gulp-zip');
 
 var targetLocation = "../target";
  // Concatenate JS Files
@@ -41,17 +41,29 @@ gulp.task('replacehtml', function() {
 gulp.task('uglifyplugin', function() {
     return gulp.src('../web/plugin.js')
         .pipe(uglify())
-        .pipe(rename('plugin.min.js'))
+        .pipe(rename('plugin.js'))
         .pipe(gulp.dest('../web/uglified'));
 });
 
 gulp.task('minify-css', function(){
-    return gulp.src('*.css')
+    return gulp.src(['common.css', 'charpicker.css'])
         .pipe(concat('concat.css'))
         .pipe(rename('styles.min.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))        
         .pipe(gulp.dest(targetLocation + '/css'));
 });
 
+gulp.task('minify-plugin-css', function(){
+    return gulp.src('plugin.css')
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(gulp.dest(targetLocation));
+});
+
+gulp.task('package', function(){
+    return gulp.src('../**')
+        .pipe(zip('charpickaplugin.zip'))
+        .pipe(gulp.dest(targetLocation));
+});
+
  // Default Task
-gulp.task('prepare-package', ['scripts', 'minify-css', 'replacehtml']);
+gulp.task('prepare-package', ['scripts', 'uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
