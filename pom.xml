@@ -36,6 +36,9 @@
 							<goal>npm</goal>
 						</goals>
 						<phase>generate-resources</phase>
+						<configuration>
+        						<npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
+        					</configuration>
 					</execution>
 					<execution>
 						<id>gulp build</id>
