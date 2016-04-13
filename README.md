@@ -7,7 +7,6 @@ You should have NodeJS and npm installed. Then run the following commands:
 ```
 cd resources
 npm run package
-
 ```
 
 ## Deploy
