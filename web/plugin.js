@@ -72,8 +72,6 @@
             this.editor = editor;
             this.dialog = workspace.createDialog();
             this.dialog.setTitle('Insert Special Characters');
-            //button configuration deprecated, line useless todo delete line
-            //this.dialog.setButtonConfiguration(sync.api.Dialog.ButtonConfiguration.OK_CANCEL);
         };
         InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
         InsertFromMenuAction.prototype.getDisplayName = function () {
@@ -85,7 +83,6 @@
         };
         InsertFromMenuAction.prototype.displayDialog = function () {
             window.charsToBeInserted = [];
-            // todo check this condition
             // if dialog has not been opened yet, load it
             if(document.querySelector('#charpickeriframe') === null) {
                 var charPickerIframe = goog.dom.createDom('iframe', {
@@ -101,7 +98,6 @@
 
                 var textarea = document.getElementById('special_characters');
                 textarea.scrollTop = textarea.scrollHeight;
-                /*this.dialog.getElement().getElementById('removeLastChar');*/
                 goog.events.listen(this.dialog.getElement().querySelector('#removeLastChar'), goog.events.EventType.CLICK, function(){
                     var preview = document.getElementById('special_characters');
                     preview.value = '';
@@ -141,30 +137,21 @@
                                 fragment: stringifiedText
                             },
                             function () {
-                                //console.log('callback from invokeOperation', localStorage.getItem("recentlyUsedCharacters"));
                                 if (localStorageUsable()) {
                                     /* if using the localStorage is possible, add the text to the START of the array - queue system */
                                     if (storedRecentChars()) {
-                                        console.log(dialogInsertChars);
                                         var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
                                         characters = (dialogInsertChars.reverse()).concat(characters);
                                         characters = removeDuplicates(characters);
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
                                         displayRecentCharacters();
-
-                                        console.log('called refresh from dialog');
                                     } else {
-                                        console.log('characters not found in localstorage, creating...');
                                         characters = dialogInsertChars;
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
                                         displayRecentCharacters();
-                                        console.log('finally', characters);
                                     }
                                 }
                             })
-                    } else {
-                        //todo theres no callback anymore
-                        callback && callback();
                     }
                 }
             });
@@ -180,22 +167,13 @@
             //overwrite the handleBlur function to prevent the popup from closing after inserting a character
             this.csmenu.handleBlur = function () {
             };
-            // this.csmenu.attach(document.querySelector('[name=insertfrommenu]'), goog.positioning.Corner.BOTTOM_START);
 
             var moreSymbols = new goog.ui.MenuItem('More symbols...');
-            // moreSymbols.setEnabled(false);
             this.csmenu.addChild(moreSymbols, true);
-
-            console.log('getting more symbols');
-            console.log(moreSymbols.getElement());
-
             moreSymbols.setId('moreSymbolsButton');
 
-
-            // todo move the dialog action performed
             var charPickerDialog = new InsertFromMenuAction(this.editor);
-            goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, //goog.bind(displayDialog, this));
-                goog.bind(charPickerDialog.displayDialog, charPickerDialog));
+            goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(charPickerDialog.displayDialog, charPickerDialog));
 
             this.csmenu.render(document.body);
             goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
@@ -217,35 +195,25 @@
             goog.events.listen(document.querySelector('.goog-char-picker-grid'),
                 goog.events.EventType.CLICK,
                 function (e) {
-                    //console.log(e.target);
                     if (goog.dom.classlist.contains(e.target, 'goog-flat-button')) {
                         editor.getActionsManager().invokeOperation(
                             'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
                                 fragment: e.target.innerHTML
                             },
-                            //callback);
-                            //goog.events.dispatchEvent('finishedInsertingCharacter')
                             function () {
                                 var quickInsertChar = e.target.innerHTML;
-                                //console.log('callback from invokeOperation', localStorage.getItem("recentlyUsedCharacters"));
                                 if (localStorageUsable()) {
                                     /* if using the localStorage is possible, add the character to the START of the array - queue system */
                                     if (storedRecentChars()) {
-                                        console.log(quickInsertChar);
                                         var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
                                         characters.unshift(quickInsertChar);
                                         characters = removeDuplicates(characters);
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-                                        //displayRecentCharacters();
 
                                     } else {
-                                        console.log('characters not found in localstorage, creating...');
-                                        //todo
                                         characters = [];
                                         characters.unshift(quickInsertChar);
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-                                        //displayRecentCharacters();
-                                        console.log('finally', characters);
                                     }
                                 }
                             })

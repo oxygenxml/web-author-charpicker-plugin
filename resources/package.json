@@ -7,7 +7,7 @@
     "url": "git+https://github.com/oxygenxml/webapp-charpicker-plugin.git"
   },
   "scripts": {
-    "package": "npm install && gulp package"
+    "package": "npm install && gulp prepare-package"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/oxygenxml/webapp-charpicker-plugin#readme",
   "devDependencies": {
+    "del": "^2.2.0",
     "google-closure-compiler": "^20160315.2.0",
     "google-closure-library": "^20160315.0.0",
     "gulp": "^3.9.1",

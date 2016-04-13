@@ -7,7 +7,7 @@ goog.require('goog.ui.CharPicker');
 
 window["initCharPicker"] = function () {
     var picker = new goog.ui.CharPicker(new goog.i18n.CharPickerData(),
-        new goog.i18n.uChar.LocalNameFetcher());/*, ["\uD869\uDED6", "a", "b", "c"], 10, 1);*/
+        new goog.i18n.uChar.LocalNameFetcher());
     var el = goog.dom.getElement('char-picker');
     picker.render(el);
     var parent = window.parent;
@@ -15,7 +15,7 @@ window["initCharPicker"] = function () {
     var output = parent.document.getElementById('special_characters');
     // Action on selection
     var selectionAction = function () {
-        output.value += picker.getSelectedChar(); //+ output.innerHTML;
+        output.value += picker.getSelectedChar();
         parent["charsToBeInserted"].push(picker.getSelectedChar());
     };
 

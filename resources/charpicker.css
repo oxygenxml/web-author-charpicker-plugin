@@ -216,10 +216,7 @@
 
 
 .char-select-this-button:hover {
-  /*background-color: #ffcc33;*/
-  /*background-color: #337ab7;*/
   background-color: #d6e9f8;
-  /*color: white;*/
 }
 
 .goog-menu-button {
@@ -301,7 +298,3 @@
     height: 160px;
   }
 }
-/*
-body {
-  margin: 0px;
-}*/
