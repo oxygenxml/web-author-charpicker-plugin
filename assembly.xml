@@ -29,7 +29,7 @@
 			<directory>resources/</directory>
 			<outputDirectory>/resources</outputDirectory>
 			<includes>
-				<include>backwardDelete.svg</include>
+				<include>BackwardDelete.svg</include>
 				<include>InsertFromCharactersMap24.png</include>
 				<include>InsertFromCharactersMap24@2x.png</include>
 			</includes>
