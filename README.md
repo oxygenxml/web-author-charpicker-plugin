@@ -10,7 +10,7 @@ npm run package
 ```
 
 ## Deploy
-You have to add the plugin to the WebAuthor by selecting the archive (the .zip file) from the **target** folder
+You have to add the plugin to the WebAuthor by selecting the archive (.zip file) from the **target** folder
 
 ## Use
 You should find the ![charpicker button](/resources/InsertFromCharactersMap24.png) button in the framework toolbar. Clicking on it should present a grid with 21 recently used (or commonly used) characters.
