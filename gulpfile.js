@@ -11,17 +11,17 @@ var rename = require('gulp-rename');
 const zip = require('gulp-zip');
 var del = require('del');
 
-var targetLocation = "../target";
-var baseLocation = '../';
-var resourceLocation = '../resources'
+var targetLocation = "target";
+var resourceLocation = 'resources'
 
+var webLocation = 'web';
 var archiveName = 'webapp-charpicker-plugin-18.0';
-var archiveLocation = '../target/archive/' + archiveName + '/';
+var archiveLocation = 'target/archive/' + archiveName + '/';
 
 
  // Concatenate JS Files, use closure compiler
 gulp.task('minify-js', function() {
-    return gulp.src(['node_modules/google-closure-library/closure/goog/**/*.js', 'deps.js', 'main.js'])
+    return gulp.src(['node_modules/google-closure-library/closure/goog/**/*.js', resourceLocation + '/deps.js', resourceLocation + '/main.js'])
         .pipe(closureCompiler({
           compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
           fileName: 'build.js',
@@ -37,14 +37,14 @@ gulp.task('minify-js', function() {
 });
 // uglify plugin.js
 gulp.task('uglifyplugin', function() {
-    return gulp.src('../web/plugin.js')
+    return gulp.src(webLocation + '/plugin.js')
         .pipe(uglify())
         .pipe(rename('plugin.js'))
-        .pipe(gulp.dest('../web/uglified'));
+        .pipe(gulp.dest(targetLocation));
 });
 
 gulp.task('minify-css', function(){
-    return gulp.src(['common.css', 'charpicker.css'])
+    return gulp.src([ resourceLocation + '/common.css', resourceLocation + '/charpicker.css'])
         .pipe(concat('concat.css'))
         .pipe(rename('styles.min.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))        
@@ -52,13 +52,13 @@ gulp.task('minify-css', function(){
 });
 
 gulp.task('minify-plugin-css', function(){
-    return gulp.src('plugin.css')
+    return gulp.src(resourceLocation + '/plugin.css')
         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest(targetLocation));
 });
 
 gulp.task('replacehtml', ['minify-js', 'minify-css'], function() {
-    gulp.src('charpicker.html')
+    gulp.src(resourceLocation + '/charpicker.html')
         .pipe(htmlreplace({
             'css': 'css/styles.min.css',
             'dev': 'js/script.min.js'
@@ -88,15 +88,15 @@ gulp.task('resource_base', ['minify-all'], function(){
         .pipe(gulp.dest(archiveLocation + '/resources'));
 });
 gulp.task('web_js', ['minify-all'], function(){
-    return gulp.src('../web/uglified/plugin.js')
+    return gulp.src(targetLocation + '/plugin.js')
         .pipe(gulp.dest(archiveLocation + '/web'));
 });
 
 gulp.task('base_rest', function(){
     return gulp.src(
         [
-            baseLocation + 'plugin.xml',
-            baseLocation + 'README.md'
+            'plugin.xml',
+            'README.md'
         ])
         .pipe(gulp.dest(archiveLocation));
 });
@@ -108,7 +108,7 @@ gulp.task('archive', ['resource_css', 'resource_js', 'resource_base', 'web_js', 
 });
 
 gulp.task('cleanup',['archive'], function(){
-    return del('../target/archive/**', {force: true});
+    return del(targetLocation + '/archive/**', {force: true});
 });
 gulp.task('minify-all', ['minify-js', 'uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
 // Default Task

@@ -236,6 +236,8 @@
 
         var insertFromMenu = new InsertFromMenuAction(editor);
         editor.getActionsManager().registerAction('insertfrommenu', insertFromMenu);
+
+        var addActionOnce = 0;
         addToFrameworkToolbar(editor);
 
         function addToFrameworkToolbar(editor) {
@@ -251,8 +253,9 @@
                         }
                     }
                 }
-
-                if (frameworkToolbar) {
+                // adds the action only once, on the first toolbar that is not Review or Builtin
+                if (frameworkToolbar && addActionOnce === 0) {
+                    addActionOnce++;
                     frameworkToolbar.children.push({
                             id: 'insertfrommenu',
                             type: "action"
