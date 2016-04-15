@@ -113,4 +113,5 @@ gulp.task('cleanup',['archive'], function(){
 gulp.task('minify-all', ['minify-js', 'uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
 // Default Task
 gulp.task('prepare-package', ['minify-all', 'resource_base', 'resource_js', 'resource_css', 'web_js', 'base_rest', 'archive', 'cleanup']);
+gulp.task('default', ['prepare-package']);
 
