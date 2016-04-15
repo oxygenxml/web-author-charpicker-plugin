@@ -9,7 +9,7 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>web/uglified</directory>
+			<directory>target/</directory>
 			<outputDirectory>/web</outputDirectory>
 			<includes>
 				<include>plugin.js</include>
