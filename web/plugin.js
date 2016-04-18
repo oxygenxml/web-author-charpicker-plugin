@@ -91,10 +91,12 @@
                 });
                 this.dialog.getElement().id = 'charPicker';
                 this.dialog.getElement().appendChild(charPickerIframe);
-                this.dialog.getElement().innerHTML += '<div><span>Insert characters:</span>' +
-                    '<input type="text" name="charsToBeInserted" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
-                    '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value=""></button>' +
-                    '</div>';
+                var div = goog.dom.createDom('div');
+                div.innerHTML = '<span>Insert characters:</span>' +
+                '<input type="text" name="charsToBeInserted" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
+                '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value=""></button>';
+
+                this.dialog.getElement().appendChild(div);
 
                 var textarea = document.getElementById('special_characters');
                 textarea.scrollTop = textarea.scrollHeight;

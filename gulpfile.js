@@ -12,7 +12,7 @@ const zip = require('gulp-zip');
 var del = require('del');
 
 var targetLocation = "target";
-var resourceLocation = 'resources'
+var resourceLocation = 'resources';
 
 var webLocation = 'web';
 var archiveName = 'webapp-charpicker-plugin-18.0';
@@ -57,7 +57,7 @@ gulp.task('minify-plugin-css', function(){
         .pipe(gulp.dest(targetLocation));
 });
 
-gulp.task('replacehtml', ['minify-js', 'minify-css'], function() {
+gulp.task('replacehtml', function() {
     gulp.src(resourceLocation + '/charpicker.html')
         .pipe(htmlreplace({
             'css': 'css/styles.min.css',
@@ -76,7 +76,7 @@ gulp.task('resource_js', ['minify-all'], function(){
         .pipe(gulp.dest(archiveLocation + '/resources/js'));
 });
 
-gulp.task('resource_base', ['minify-all'], function(){
+gulp.task('resource_base', ['minify-plugin-css', 'replacehtml'], function(){
     return gulp.src(
         [
             targetLocation + '/plugin.css',
@@ -110,8 +110,15 @@ gulp.task('archive', ['resource_css', 'resource_js', 'resource_base', 'web_js', 
 gulp.task('cleanup',['archive'], function(){
     return del(targetLocation + '/archive/**', {force: true});
 });
+
+// dev: make a copy of the google closure library in resources
+gulp.task('goog_base_js', function(){
+    return gulp.src('node_modules/google-closure-library/**/*')
+        .pipe(gulp.dest(resourceLocation + '/closure-library'));
+});
+
 gulp.task('minify-all', ['minify-js', 'uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
 // Default Task
-gulp.task('prepare-package', ['minify-all', 'resource_base', 'resource_js', 'resource_css', 'web_js', 'base_rest', 'archive', 'cleanup']);
+gulp.task('prepare-package', ['minify-all', 'resource_base', 'resource_js', 'resource_css', 'web_js', 'base_rest', 'archive', 'cleanup', 'goog_base_js']);
 gulp.task('default', ['prepare-package']);
 
