@@ -47,6 +47,9 @@
     height: 41px;
     width: 50px;
     margin-left: 2px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     background-image: url('backwardDelete.svg');
     background-size: 100% 90%;
     background-repeat: no-repeat;

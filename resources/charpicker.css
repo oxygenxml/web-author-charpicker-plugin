@@ -83,6 +83,9 @@
 
 .goog-char-picker-okbutton {
   display: inline-block;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   padding: 6px 12px;
   margin-bottom: 0;
   margin-left: 2px;
