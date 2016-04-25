@@ -32,8 +32,8 @@
 }
 
 #charpickeriframe {
-    width:400px;
-    height:400px;
+    width:350px;
+    height:330px;
     border:none;
 }
 #special_characters {
@@ -98,15 +98,222 @@
     padding: 5px 20px 4px 20px;
 }
 
+.goog-char-picker-okbutton {
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0px 12px;
+    margin-bottom: 0;
+    margin-left: 2px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: top;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+}
+.goog-char-picker-okbutton:focus,
+.goog-char-picker-okbutton:active:focus {
+    outline: thin dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+.goog-char-picker-okbutton:hover,
+.goog-char-picker-okbutton:focus {
+    color: #333;
+    text-decoration: none;
+    background-color: #e6e6e6;
+}
+
+.tabsContainer
+{
+    width: 100%;
+    height: 220px;
+}
+
+.tabsContainer ul,
+.tabsContainer li
+{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tabsContainer,
+.tabsContainer input[type="radio"]:checked + label
+{
+    position: relative;
+}
+
+.tabsContainer li,
+.tabsContainer input[type="radio"] + label
+{
+    display: inline-block;
+}
+
+.tabsContainer li > div,
+.tabsContainer input[type="radio"]
+{
+    position: absolute;
+}
+
+.tabsContainer li > div
+{
+    border-top: solid 1px #ccc;
+}
+
+.tabsContainer
+{
+    height: 400px;
+}
+
+.tabsContainer li
+{
+    vertical-align: top;
+}
+
+.tabsContainer li:first-child
+{
+    margin-left: 8px;
+}
+
+.tabsContainer li > div
+{
+    top: 33px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    overflow: auto;
+    background: #fff;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.tabsContainer input[type="radio"] + label
+{
+    margin: 0 2px 0 0;
+    padding: 0 18px;
+    line-height: 32px;
+    background: #f1f1f1;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid lightgray;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.tabsContainer input[type="radio"]:checked + label
+{
+    z-index: 1;
+    background: #fff;
+    border-bottom-color: #fff;
+    cursor: default;
+}
+
+.tabsContainer input[type="radio"]
+{
+    opacity: 0;
+}
+
+.tabsContainer input[type="radio"] ~ div
+{
+    display: none;
+}
+
+.tabsContainer input[type="radio"]:checked:not(:disabled) ~ div
+{
+    display: block;
+}
+
+#foundByNameList {
+    height: 200px;
+    overflow-y: scroll;
+    margin-top: 5px;
+    border: 1px solid lightgrey;
+}
+.characterListRow:hover {
+    background-color: #d6e9f8;
+}
+.characterListSymbol {
+    display: inline-block;
+    font-size:2em;
+    width:49px;
+    height: 49px;
+    line-height: 50px;
+    border-bottom: 1px solid lightgrey;
+    border-right: 1px solid lightgrey;
+    text-align: center;
+    cursor: pointer;
+}
+.characterListSymbol:hover {
+    background-color: #d6e9f8;
+}
+
+#previewCharacterDetails {
+    margin-top: 10px;
+    width: 360px;
+}
+#previewSymbol {
+    width: 60px;
+    height: 60px;
+    line-height: 62px;
+    font-size: 3em;
+    display: inline-block;
+    border:1px solid lightgrey;
+    text-align: center;
+    overflow: hidden;
+}
+#previewSymbolName {
+    padding-left: 10px;
+    display: inline-block;
+    width: 250px;
+    vertical-align: top;
+    line-height: 1.2em;
+}
+#searchNameButton {
+    line-height: 1.3em;
+    vertical-align: baseline;
+}
 @media (max-height: 560px) {
     #charpickeriframe {
-        height: 270px;
+        height: 220px;
     }
     #charPicker {
         padding: 6px 12px;
     }
     #moreSymbolsButton .goog-menuitem-content{
         font-size: 1.1em;
+    }
+    #previewCharacterDetails {
+        display: none;
+    }
+    .tabsContainer {
+        height: 280px;
+    }
+    #charpicker-search-by-name {
+        padding: 8px 0px;
+    }
+    .tabsContainer li > div {
+        padding: 0px;
+    }
+    #foundByNameList {
+        height: 160px;
     }
 }
 

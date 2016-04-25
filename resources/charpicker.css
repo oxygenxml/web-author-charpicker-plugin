@@ -1,9 +1,4 @@
 
-.goog-char-picker {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
 /* goog.ui.HoverCard */
 .goog-char-picker-hovercard {
   border: solid 2px #337ab7;
@@ -36,14 +31,14 @@
 .goog-char-picker-grid-container {
   border: 1px solid #777;
   background-color: #fff;
-  width: 370px;
-  height: 280px;
+  width: 330px;
+  height: 190px;
   margin-bottom:10px;
 }
 
 .goog-char-picker-grid {
   overflow-y: scroll;
-  height: 280px;
+  height: 190px;
   width: 100%;
   position: relative;
 }
@@ -166,7 +161,7 @@
   outline: none;
   padding: 0;
   position: absolute;
-  max-height: 260px;
+  max-height: 170px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -289,15 +284,18 @@
 /* media query for the iframe contents when the screen is less than 480px height */
 @media (max-height: 300px) {
   .goog-char-picker-grid {
-    height: 180px;
+    height: 130px;
   }
   .goog-char-picker-grid-container {
-    height: 180px;
+    height: 130px;
   }
   .goog-menu-button-inner-box {
     padding: 3px 4px;
   }
   .goog-char-picker-menu {
-    height: 160px;
+    height: 200px;
+  }
+  body {
+    margin-bottom: 0px;
   }
 }

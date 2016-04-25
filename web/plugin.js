@@ -1,6 +1,12 @@
 (function () {
     goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
 
+        //var url = e.options.url;
+        //console.log(sync.util.Url(url).getDomain());
+
+        //quickly change urls that have the plugin name hardcoded
+        var pluginNameForResources = 'char-picker';
+
         var localStorageUsable = function () {
             if (typeof (Storage) !== 'undefined') {
                 return 1;
@@ -23,8 +29,15 @@
             return arr.filter(function(item, pos) {
                 return arr.indexOf(item) == pos;
             });
+        };
+        var capitalizeWords = function(text) {
+            var splitText = text.toLowerCase().split(' ');
+            for(var i=0; i<splitText.length; i++) {
+                //console.log(splitText[i].charAt[0]);
+                splitText[i] = splitText[i].substr(0,1).toUpperCase() + splitText[i].substring(1);
+            }
+            return splitText.join(' ');
         }
-
         var displayRecentCharacters = function () {
             var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
                 "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
@@ -66,7 +79,13 @@
                     characters[i]));
             }
         }
-
+        var updateCharPreview = function(e) {
+            var symbol = e.target.innerHTML;
+            var symbolCode = e.target.getAttribute('data-symbol-hexcode');
+            var symbolName = e.target.getAttribute('data-symbol-name')
+            document.querySelector('#previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
+                '</div><div id="previewSymbolName">' + symbolName + ' <span style="white-space: nowrap; vertical-align: top">(' + symbolCode + ')</span></div>';
+        };
 
         var InsertFromMenuAction = function (editor) {
             this.editor = editor;
@@ -77,7 +96,10 @@
         InsertFromMenuAction.prototype.getDisplayName = function () {
             return 'insert from menu';
         };
-        var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/char-picker/InsertFromCharactersMap24.png');
+        /*githubOpenAction.setLargeIcon(
+            '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');*/
+        //var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/' + pluginNameForResources + '/InsertFromCharactersMap24' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
+        var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/' + pluginNameForResources + '/InsertFromCharactersMap24.png');
         InsertFromMenuAction.prototype.getLargeIcon = function () {
             return myIconUrl;
         };
@@ -85,12 +107,96 @@
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
             if(document.querySelector('#charpickeriframe') === null) {
+                var tabContainer = goog.dom.createDom('div', {class: 'tabsContainer'});
+                tabContainer.innerHTML = '<ul><li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-0" checked="checked" />' +
+                    '<label for="tabsContainer-0-0">By name</label><div id="charpicker-search-by-name"></div></li>' +
+                    '<li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-1" />' +
+                    '<label for="tabsContainer-0-1">By categories or hex name</label><div id="charpicker-advanced"></div></li></ul>';
+
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
-                    'src': '../plugin-resources/char-picker/charpicker.html'
+                    'src': '../plugin-resources/' + pluginNameForResources + '/charpicker.html'
+                    //'src': '../plugin-resources/closure/charpicker.html'
                 });
                 this.dialog.getElement().id = 'charPicker';
-                this.dialog.getElement().appendChild(charPickerIframe);
+                this.dialog.getElement().appendChild(tabContainer);
+
+
+                //var searchByNameInput = goog.dom.createDom('in')
+                var searchByNameContainer = document.getElementById("charpicker-search-by-name");
+                searchByNameContainer.innerHTML = '<div style="display:inline-block; line-height: 1.2em;">Name of character: <br> <input type="text" name="searchName" id="searchName"></div><button id="searchNameButton" class="goog-char-picker-okbutton">search</button>'
+                    + '<div id="foundByNameList"></div>';
+
+                var previewCharacterDetails = goog.dom.createDom('div', {'id': 'previewCharacterDetails'});
+                document.getElementById('charpicker-search-by-name').appendChild(previewCharacterDetails);
+
+                goog.events.listen(document.querySelector('#foundByNameList'),
+                    goog.events.EventType.MOUSEOVER,
+                    function (e){
+                        console.log(e);
+                        if(e.target.id !== 'foundByNameList'){
+                            updateCharPreview(e);
+                        }
+                    }
+                );
+                goog.events.listen(document.querySelector('#foundByNameList'),
+                    goog.events.EventType.CLICK,
+                    function (e){
+                        console.log(e);
+                        if(e.target.id !== 'foundByNameList'){
+                            updateCharPreview(e);
+                            var symbol = e.target.innerHTML;
+                            charsToBeInserted.push(symbol);
+                            document.getElementById('special_characters').value += symbol;
+                        }
+                    }
+                );
+
+
+                //goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(charPickerDialog.displayDialog, charPickerDialog));
+                goog.require('goog.net.XhrIo');
+                var executeQuery = function(query) {
+                    //var url = "https://i18n-cloud.appspot.com/csearch";
+                    var url = "http://localhost:8081/oxygen-sdk-sample-webapp/plugins-dispatcher/charpicker-plugin" + "?q=" + encodeURIComponent(query);
+                    console.log('sending request');
+                    document.getElementById("foundByNameList").innerHTML = '';
+                    goog.net.XhrIo.send(url, function(e){
+                        console.log(e);
+                        var xhr = e.target;
+                        var obj = xhr.getResponseJson();
+
+                        for(var i in obj) {
+                            var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[i]), 'data-symbol-hexcode': i});
+                            var decimalCode = parseInt(i, 16);
+                            foundByNameItem.innerHTML = String.fromCodePoint(decimalCode);
+                            document.getElementById("foundByNameList").appendChild(foundByNameItem);
+                        }
+
+                        //console.log(obj);
+                    }, "GET");
+                    //}, "POST", "q=" + encodeURIComponent(query));
+                };
+                goog.events.listen(document.getElementById("searchNameButton"), goog.events.EventType.CLICK, function(){
+                    var query = document.getElementById("searchName").value;
+                    executeQuery(query);
+
+                });
+
+                // when the user is searching for character by name, enter triggers submit query instead of closing the dialog
+                goog.events.listen(document.querySelector('#searchName'), goog.events.EventType.KEYDOWN, function(e){
+                    console.log('pressing');
+                        if(e.keyCode === 13) {
+                            e.preventDefault();
+                            var query = document.getElementById("searchName").value;
+                            executeQuery(query);
+                        }
+                    }
+                );
+
+                //todo: make separate function for the query, rename query
+
+                document.querySelector('#charpicker-advanced').appendChild(charPickerIframe);
+
                 var div = goog.dom.createDom('div');
                 div.innerHTML = '<span>Insert characters:</span>' +
                 '<input type="text" name="charsToBeInserted" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
@@ -108,10 +214,12 @@
                         preview.value += charsToBeInserted[i];
                     }
                 });
+
             }
             // if dialog has been populated already just reset the textboxes
             else {
                 this.dialog.getElement().querySelector('#special_characters').value = '';
+                this.dialog.getElement().querySelector('#searchName').value = '';
                 var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
                 var iframeContent = (iframe.contentWindow || iframe.contentDocument);
                 if (iframeContent.document) {
@@ -127,6 +235,7 @@
             this.dialog.onSelect(function (key) {
                 // DIALOG INSERT GRID
                 if (key == 'ok') {
+                    console.log('key' + key);
                     var dialogInsertChars = charsToBeInserted;
                     if (dialogInsertChars) {
                         var stringifiedText = '';
@@ -268,6 +377,6 @@
                 }
             });
         };
-        sync.util.loadCSSFile("../plugin-resources/char-picker/plugin.css");
+        sync.util.loadCSSFile("../plugin-resources/" + pluginNameForResources + "/plugin.css");
     })
 })();

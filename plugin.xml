@@ -9,6 +9,13 @@
  version="18.0-SNAPSHOT"
  vendor="SyncRO"
  class="ro.sync.exml.plugin.Plugin">
+ <runtime>
+  <librariesFolder name="lib"/>
+  <library name="target/classes"/>
+ </runtime>
+ 
  <extension type="WebappStaticResourcesFolder" 
     path="resources/" href="char-picker/"/> 
+ <extension type="WebappServlet" 
+  	class="com.oxgenxml.charpicker.SpecialCharServlet"/>
 </plugin>
