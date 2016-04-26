@@ -1,11 +1,8 @@
 (function () {
     goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
-
-        //var url = e.options.url;
-        //console.log(sync.util.Url(url).getDomain());
-
+        
         //quickly change urls that have the plugin name hardcoded
-        var pluginNameForResources = 'char-picker';
+        var pluginResourcesFolder = 'char-picker';
 
         var localStorageUsable = function () {
             if (typeof (Storage) !== 'undefined') {
@@ -15,7 +12,7 @@
                 console.log('localstorage not supported');
                 return 0;
             }
-        }
+        };
         var storedRecentChars = function () {
             if (localStorage.getItem("recentlyUsedCharacters")) {
                 return 1;
@@ -24,7 +21,7 @@
                 console.log('there are no recentCharacters set');
                 return 0;
             }
-        }
+        };
         var removeDuplicates = function (arr) {
             return arr.filter(function(item, pos) {
                 return arr.indexOf(item) == pos;
@@ -32,12 +29,11 @@
         };
         var capitalizeWords = function(text) {
             var splitText = text.toLowerCase().split(' ');
-            for(var i=0; i<splitText.length; i++) {
-                //console.log(splitText[i].charAt[0]);
+            for(var i = 0; i < splitText.length; i++) {
                 splitText[i] = splitText[i].substr(0,1).toUpperCase() + splitText[i].substring(1);
             }
             return splitText.join(' ');
-        }
+        };
         var displayRecentCharacters = function () {
             var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
                 "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
@@ -53,7 +49,6 @@
             }
 
             var characters = [];
-            //check if this check for undefined is ok
             if (localStorageUsable()) {
                 if (storedRecentChars()) {
                     characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
@@ -78,11 +73,11 @@
                     },
                     characters[i]));
             }
-        }
+        };
         var updateCharPreview = function(e) {
             var symbol = e.target.innerHTML;
             var symbolCode = e.target.getAttribute('data-symbol-hexcode');
-            var symbolName = e.target.getAttribute('data-symbol-name')
+            var symbolName = e.target.getAttribute('data-symbol-name');
             document.querySelector('#previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
                 '</div><div id="previewSymbolName">' + symbolName + ' <span style="white-space: nowrap; vertical-align: top">(' + symbolCode + ')</span></div>';
         };
@@ -96,13 +91,12 @@
         InsertFromMenuAction.prototype.getDisplayName = function () {
             return 'insert from menu';
         };
-        /*githubOpenAction.setLargeIcon(
-            '../plugin-resources/github-static/Github70' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');*/
-        //var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/' + pluginNameForResources + '/InsertFromCharactersMap24' + (sync.util.getHdpiFactor() > 1 ? '@2x' : '') + '.png');
-        var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/' + pluginNameForResources + '/InsertFromCharactersMap24.png');
+
+        var myIconUrl = sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
         InsertFromMenuAction.prototype.getLargeIcon = function () {
             return myIconUrl;
         };
+
         InsertFromMenuAction.prototype.displayDialog = function () {
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
@@ -115,14 +109,12 @@
 
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
-                    'src': '../plugin-resources/' + pluginNameForResources + '/charpicker.html'
-                    //'src': '../plugin-resources/closure/charpicker.html'
+                    'src': '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html'
                 });
                 this.dialog.getElement().id = 'charPicker';
                 this.dialog.getElement().appendChild(tabContainer);
 
 
-                //var searchByNameInput = goog.dom.createDom('in')
                 var searchByNameContainer = document.getElementById("charpicker-search-by-name");
                 searchByNameContainer.innerHTML = '<div style="display:inline-block; line-height: 1.2em;">Name of character: <br> <input type="text" name="searchName" id="searchName"></div><button id="searchNameButton" class="goog-char-picker-okbutton">search</button>'
                     + '<div id="foundByNameList"></div>';
@@ -133,7 +125,6 @@
                 goog.events.listen(document.querySelector('#foundByNameList'),
                     goog.events.EventType.MOUSEOVER,
                     function (e){
-                        console.log(e);
                         if(e.target.id !== 'foundByNameList'){
                             updateCharPreview(e);
                         }
@@ -142,7 +133,6 @@
                 goog.events.listen(document.querySelector('#foundByNameList'),
                     goog.events.EventType.CLICK,
                     function (e){
-                        console.log(e);
                         if(e.target.id !== 'foundByNameList'){
                             updateCharPreview(e);
                             var symbol = e.target.innerHTML;
@@ -153,15 +143,11 @@
                 );
 
 
-                //goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(charPickerDialog.displayDialog, charPickerDialog));
                 goog.require('goog.net.XhrIo');
                 var executeQuery = function(query) {
-                    //var url = "https://i18n-cloud.appspot.com/csearch";
-                    var url = "http://localhost:8081/oxygen-sdk-sample-webapp/plugins-dispatcher/charpicker-plugin" + "?q=" + encodeURIComponent(query);
-                    console.log('sending request');
+                    var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(query);
                     document.getElementById("foundByNameList").innerHTML = '';
                     goog.net.XhrIo.send(url, function(e){
-                        console.log(e);
                         var xhr = e.target;
                         var obj = xhr.getResponseJson();
 
@@ -171,10 +157,7 @@
                             foundByNameItem.innerHTML = String.fromCodePoint(decimalCode);
                             document.getElementById("foundByNameList").appendChild(foundByNameItem);
                         }
-
-                        //console.log(obj);
                     }, "GET");
-                    //}, "POST", "q=" + encodeURIComponent(query));
                 };
                 goog.events.listen(document.getElementById("searchNameButton"), goog.events.EventType.CLICK, function(){
                     var query = document.getElementById("searchName").value;
@@ -184,7 +167,6 @@
 
                 // when the user is searching for character by name, enter triggers submit query instead of closing the dialog
                 goog.events.listen(document.querySelector('#searchName'), goog.events.EventType.KEYDOWN, function(e){
-                    console.log('pressing');
                         if(e.keyCode === 13) {
                             e.preventDefault();
                             var query = document.getElementById("searchName").value;
@@ -235,14 +217,12 @@
             this.dialog.onSelect(function (key) {
                 // DIALOG INSERT GRID
                 if (key == 'ok') {
-                    console.log('key' + key);
                     var dialogInsertChars = charsToBeInserted;
                     if (dialogInsertChars) {
                         var stringifiedText = '';
                         for(i=0;i<dialogInsertChars.length;i++){
                             stringifiedText += dialogInsertChars[i];
                         }
-                        //this.editor.getActionsManager().invokeOperation(
                         editor.getActionsManager().invokeOperation(
                             'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
                                 fragment: stringifiedText
@@ -268,7 +248,7 @@
             });
 
             this.dialog.show();
-        }
+        };
 
         InsertFromMenuAction.prototype.init = function () {
             window.charsToBeInserted = [];
@@ -377,6 +357,6 @@
                 }
             });
         };
-        sync.util.loadCSSFile("../plugin-resources/" + pluginNameForResources + "/plugin.css");
+        sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/plugin.css");
     })
 })();

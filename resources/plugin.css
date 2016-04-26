@@ -260,6 +260,12 @@
     border-right: 1px solid lightgrey;
     text-align: center;
     cursor: pointer;
+    overflow: hidden;
+    vertical-align: top;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .characterListSymbol:hover {
     background-color: #d6e9f8;
