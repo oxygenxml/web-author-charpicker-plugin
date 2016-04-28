@@ -142,7 +142,6 @@
                     }
                 );
 
-
                 goog.require('goog.net.XhrIo');
                 var executeQuery = function(query) {
                     var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(query);
@@ -159,18 +158,43 @@
                         }
                     }, "GET");
                 };
-                goog.events.listen(document.getElementById("searchNameButton"), goog.events.EventType.CLICK, function(){
-                    var query = document.getElementById("searchName").value;
-                    executeQuery(query);
 
+                // execute query when user clicks on the search button
+                goog.events.listen(document.getElementById("searchNameButton"), goog.events.EventType.CLICK, function() {
+                    checkAndSearch();
                 });
 
-                // when the user is searching for character by name, enter triggers submit query instead of closing the dialog
+                // execute query when user presses enter in the input, prevent dialog closing
                 goog.events.listen(document.querySelector('#searchName'), goog.events.EventType.KEYDOWN, function(e){
                         if(e.keyCode === 13) {
                             e.preventDefault();
-                            var query = document.getElementById("searchName").value;
-                            executeQuery(query);
+                            checkAndSearch();
+                        }
+                    }
+                );
+
+                // execute query automatically after user stops typing
+                var typingPause = 500;
+                var timeoutfunction;
+
+                var checkAndSearch = function() {
+                    clearTimeout(timeoutfunction);
+                    var inputValue = document.getElementById("searchName").value;
+
+                    document.getElementById("foundByNameList").innerHTML = '';
+                    document.getElementById("previewCharacterDetails").innerHTML = '';
+
+                    if(inputValue.length !== 0){
+                        executeQuery(inputValue);
+                    }
+                };
+
+                goog.events.listen(document.getElementById("searchName"),
+                    goog.events.EventType.KEYUP,
+                    function(e) {
+                        // if the key is enter a search is triggered already on keydown
+                        if (e.keyCode !== 13){
+                            timeoutfunction = setTimeout(checkAndSearch, typingPause);
                         }
                     }
                 );
