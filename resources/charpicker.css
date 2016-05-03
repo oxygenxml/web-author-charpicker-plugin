@@ -1,4 +1,3 @@
-
 /* goog.ui.HoverCard */
 .goog-char-picker-hovercard {
   border: solid 2px #337ab7;
@@ -11,6 +10,7 @@
   visibility: hidden;
   z-index: 99;
 }
+
 
 .goog-char-picker-name {
   font-size: x-small;
@@ -29,16 +29,17 @@
  * grid
  */
 .goog-char-picker-grid-container {
-  border: 1px solid #777;
+  border: 1px solid lightgrey;
   background-color: #fff;
-  width: 330px;
-  height: 190px;
-  margin-bottom:10px;
+  width: 385px;
+  height: 200px;
+  margin-bottom:30px;
 }
 
 .goog-char-picker-grid {
   overflow-y: scroll;
-  height: 190px;
+  /*height: 190px;*/
+  height: 100%;
   width: 100%;
   position: relative;
 }
@@ -70,10 +71,11 @@
   width: 96px;
   font-size: 20px;
   height: 28px;
+  font-family: robotolight,Arial,Helvetica,sans-serif;
 }
 
 .label-input-label {
-  color: GrayText;
+  color: gray;
 }
 
 .goog-char-picker-okbutton {
@@ -120,9 +122,9 @@
  */
 .goog-char-picker-grid .goog-flat-button {
   position: relative;
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
+  width: 51px;
+  height: 51px;
+  line-height: 52px;
   font-size: 2em;
   border-bottom: 1px solid #ddd;
   border-right: 1px solid #ddd;
@@ -133,8 +135,7 @@
 
 .goog-char-picker-grid .goog-flat-button-hover,
 .goog-char-picker-grid .goog-flat-button-focus {
-  background-color: #337ab7;
-  color: white;
+  background-color: #d6e9f8;
 }
 
 /*
@@ -147,7 +148,6 @@
   margin: 0;
   padding: 0;
   position: absolute;
-  background-position: center left;
 }
 
 /* State: resting. */
@@ -161,7 +161,7 @@
   outline: none;
   padding: 0;
   position: absolute;
-  max-height: 170px;
+  max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -219,6 +219,7 @@
 
 .goog-menu-button {
   border: 0;
+  border-radius: 4px;
   color: #000;
   cursor: pointer;
   list-style: none;
@@ -232,7 +233,7 @@
   background-color: #e6e6e6;
 }
 .goog-menu-button.goog-menu-button-open {
-  background-color: #d4d4d4;
+  background-color: #e6e6e6;
 }
 .goog-menu-button-dropdown {
   display: inline-block;
@@ -249,7 +250,8 @@
 .goog-menu-button-outer-box,
 .goog-menu-button-inner-box {
   border-style: solid;
-  border-color: #aaa;
+  border-color: lightgrey;
+  border-radius: 4px;
   vertical-align: top;
 }
 .goog-menu-button-outer-box {
@@ -263,7 +265,7 @@
   padding: 6px 8px;
 }
 /* span for "recent characters" */
-.goog-char-picker span:nth-child(5){
+.goog-char-picker span:nth-child(4){
     display: none;
 }
 .caret {
@@ -280,22 +282,35 @@
 #pickermenu {
   padding: 0px;
 }
+body {
+  margin: 0px;
+  overflow: hidden;
+  font-family: robotolight,Arial,Helvetica,sans-serif;
+}
 
+#label-categories {
+  display: block;
+  padding-right: 5px;
+}
+
+#label-hexcode {
+  padding-right: 5px;
+}
+#dropdown-wrapper {
+  display: inline-block;
+}
+#categories {
+  height: 53px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
 /* media query for the iframe contents when the screen is less than 480px height */
 @media (max-height: 300px) {
-  .goog-char-picker-grid {
-    height: 130px;
-  }
   .goog-char-picker-grid-container {
     height: 130px;
-  }
-  .goog-menu-button-inner-box {
-    padding: 3px 4px;
+    margin-bottom: 10px;
   }
   .goog-char-picker-menu {
-    height: 200px;
-  }
-  body {
-    margin-bottom: 0px;
+    height: 160px;
   }
 }

@@ -105,7 +105,7 @@
                 tabContainer.innerHTML = '<ul><li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-0" checked="checked" />' +
                     '<label for="tabsContainer-0-0">By name</label><div id="charpicker-search-by-name"></div></li>' +
                     '<li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-1" />' +
-                    '<label for="tabsContainer-0-1">By categories or hex name</label><div id="charpicker-advanced"></div></li></ul>';
+                    '<label for="tabsContainer-0-1">By categories or hex code</label><div id="charpicker-advanced"></div></li></ul>';
 
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
@@ -114,9 +114,11 @@
                 this.dialog.getElement().id = 'charPicker';
                 this.dialog.getElement().appendChild(tabContainer);
 
+                this.dialog.getElement().parentElement.classList.add("dialogContainer");
+
 
                 var searchByNameContainer = document.getElementById("charpicker-search-by-name");
-                searchByNameContainer.innerHTML = '<div style="display:inline-block; line-height: 1.2em;">Name of character: <br> <input type="text" name="searchName" id="searchName"></div><button id="searchNameButton" class="goog-char-picker-okbutton">search</button>'
+                searchByNameContainer.innerHTML = '<div style="line-height: 1.2em;">Name of character to search for: <br> <input type="text" class="charpicker-input" name="searchName" id="searchName"></div>'
                     + '<div id="foundByNameList"></div>';
 
                 var previewCharacterDetails = goog.dom.createDom('div', {'id': 'previewCharacterDetails'});
@@ -153,16 +155,11 @@
                         for(var i in obj) {
                             var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[i]), 'data-symbol-hexcode': i});
                             var decimalCode = parseInt(i, 16);
-                            foundByNameItem.innerHTML = String.fromCodePoint(decimalCode);
+                            foundByNameItem.innerHTML = String.fromCharCode(decimalCode);
                             document.getElementById("foundByNameList").appendChild(foundByNameItem);
                         }
                     }, "GET");
                 };
-
-                // execute query when user clicks on the search button
-                goog.events.listen(document.getElementById("searchNameButton"), goog.events.EventType.CLICK, function() {
-                    checkAndSearch();
-                });
 
                 // execute query when user presses enter in the input, prevent dialog closing
                 goog.events.listen(document.querySelector('#searchName'), goog.events.EventType.KEYDOWN, function(e){
@@ -199,13 +196,12 @@
                     }
                 );
 
-                //todo: make separate function for the query, rename query
-
                 document.querySelector('#charpicker-advanced').appendChild(charPickerIframe);
 
                 var div = goog.dom.createDom('div');
-                div.innerHTML = '<span>Insert characters:</span>' +
-                '<input type="text" name="charsToBeInserted" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
+                div.id = "selectedCharsWrapper";
+                div.innerHTML = '<span>Selected characters:</span>' +
+                '<input type="text" name="charsToBeInserted" class="charpicker-input" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
                 '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value=""></button>';
 
                 this.dialog.getElement().appendChild(div);
@@ -377,6 +373,7 @@
                         });
                     setTimeout(function () {
                         insertFromMenu.init();
+                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", "Insert a special character.");
                     }, 0)
                 }
             });

@@ -10,6 +10,7 @@ var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 const zip = require('gulp-zip');
 var del = require('del');
+var jshint = require('gulp-jshint');
 
 var targetLocation = "target";
 var resourceLocation = 'resources';
@@ -18,7 +19,11 @@ var webLocation = 'web';
 var archiveName = 'webapp-charpicker-plugin-18.0';
 var archiveLocation = 'target/archive/' + archiveName + '/';
 
-
+gulp.task('lint', function() {
+    return gulp.src([webLocation + '/plugin.js', resourceLocation + '/**/*.js', '!'+resourceLocation + '/closure-library/**/*.js'])
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'));
+});
  // Concatenate JS Files, use closure compiler
 gulp.task('minify-js', function() {
     return gulp.src(['node_modules/google-closure-library/closure/goog/**/*.js', resourceLocation + '/deps.js', resourceLocation + '/main.js'])
@@ -61,7 +66,8 @@ gulp.task('replacehtml', function() {
     gulp.src(resourceLocation + '/charpicker.html')
         .pipe(htmlreplace({
             'css': 'css/styles.min.css',
-            'dev': 'js/script.min.js'
+            'dev': 'js/script.min.js',
+            'robotolight': '<style>@font-face {font-family: "robotolight"; src: url("../../app/fonts/RobotoTTF/Roboto-Light.ttf") format("truetype");}</style>'
         }))
         .pipe(gulp.dest(targetLocation));
 });
