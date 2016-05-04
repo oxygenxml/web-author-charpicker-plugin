@@ -3,13 +3,13 @@ package com.oxgenxml.charpicker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 
 public class SpecialCharServlet extends WebappServletPluginExtension {
 	
-	private static int maxIterations = 200;
+	private static int maxResults = 500;
 	
 	private Properties chars;
 
@@ -66,15 +66,19 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		
 		
 		String[] queryWords = query.split("\\s+");
+		int scoreFullMatch = 3;
+		int scorePartialMatch = 1;
+		int maxScore = queryWords.length * scoreFullMatch;
+		
+		// score equivalent to over half of query words matching fully
+		int relevanceThreshold = queryWords.length * scoreFullMatch/2;
+		
 		Map<String, String> charsFromProperties = propsAsMap(chars);
 		Map<String, String> matches = new LinkedHashMap<String, String>();
 		
-		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new TreeMap<Integer, Set<Map.Entry<String, String>>>();
-		for(int score = queryWords.length * 3; score >= 1; score--){
-			charactersByScore.put(score, new HashSet<Map.Entry<String, String>>());
-		}
+		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<Integer, Set<Map.Entry<String, String>>>();
 
-		int relevanceThreshold = queryWords.length * 3/2;
+		
 		ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
 		ArrayList<Pattern> partialPatterns = getPartialPatterns(queryWords);
 		
@@ -87,11 +91,11 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			for(int i = 0; i< queryWords.length; i++){
 				Matcher matcher = fullPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){
-					score+=3;
+					score += scoreFullMatch;
 				}
 				matcher = partialPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){
-					score++;
+					score += scorePartialMatch;
 				}
 			}			
 			
@@ -101,23 +105,24 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 				if(charsWithCurrentScore == null) {
 					charsWithCurrentScore = new HashSet<Map.Entry<String, String>>();
 					charactersByScore.put(score, charsWithCurrentScore);
-				}				
-				
+				}
 				charsWithCurrentScore.add(entry);
 			}
 		}
 		
 		int results = 0;
-		for(int score = queryWords.length * 3; score >= queryWords.length * 3/2; score--){
-			System.out.println("results for score --------------" + score);
-			for(Entry<String, String> entry : charactersByScore.get(score)) {
-				matches.put(entry.getKey(), entry.getValue());
-				System.out.println((String)entry.getValue());
-				results++;
-				if(results >= maxIterations){
-	    			break;
-	    		}
-			}		
+		for(int score = maxScore; score >= relevanceThreshold; score--){
+			//System.out.println("results for score --------------" + score);
+			if(charactersByScore.get(score) != null) {
+				for(Entry<String, String> entry : charactersByScore.get(score)) {				
+					matches.put(entry.getKey(), entry.getValue());
+					//System.out.println((String)entry.getValue());
+					results++;
+					if(results >= maxResults){
+		    			break;
+		    		}				
+				}
+			}
 		}
 		
 		return matches;
