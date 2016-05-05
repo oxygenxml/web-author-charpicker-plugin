@@ -7,7 +7,7 @@
 		<format>jar</format>
 	</formats>
 	
-	<fileSets>
+	<fileSets> 
 		<fileSet>
 			<directory>target/</directory>
 			<outputDirectory>/web</outputDirectory>
