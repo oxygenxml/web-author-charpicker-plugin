@@ -1,1 +1,11 @@
-language: java
+language: javascript
+deploy:
+  provider: releases
+  api_key:
+    secure: 00SLO+B9Eb8GnBCM8dV/qploKRmhTblzyH6LhWyX0NPJHQtboazldSgYbfbcuvwE73+7dmXl+Nkezu/dnVEQryO7WIDQos7wtwGix7itHFD9yqtTO0SPV4byMzxYQ3w7XvIV4zobk/fDNDLUQPUgSXPCapHDZTXqpXn7fRz5x5xnyNNYZ6bkmmwZ7hsIjCtGy2siKFG812P+VksimCQO6mITQAZeOaxh0fid1zxn8BHQ+Hx7TL6ZoRPfzADRexAgPe48uj21c5HZLclTjiAEgRCDTF+6Zpcu238TEemHO+Ly8Odb4n9wTTJL/HWvsflv7etEIRbDf4kenR6l+SPp0YpDnrOQwB3txCqJ5u3A+Lvo5wgntSZP6v7laL9g3kWvo462a8sS+nzCDOY2qROuO9MwaNri6iPven5GbYZlXxNShDrTs/hdiQ1g1V/K1wICZH6Dkkwbq6Fe7/Q+PKAkJmNv2g6gzkpJg1jRlme/vGlMFJ7Vbh0XmAal8DaYwDW/pH1J+f0tKPGSRqZ9ao61mdEQ2atKve5L79EI2QFmLglYhcvZYWqLFC6F2p3BihW24TWsJgD0VWAfaEhvh22g/06f2J3dJXF3mN+h4LJExzJpDOOyQHAd4DWz/g3PlFs+AWaMGa7Ob0iEUfoXLIscsdLAnOJELH4eMCP4jiX9bak=
+  file: target/webapp-charpicker-plugin-18.0.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: oxygenxml/webapp-charpicker-plugin
+    branch: BRANCH_OXYGEN_RELEASE_18_0
