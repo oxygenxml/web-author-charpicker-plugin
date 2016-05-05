@@ -298,9 +298,7 @@
             });
             parentElement.insertBefore(newElement, theFirstChild);
 
-
             this.csmenu.setToggleMode(true);
-
 
             // QUICK INSERT GRID
             goog.events.listen(document.querySelector('.goog-char-picker-grid'),
