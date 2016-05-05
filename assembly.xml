@@ -14,7 +14,7 @@
 			<includes>
 				<include>plugin.js</include>
 			</includes>
-		</fileSet>
+		</fileSet> 
 		<fileSet>
 			<directory>target/</directory>
 			<outputDirectory>/resources</outputDirectory>
