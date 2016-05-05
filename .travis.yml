@@ -1,4 +1,4 @@
-language: java
+language: javascript
 deploy:
   provider: releases
   api_key:
@@ -7,5 +7,5 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-#    repo: oxygenxml/webapp-charpicker-plugin
-#    branch: SNAPSHOT
+    repo: oxygenxml/webapp-charpicker-plugin
+    branch: SNAPSHOT
