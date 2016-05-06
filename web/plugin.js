@@ -152,9 +152,9 @@
                         var xhr = e.target;
                         var obj = xhr.getResponseJson();
 
-                        for(var i in obj) {
-                            var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[i]), 'data-symbol-hexcode': i});
-                            var decimalCode = parseInt(i, 16);
+                        for(var code in obj) {
+                            var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[code]), 'data-symbol-hexcode': code});
+                            var decimalCode = parseInt(code, 16);
                             foundByNameItem.innerHTML = String.fromCharCode(decimalCode);
                             document.getElementById("foundByNameList").appendChild(foundByNameItem);
                         }
@@ -378,6 +378,6 @@
                 }
             });
         };
-        sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/plugin.css");
+        sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/css/plugin.css");
     })
 })();

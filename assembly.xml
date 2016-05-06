@@ -22,7 +22,7 @@
 				<include>charpicker.html</include>
 				<include>js/script.min.js</include>
 				<include>css/styles.min.css</include>
-				<include>plugin.css</include>
+				<include>css/plugin.css</include>
 			</includes>
 		</fileSet>
 		<fileSet>

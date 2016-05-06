@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "robotolight";
+  src: url("../../../app/fonts/RobotoTTF/Roboto-Light.ttf") format("truetype");
+}
+
 /* goog.ui.HoverCard */
 .goog-char-picker-hovercard {
   border: solid 2px #337ab7;
@@ -10,7 +15,6 @@
   visibility: hidden;
   z-index: 99;
 }
-
 
 .goog-char-picker-name {
   font-size: x-small;
@@ -38,7 +42,6 @@
 
 .goog-char-picker-grid {
   overflow-y: scroll;
-  /*height: 190px;*/
   height: 100%;
   width: 100%;
   position: relative;
