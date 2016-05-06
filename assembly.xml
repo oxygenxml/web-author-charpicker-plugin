@@ -7,14 +7,14 @@
 		<format>jar</format>
 	</formats>
 	
-	<fileSets>
+	<fileSets> 
 		<fileSet>
 			<directory>target/</directory>
 			<outputDirectory>/web</outputDirectory>
 			<includes>
 				<include>plugin.js</include>
 			</includes>
-		</fileSet>
+		</fileSet> 
 		<fileSet>
 			<directory>target/</directory>
 			<outputDirectory>/resources</outputDirectory>
