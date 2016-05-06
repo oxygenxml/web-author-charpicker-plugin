@@ -4,11 +4,6 @@
 .char-select-button:hover {
     background-color: #d6e9f8;
 }
-.curly {
-    display: inline-block;
-    position:relative;
-    background: url(http://i.imgur.com/HlfA2is.gif) bottom repeat-x;
-}
 
 #simplePickerGrid .recentCharactersGrid {
     height: 130px;
