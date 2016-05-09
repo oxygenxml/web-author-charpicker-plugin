@@ -38,8 +38,7 @@
             var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
                 "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
             /* selector for targeting the recent characters container */
-            var selector = '.recentCharactersGrid';
-            var container = document.querySelector(selector);
+            var container = document.querySelector('.recentCharactersGrid');
 
             /* remove all recent characters to add the new ones again */
             var fc = container.firstChild;
@@ -68,7 +67,7 @@
             }
             /* add the characters to the container */
             for (i = 0; i < characters.length; i++) {
-                document.querySelector(selector).appendChild(goog.dom.createDom('div', {
+                container.appendChild(goog.dom.createDom('div', {
                         'class': 'goog-inline-block goog-flat-button char-select-button'
                     },
                     characters[i]));
@@ -78,7 +77,7 @@
             var symbol = e.target.innerHTML;
             var symbolCode = e.target.getAttribute('data-symbol-hexcode');
             var symbolName = e.target.getAttribute('data-symbol-name');
-            document.querySelector('#previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
+            document.getElementById('previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
                 '</div><div id="previewSymbolName">' + symbolName + ' <span style="white-space: nowrap; vertical-align: top">(' + symbolCode + ')</span></div>';
         };
 
@@ -100,7 +99,7 @@
         InsertFromMenuAction.prototype.displayDialog = function () {
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
-            if(document.querySelector('#charpickeriframe') === null) {
+            if(document.getElementById('charpickeriframe') === null) {
                 var tabContainer = goog.dom.createDom('div', {class: 'tabsContainer'});
                 tabContainer.innerHTML = '<ul><li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-0" checked="checked" />' +
                     '<label for="tabsContainer-0-0">By name</label><div id="charpicker-search-by-name"></div></li>' +
@@ -124,7 +123,7 @@
                 var previewCharacterDetails = goog.dom.createDom('div', {'id': 'previewCharacterDetails'});
                 document.getElementById('charpicker-search-by-name').appendChild(previewCharacterDetails);
 
-                goog.events.listen(document.querySelector('#foundByNameList'),
+                goog.events.listen(document.getElementById('foundByNameList'),
                     goog.events.EventType.MOUSEOVER,
                     function (e){
                         if(e.target.id !== 'foundByNameList'){
@@ -132,7 +131,7 @@
                         }
                     }
                 );
-                goog.events.listen(document.querySelector('#foundByNameList'),
+                goog.events.listen(document.getElementById('foundByNameList'),
                     goog.events.EventType.CLICK,
                     function (e){
                         if(e.target.id !== 'foundByNameList'){
@@ -145,58 +144,60 @@
                 );
 
                 goog.require('goog.net.XhrIo');
-                var executeQuery = function(query) {
-                    var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(query);
+                var findCharByName = function() {
+					
+					var name = document.getElementById("searchName").value;
+
+					// clear boxes to get ready for results
                     document.getElementById("foundByNameList").innerHTML = '';
-                    goog.net.XhrIo.send(url, function(e){
-                        var xhr = e.target;
-                        var obj = xhr.getResponseJson();
+                    document.getElementById("previewCharacterDetails").innerHTML = '';
 
-                        for(var code in obj) {
-                            var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[code]), 'data-symbol-hexcode': code});
-                            var decimalCode = parseInt(code, 16);
-                            foundByNameItem.innerHTML = String.fromCharCode(decimalCode);
-                            document.getElementById("foundByNameList").appendChild(foundByNameItem);
-                        }
-                    }, "GET");
-                };
+                    if(name.length !== 0){
+						var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(name);
+						document.getElementById("foundByNameList").innerHTML = '';
+						goog.net.XhrIo.send(url, function(e){
+							var xhr = e.target;
+							var obj = xhr.getResponseJson();
 
-                // execute query when user presses enter in the input, prevent dialog closing
-                goog.events.listen(document.querySelector('#searchName'), goog.events.EventType.KEYDOWN, function(e){
-                        if(e.keyCode === 13) {
-                            e.preventDefault();
-                            checkAndSearch();
-                        }
+							for(var code in obj) {
+								var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[code]), 'data-symbol-hexcode': code});
+								var decimalCode = parseInt(code, 16);
+								foundByNameItem.innerHTML = String.fromCharCode(decimalCode);
+								document.getElementById("foundByNameList").appendChild(foundByNameItem);
+							}
+							localStorage.setItem("lastCharacterSearch", name);
+						}, "GET");
                     }
-                );
+                };
+                
 
                 // execute query automatically after user stops typing
                 var typingPause = 500;
                 var timeoutfunction;
-
-                var checkAndSearch = function() {
-                    clearTimeout(timeoutfunction);
-                    var inputValue = document.getElementById("searchName").value;
-
-                    document.getElementById("foundByNameList").innerHTML = '';
-                    document.getElementById("previewCharacterDetails").innerHTML = '';
-
-                    if(inputValue.length !== 0){
-                        executeQuery(inputValue);
+				
+				// execute query immediately when user presses enter in the input, prevent dialog closing
+                goog.events.listen(document.getElementById('searchName'), goog.events.EventType.KEYDOWN, function(e){
+                        if(e.keyCode === 13) {
+                            e.preventDefault();
+							clearTimeout(timeoutfunction);
+                            findCharByName();
+                        }
                     }
-                };
-
+                );
+				
+				// execute query after delay on keyup
                 goog.events.listen(document.getElementById("searchName"),
                     goog.events.EventType.KEYUP,
                     function(e) {
                         // if the key is enter a search is triggered already on keydown
                         if (e.keyCode !== 13){
-                            timeoutfunction = setTimeout(checkAndSearch, typingPause);
+							clearTimeout(timeoutfunction);
+                            timeoutfunction = setTimeout(findCharByName, typingPause);
                         }
                     }
                 );
 
-                document.querySelector('#charpicker-advanced').appendChild(charPickerIframe);
+                document.getElementById('charpicker-advanced').appendChild(charPickerIframe);
 
                 var div = goog.dom.createDom('div');
                 div.id = "selectedCharsWrapper";
@@ -221,7 +222,9 @@
             // if dialog has been populated already just reset the textboxes
             else {
                 this.dialog.getElement().querySelector('#special_characters').value = '';
-                this.dialog.getElement().querySelector('#searchName').value = '';
+                var searchbox = this.dialog.getElement().querySelector('#searchName');
+				searchbox.value = '';
+				searchbox.setAttribute("placeholder", localStorage.getItem("lastCharacterSearch"));
                 var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
                 var iframeContent = (iframe.contentWindow || iframe.contentDocument);
                 if (iframeContent.document) {
@@ -240,7 +243,7 @@
                     var dialogInsertChars = charsToBeInserted;
                     if (dialogInsertChars) {
                         var stringifiedText = '';
-                        for(i=0;i<dialogInsertChars.length;i++){
+                        for(i = 0; i < dialogInsertChars.length; i++){
                             stringifiedText += dialogInsertChars[i];
                         }
                         editor.getActionsManager().invokeOperation(
