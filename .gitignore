@@ -2,3 +2,6 @@ target/
 .idea/
 node_modules/
 resources/closure-library/
+/.settings/
+/.classpath
+/.project
