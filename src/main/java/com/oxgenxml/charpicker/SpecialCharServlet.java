@@ -30,7 +30,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	@Override
 	public void init() throws ServletException {
-		InputStream charsInputStream = this.getClass().getClassLoader().getResourceAsStream("/builtin/unicodeCharacters.properties");
+		InputStream charsInputStream = this.getClass().getClassLoader().getResourceAsStream("builtin/unicodeCharacters.properties");
 		setChars(new Properties());
 		try {
 			getChars().load(charsInputStream);
