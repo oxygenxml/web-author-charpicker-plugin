@@ -104,7 +104,7 @@
                 tabContainer.innerHTML = '<ul><li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-0" checked="checked" />' +
                     '<label for="tabsContainer-0-0">By name</label><div id="charpicker-search-by-name"></div></li>' +
                     '<li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-1" />' +
-                    '<label for="tabsContainer-0-1">By categories or hex code</label><div id="charpicker-advanced"></div></li></ul>';
+                    '<label for="tabsContainer-0-1">By categories<span class="low-width-hide"> or hex code</span></label><div id="charpicker-advanced"></div></li></ul>';
 
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
@@ -117,7 +117,7 @@
 
 
                 var searchByNameContainer = document.getElementById("charpicker-search-by-name");
-                searchByNameContainer.innerHTML = '<div style="line-height: 1.2em;">Name of character to search for: <br> <input type="text" class="charpicker-input" name="searchName" id="searchName"></div>'
+                searchByNameContainer.innerHTML = '<div style="line-height: 1.2em; height:57px;">Name of character to search for: <br> <input type="text" class="charpicker-input" name="searchName" id="searchName"></div>'
                     + '<div id="foundByNameList"></div>';
 
                 var previewCharacterDetails = goog.dom.createDom('div', {'id': 'previewCharacterDetails'});
@@ -154,7 +154,6 @@
 
                     if(name.length !== 0){
 						var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(name);
-						document.getElementById("foundByNameList").innerHTML = '';
 						goog.net.XhrIo.send(url, function(e){
 							var xhr = e.target;
 							var obj = xhr.getResponseJson();
@@ -224,7 +223,9 @@
                 this.dialog.getElement().querySelector('#special_characters').value = '';
                 var searchbox = this.dialog.getElement().querySelector('#searchName');
 				searchbox.value = '';
-				searchbox.setAttribute("placeholder", localStorage.getItem("lastCharacterSearch"));
+                if(localStorage.getItem("lastCharacterSearch") !== null){
+                    searchbox.setAttribute("placeholder", localStorage.getItem("lastCharacterSearch") );
+                }
                 var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
                 var iframeContent = (iframe.contentWindow || iframe.contentDocument);
                 if (iframeContent.document) {

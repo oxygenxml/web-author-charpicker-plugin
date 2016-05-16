@@ -36,6 +36,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			getChars().load(charsInputStream);
 		} catch (IOException e) {
 			// log something...
+			System.out.println("could not load the special character file");
 		}
 	}
 	@Override
