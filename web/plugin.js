@@ -376,6 +376,7 @@
                     setTimeout(function () {
                         insertFromMenu.init();
                         document.getElementsByName("insertfrommenu")[0].setAttribute("title", "Insert a special character.");
+                        alert("charpicker loaded");
                     }, 0)
                 }
             });
