@@ -74,7 +74,7 @@
             }
         };
         var updateCharPreview = function(e) {
-            var symbol = e.target.innerHTML;
+            var symbol = e.target.textContent;
             var symbolCode = e.target.getAttribute('data-symbol-hexcode');
             var symbolName = e.target.getAttribute('data-symbol-name');
             document.getElementById('previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
@@ -136,7 +136,7 @@
                     function (e){
                         if(e.target.id !== 'foundByNameList'){
                             updateCharPreview(e);
-                            var symbol = e.target.innerHTML;
+                            var symbol = e.target.textContent;
                             charsToBeInserted.push(symbol);
                             document.getElementById('special_characters').value += symbol;
                         }
@@ -161,7 +161,7 @@
 							for(var code in obj) {
 								var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[code]), 'data-symbol-hexcode': code});
 								var decimalCode = parseInt(code, 16);
-								foundByNameItem.innerHTML = String.fromCharCode(decimalCode);
+								foundByNameItem.textContent = String.fromCharCode(decimalCode);
 								document.getElementById("foundByNameList").appendChild(foundByNameItem);
 							}
 							localStorage.setItem("lastCharacterSearch", name);
@@ -314,7 +314,7 @@
                                 fragment: e.target.innerHTML
                             },
                             function () {
-                                var quickInsertChar = e.target.innerHTML;
+                                var quickInsertChar = e.target.textContent;
                                 if (localStorageUsable()) {
                                     /* if using the localStorage is possible, add the character to the START of the array - queue system */
                                     if (storedRecentChars()) {
@@ -376,7 +376,6 @@
                     setTimeout(function () {
                         insertFromMenu.init();
                         document.getElementsByName("insertfrommenu")[0].setAttribute("title", "Insert a special character.");
-                        alert("charpicker loaded");
                     }, 0)
                 }
             });

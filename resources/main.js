@@ -26,7 +26,7 @@ window["initCharPicker"] = function () {
 
     var label = document.createElement("div");
     label.id = "label-categories";
-    label.innerHTML = "Categories:";
+    label.textContent = "Categories:";
     categoriesBar.insertBefore(label, categoriesBar.firstChild);
 
     var wrapper = document.createElement("div");
