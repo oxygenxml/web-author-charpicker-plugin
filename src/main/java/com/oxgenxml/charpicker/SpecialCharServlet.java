@@ -35,10 +35,10 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		try {
 			getChars().load(charsInputStream);
 		} catch (IOException e) {
-			// log something...
 			System.out.println("could not load the special character file");
 		}
 	}
+	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String query = req.getParameter("q");
@@ -51,18 +51,17 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			charResult = findCharByName(query, getChars());
 			long endTime = System.nanoTime();
 			long duration = (endTime - startTime);
-			System.out.println("TIME ELAPSED" + duration/1000000);
-			
+			System.out.println("TIME ELAPSED" + duration/1000000);			
 			
 			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
 		}
 	}
 	
 	public Map<String, String> findCharByName(String query, Properties chars) {
-		//remove extra spaces
+		// Remove extra spaces.
 		query = query.replaceAll("\\s+", " ");
 		
-		//remove special characters
+		// Remove special characters.
 		query = query.replaceAll("[+.^:,*{}]", " ");
 		
 		
@@ -71,7 +70,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		int scorePartialMatch = 1;
 		int maxScore = queryWords.length * scoreFullMatch;
 		
-		// score equivalent to over half of query words matching fully
+		// Score equivalent to over half of query words matching fully.
 		int relevanceThreshold = queryWords.length * scoreFullMatch/2;
 		
 		Map<String, String> charsFromProperties = propsAsMap(chars);
@@ -86,7 +85,6 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		for(Map.Entry<String, String> entry : charsFromProperties.entrySet()) {
 			String charDescription = entry.getValue();
 			
-			//int score = computeCharacterScore(queryWords, charDescription);
 			int score = 0;
 			
 			for(int i = 0; i< queryWords.length; i++){
@@ -100,7 +98,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 				}
 			}			
 			
-			// score equivalent to partial matches for all or full matches for half of query parameters
+			// Score equivalent to partial matches for all or full matches for half of query parameters.
 			if(score >= relevanceThreshold) {
 				Set<Entry<String, String>> charsWithCurrentScore = charactersByScore.get(score);
 				if(charsWithCurrentScore == null) {
@@ -110,24 +108,21 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 				charsWithCurrentScore.add(entry);
 			}
 		}
-		
 		int results = 0;
 		for(int score = maxScore; score >= relevanceThreshold; score--){
-			//System.out.println("results for score --------------" + score);
 			if(charactersByScore.get(score) != null) {
 				for(Entry<String, String> entry : charactersByScore.get(score)) {				
 					matches.put(entry.getKey(), entry.getValue());
-					//System.out.println((String)entry.getValue());
 					results++;
 					if(results >= maxResults){
 		    			break;
 		    		}				
 				}
 			}
-		}
-		
+		}		
 		return matches;
 	}
+	
 	private Map<String, String> propsAsMap(Properties props) {
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		for (Map.Entry<Object, Object> entry: props.entrySet()) {
@@ -136,6 +131,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		
 		return map;
 	}
+	
 	private ArrayList<Pattern> getFullPatterns(String[] queryWords) {
 		ArrayList<Pattern> fullPatterns = new ArrayList<Pattern>();
 		
@@ -158,35 +154,15 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		return partialPatterns;
 	}
 	
-	/*private int computeCharacterScore(String[] queryWords, String charDescription) {
-		int score = 0;
-		//ArrayList<Map.Entry<Object, Object>> foundEntryList = new ArrayList<Map.Entry<Object, Object>>();
-		ArrayList<Pattern> fullPatterns = getFullPatterns(); 
-		for(int i = 0; i < queryWords.length; i++) {
-			//System.out.println("looking for " + queryArray[i]);
-			//Pattern pattern = Pattern.compile("\\b" + queryWords[i] + "\\b", Pattern.CASE_INSENSITIVE);
-			
-			Matcher matcher = pattern.matcher(charDescription);
-			if(matcher.find()){
-				score+=3;
-			}
-			
-			pattern = Pattern.compile("\\b" + queryWords[i] + "[a-zA-Z]+\\b", Pattern.CASE_INSENSITIVE);
-			matcher = pattern.matcher(charDescription);
-			if(matcher.find()) {
-				score++;
-			}
-		}
-		return score;
-	}*/
-	
 	@Override
 	public String getPath() {
 		return "charpicker-plugin";
 	}
+	
 	public Properties getChars() {
 		return chars;
 	}
+	
 	public void setChars(Properties chars) {
 		this.chars = chars;
 	}
