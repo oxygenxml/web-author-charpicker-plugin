@@ -70,8 +70,7 @@
 
         var InsertFromMenuAction = function (editor) {
             this.editor = editor;
-            this.dialog = workspace.createDialog();
-            this.dialog.setTitle('Insert Special Characters');
+            this.dialog = null;
         };
         InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
         InsertFromMenuAction.prototype.getDisplayName = function () {
@@ -81,8 +80,20 @@
         InsertFromMenuAction.prototype.getLargeIcon = function () {
             return myIconUrl;
         };
+
+       /**
+        * Make sure the dialog is created.
+        */
+        InsertFromMenuAction.prototype.ensureDialogCreated = function() {
+            if (!this.dialog) {
+                this.dialog = workspace.createDialog();
+                this.dialog.setTitle('Insert Special Characters');
+            }
+        };
+
         InsertFromMenuAction.prototype.displayDialog = function () {
             window.charsToBeInserted = [];
+            this.ensureDialogCreated();
             // if dialog has not been opened yet, load it
             if(document.querySelector('#charpickeriframe') === null) {
                 var charPickerIframe = goog.dom.createDom('iframe', {
