@@ -287,8 +287,7 @@
             this.csmenu.addChild(moreSymbols, true);
             moreSymbols.setId('moreSymbolsButton');
 
-            var charPickerDialog = new InsertFromMenuAction(this.editor);
-            goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(charPickerDialog.displayDialog, charPickerDialog));
+            goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(this.displayDialog, this));
 
             this.csmenu.render(document.body);
             goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
