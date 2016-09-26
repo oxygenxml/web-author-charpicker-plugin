@@ -97,6 +97,16 @@
         };
 
         InsertFromMenuAction.prototype.displayDialog = function () {
+
+            // Resize the dialog when the window resizes (keep it usable on smaller devices after the keyboard pops up).
+            var resizeListenerKey = goog.events.listen(window, goog.events.EventType.RESIZE, goog.bind(function () {
+                this.dialog.setPreferredSize(420, 550);
+            }, this));
+
+            goog.events.listenOnce(this.dialog.dialog, goog.ui.Dialog.EventType.AFTER_HIDE, function () {
+                goog.events.unlistenByKey(resizeListenerKey);
+            });
+
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
             if(document.getElementById('charpickeriframe') === null) {
@@ -289,7 +299,7 @@
 
             goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(this.displayDialog, this));
 
-            this.csmenu.render(document.body);
+            this.csmenu.render();
             goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
 
             // add the characters grid before the "more symbols..." button

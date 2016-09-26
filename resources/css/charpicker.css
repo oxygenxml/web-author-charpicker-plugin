@@ -36,6 +36,7 @@
   border: 1px solid lightgrey;
   background-color: #fff;
   width: 100%;
+  width: calc(100% - 3px);
   max-height: 200px;
   margin-bottom:30px;
 }

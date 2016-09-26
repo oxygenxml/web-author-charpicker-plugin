@@ -50,7 +50,7 @@
 #removeLastChar {
     vertical-align: top;
     height: 34px;
-    width: 50px;
+    width: 40px;
     margin-left: 2px;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -238,6 +238,7 @@
 
 #foundByNameList {
     width: 100%;
+    width: calc(100% - 2px);
     height: 200px;
     overflow-y: scroll;
     margin-top: 5px;
@@ -316,10 +317,6 @@
 @media (max-height: 560px) {
     #charpickeriframe {
         height: 250px;
-    }
-
-    #charPicker {
-        padding: 6px 12px;
     }
 
     #moreSymbolsButton .goog-menuitem-content{
