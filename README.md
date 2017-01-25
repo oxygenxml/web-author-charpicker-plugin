@@ -5,7 +5,7 @@ A plugin for oXygen XML WebApp that adds support for inserting special UTF-8 cha
 
 ## Install
 
-You can download the release suitable for your oXygen XML Web Author server and install it using the **Administration Page**. The complete procedure can be found in the [User Guide](http://oxygenxml.com/doc/versions/18.1.0/ug-webauthor/#topics/webapp-configure-plugins.html).
+You can [download the release](https://github.com/oxygenxml/webapp-charpicker-plugin/releases) suitable for your oXygen XML Web Author server and install it using the **Administration Page**. The complete procedure can be found in the [User Guide](http://oxygenxml.com/doc/versions/18.1.0/ug-webauthor/#topics/webapp-configure-plugins.html).
 
 ## Use
 You should find the ![charpicker button](/resources/InsertFromCharactersMap24.png) button in the framework toolbar. Clicking on it should present a grid with 21 recently used characters.
