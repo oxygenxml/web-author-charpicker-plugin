@@ -1,32 +1,24 @@
 (function () {
     goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
-        
+
+        var translations = {
+            'BY_NAME_': {'en': 'By name'},
+            'BY_CATEGORIES_': {'en': 'By categories'},
+            'BY_CATEGORIES_OR_HEX_CODE_': {'en': 'By categories or hex code'},
+            'NAME_OF_CHARACTER_': {'en': 'Name of character to search for:'},
+            'MORE_SYMBOLS_': {'en': 'More symbols...'},
+            'INSERT_SPECIAL_CHARACTERS_': {'en': 'Insert Special Characters'},
+            'SELECTED_CHARACTERS_': { 'en': 'Selected characters:' },
+            'REMOVE_LAST_CHARACTER_': { 'en': 'Remove last character' },
+            'INSERT_SPECIAL_CHARACTERS_': { 'en': 'Insert special characters.' }
+        };
+        sync.Translation.addTranslations(translations);
+
         //quickly change urls that have the plugin name hardcoded
         var pluginResourcesFolder = 'char-picker';
 
-        var localStorageUsable = function () {
-            if (typeof (Storage) !== 'undefined') {
-                return 1;
-            }
-            else {
-                console.log('localstorage not supported');
-                return 0;
-            }
-        };
-        var storedRecentChars = function () {
-            if (localStorage.getItem("recentlyUsedCharacters")) {
-                return 1;
-            }
-            else{
-                console.log('there are no recentCharacters set');
-                return 0;
-            }
-        };
-        var removeDuplicates = function (arr) {
-            return arr.filter(function(item, pos) {
-                return arr.indexOf(item) == pos;
-            });
-        };
+        var localStorageUsable = function () { return typeof (Storage) !== 'undefined'; };
+        var storedRecentChars = function () { return localStorage.getItem("recentlyUsedCharacters"); };
         var capitalizeWords = function(text) {
             var splitText = text.toLowerCase().split(' ');
             for(var i = 0; i < splitText.length; i++) {
@@ -36,7 +28,7 @@
         };
         var displayRecentCharacters = function () {
             var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
-                "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
+                "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"];
             /* selector for targeting the recent characters container */
             var container = document.querySelector('.recentCharactersGrid');
 
@@ -59,7 +51,8 @@
             var maxChars = 21;
             if (characters.length < maxChars) {
                 characters = characters.concat(defaultRecentCharacters);
-                characters = removeDuplicates(characters).slice(0, maxChars);
+                goog.array.removeDuplicates(characters);
+                characters = characters.slice(0, maxChars);
                 localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
             } else if (characters.length > maxChars) {
                 characters = characters.slice(0, maxChars);
@@ -77,14 +70,22 @@
             var symbol = e.target.textContent;
             var symbolCode = e.target.getAttribute('data-symbol-hexcode');
             var symbolName = e.target.getAttribute('data-symbol-name');
-            document.getElementById('previewCharacterDetails').innerHTML = '<div id="previewSymbol">' + symbol +
-                '</div><div id="previewSymbolName">' + symbolName + ' <span style="white-space: nowrap; vertical-align: top">(' + symbolCode + ')</span></div>';
+
+            var previewCharacterDetails = document.getElementById('previewCharacterDetails');
+
+            previewCharacterDetails.innerHTML = '';
+            goog.dom.appendChild(previewCharacterDetails, goog.dom.createDom('div', { 'id': 'previewSymbol' }, symbol));
+            goog.dom.appendChild(previewCharacterDetails, goog.dom.createDom(
+                'div', { 'id': 'previewSymbolName' },
+                symbolName,
+                goog.dom.createDom('span', { 'style': 'white-space: nowrap; vertical-align: top' }, ' (' + symbolCode + ')')
+            ));
         };
 
         var InsertFromMenuAction = function (editor) {
             this.editor = editor;
             this.dialog = workspace.createDialog();
-            this.dialog.setTitle('Insert Special Characters');
+            this.dialog.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
         };
         InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
         InsertFromMenuAction.prototype.getDisplayName = function () {
@@ -110,28 +111,47 @@
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
             if(document.getElementById('charpickeriframe') === null) {
-                var tabContainer = goog.dom.createDom('div', {class: 'tabsContainer'});
-                tabContainer.innerHTML = '<ul><li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-0" checked="checked" />' +
-                    '<label for="tabsContainer-0-0">By name</label><div id="charpicker-search-by-name"></div></li>' +
-                    '<li><input type="radio" name="tabsContainer-0" id="tabsContainer-0-1" />' +
-                    '<label for="tabsContainer-0-1">By categories<span class="low-width-hide"> or hex code</span></label><div id="charpicker-advanced"></div></li></ul>';
+                var tabContainer = goog.dom.createDom(
+                    'div', 'tabsContainer',
+                    goog.dom.createDom(
+                        'ul', '',
+                        goog.dom.createDom(
+                            'li', '',
+                            goog.dom.createDom('input', { 'id': 'tabsContainer-0-0', 'type': 'radio', 'name': 'tabsContainer-0', 'checked': 'checked' }),
+                            goog.dom.createDom('label', { 'for': 'tabsContainer-0-0' }, tr(msgs.BY_NAME_)),
+                            goog.dom.createDom(
+                                'div', { 'id': 'charpicker-search-by-name' },
+                                goog.dom.createDom(
+                                    'div', {'style': 'line-height: 1.2em; height: 57px;'},
+                                    tr(msgs.NAME_OF_CHARACTER_),
+                                    goog.dom.createDom('br'),
+                                    goog.dom.createDom('input', { 'id': 'searchName', 'class': 'charpicker-input', 'type': 'text', 'name': 'searchName' })
+                                ),
+                                goog.dom.createDom('div', {'id': 'foundByNameList'}),
+                                goog.dom.createDom('div', {'id': 'previewCharacterDetails'})
+                            )
+                        ),
+                        goog.dom.createDom(
+                            'li', '',
+                            goog.dom.createDom('input', { 'id': 'tabsContainer-0-1', 'type': 'radio', 'name': 'tabsContainer-0' }),
+                            goog.dom.createDom(
+                                'label', { 'for': 'tabsContainer-0-1' },
+                                goog.dom.createDom('span', 'low-width-hide', tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)),
+                                goog.dom.createDom('span', 'big-width-hide', tr(msgs.BY_CATEGORIES_))
+                            ),
+                            goog.dom.createDom('div', { 'id': 'charpicker-advanced' })
+                        )
+                    )
+                );
 
                 var charPickerIframe = goog.dom.createDom('iframe', {
                     'id': 'charpickeriframe',
                     'src': '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html'
                 });
                 this.dialog.getElement().id = 'charPicker';
-                this.dialog.getElement().appendChild(tabContainer);
+                goog.dom.appendChild(this.dialog.getElement(), tabContainer);
 
                 this.dialog.getElement().parentElement.classList.add("dialogContainer");
-
-
-                var searchByNameContainer = document.getElementById("charpicker-search-by-name");
-                searchByNameContainer.innerHTML = '<div style="line-height: 1.2em; height:57px;">Name of character to search for: <br> <input type="text" class="charpicker-input" name="searchName" id="searchName"></div>'
-                    + '<div id="foundByNameList"></div>';
-
-                var previewCharacterDetails = goog.dom.createDom('div', {'id': 'previewCharacterDetails'});
-                document.getElementById('charpicker-search-by-name').appendChild(previewCharacterDetails);
 
                 goog.events.listen(document.getElementById('foundByNameList'),
                     goog.events.EventType.MOUSEOVER,
@@ -208,13 +228,34 @@
 
                 document.getElementById('charpicker-advanced').appendChild(charPickerIframe);
 
-                var div = goog.dom.createDom('div');
-                div.id = "selectedCharsWrapper";
-                div.innerHTML = '<span>Selected characters:</span>' +
-                '<input type="text" name="charsToBeInserted" class="charpicker-input" id="special_characters" onFocus="this.setSelectionRange(0, this.value.length)" readonly/>' +
-                '<button id="removeLastChar" class="goog-button goog-char-picker-okbutton" title="Remove last character" value=""></button>';
+                var readOnlyInput = goog.dom.createDom(
+                    'input',
+                    {
+                        'id': 'special_characters',
+                        'class': 'charpicker-input',
+                        'type': 'text',
+                        'name': 'charsToBeInserted'
+                    }
+                );
+                readOnlyInput.setAttribute('readonly', true);
+                readOnlyInput.setAttribute('onFocus', 'this.setSelectionRange(0, this.value.length)');
 
-                this.dialog.getElement().appendChild(div);
+                var div = goog.dom.createDom(
+                    'div', { 'id': 'selectedCharsWrapper' },
+                    goog.dom.createDom('span', '', tr(msgs.SELECTED_CHARACTERS_)),
+                    readOnlyInput,
+                    goog.dom.createDom(
+                        'button',
+                        {
+                            'id': 'removeLastChar',
+                            'class': 'goog-button goog-char-picker-okbutton',
+                            'title': tr(msgs.REMOVE_LAST_CHARACTER_),
+                            'value': ''
+                        }
+                    )
+                );
+
+                goog.dom.appendChild(this.dialog.getElement(), div);
 
                 var textarea = document.getElementById('special_characters');
                 textarea.scrollTop = textarea.scrollHeight;
@@ -222,7 +263,7 @@
                     var preview = document.getElementById('special_characters');
                     preview.value = '';
                     charsToBeInserted.pop();
-                    for(var i=0;i<charsToBeInserted.length;i++){
+                    for(var i = 0; i < charsToBeInserted.length; i++){
                         preview.value += charsToBeInserted[i];
                     }
                 });
@@ -267,7 +308,7 @@
                                     if (storedRecentChars()) {
                                         var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
                                         characters = (dialogInsertChars.reverse()).concat(characters);
-                                        characters = removeDuplicates(characters);
+                                        goog.array.removeDuplicates(characters);
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
                                         displayRecentCharacters();
                                     } else {
@@ -293,7 +334,7 @@
             this.csmenu.handleBlur = function () {
             };
 
-            var moreSymbols = new goog.ui.MenuItem('More symbols...');
+            var moreSymbols = new goog.ui.MenuItem(goog.string.htmlEscape(tr(msgs.MORE_SYMBOLS_)));
             this.csmenu.addChild(moreSymbols, true);
             moreSymbols.setId('moreSymbolsButton');
 
@@ -320,7 +361,7 @@
                     if (goog.dom.classlist.contains(e.target, 'goog-flat-button')) {
                         editor.getActionsManager().invokeOperation(
                             'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
-                                fragment: e.target.innerHTML
+                                fragment: e.target.textContent
                             },
                             function () {
                                 var quickInsertChar = e.target.textContent;
@@ -329,7 +370,7 @@
                                     if (storedRecentChars()) {
                                         var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
                                         characters.unshift(quickInsertChar);
-                                        characters = removeDuplicates(characters);
+                                        goog.array.removeDuplicates(characters);
                                         localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
 
                                     } else {
@@ -384,7 +425,7 @@
                         });
                     setTimeout(function () {
                         insertFromMenu.init();
-                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", "Insert a special character.");
+                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
                     }, 0)
                 }
             });

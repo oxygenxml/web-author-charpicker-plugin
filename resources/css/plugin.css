@@ -96,12 +96,15 @@
 
 #pickermenu {
     padding: 0px;
+    font: normal 13px Roboto, sans-serif;
+    font-weight: 200;
 }
 
 #moreSymbolsButton {
-    margin-top: 2px;
+    margin-top: -1px;
     border-top: 1px solid #e6e6e6;
-    padding: 5px 20px 4px 20px;
+    padding: 10px 20px 7px 20px;
+    cursor: pointer;
 }
 
 .goog-char-picker-okbutton {
@@ -380,5 +383,10 @@
     #removeLastChar {
         width: 18%;
         margin-left: 2%;
+    }
+}
+@media (min-width: 481px) {
+    .big-width-hide {
+        display: none;
     }
 }
