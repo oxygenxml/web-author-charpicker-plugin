@@ -10,7 +10,7 @@
             'INSERT_SPECIAL_CHARACTERS_': {'en': 'Insert Special Characters'},
             'SELECTED_CHARACTERS_': { 'en': 'Selected characters:' },
             'REMOVE_LAST_CHARACTER_': { 'en': 'Remove last character' },
-            'INSERT_SPECIAL_CHARACTERS_': { 'en': 'Insert special characters.' }
+            'INSERT_SPECIAL_CHARACTERS_TOOLTIP_': { 'en': 'Insert special characters.' }
         };
         sync.Translation.addTranslations(translations);
 
@@ -425,7 +425,7 @@
                         });
                     setTimeout(function () {
                         insertFromMenu.init();
-                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_TOOLTIP_));
                     }, 0)
                 }
             });
