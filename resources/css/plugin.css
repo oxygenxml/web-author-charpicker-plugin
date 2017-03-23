@@ -9,7 +9,7 @@
     height: 130px;
     width: 198px;
     font-size: 1.5em;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 #simplePickerGrid .goog-flat-button {
     position: relative;
@@ -28,7 +28,7 @@
     overflow: hidden;
     height: auto;
     width: 231px;
-    margin: 0px;
+    margin: 0;
     position: relative;
 }
 
@@ -48,7 +48,6 @@
 }
 
 #removeLastChar {
-    vertical-align: top;
     height: 34px;
     width: 40px;
     margin-left: 2px;
@@ -95,7 +94,7 @@
 }
 
 #pickermenu {
-    padding: 0px;
+    padding: 0;
     font: normal 13px Roboto, sans-serif;
     font-weight: 200;
 }
@@ -201,7 +200,7 @@
 
 .tabsContainer input[type="radio"] + label {
     margin: 0 2px 0 0;
-    padding: 0 18px;
+    padding: 0 10px;
     line-height: 32px;
     background: #f1f1f1;
     text-align: center;
@@ -308,12 +307,12 @@
 }
 
 #charpicker-search-by-name {
-    padding: 8px 0px 8px 0px;
+    padding: 8px 0 8px 0;
     overflow: hidden;
 }
 
 #charpicker-advanced {
-    padding: 8px 0px 8px 0px;
+    padding: 8px 0 8px 0;
     overflow: hidden;
 }
 
@@ -335,11 +334,11 @@
     }
 
     #charpicker-search-by-name {
-        padding: 8px 0px;
+        padding: 8px 0;
     }
 
     .tabsContainer li > div {
-        padding: 0px;
+        padding: 0;
     }
 
     #foundByNameList {
@@ -371,12 +370,12 @@
     }
 
     #charpicker-advanced {
-        padding: 8px 0px 0px 0px;
+        padding: 8px 0 0 0;
         overflow: hidden;
     }
 
     #special_characters {
-        margin-left: 0px;
+        margin-left: 0;
         width: 80%;
     }
 

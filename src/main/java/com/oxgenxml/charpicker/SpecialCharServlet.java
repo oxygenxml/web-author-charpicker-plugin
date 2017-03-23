@@ -47,12 +47,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
 		}
 		else {
-			long startTime = System.nanoTime();
 			charResult = findCharByName(query, getChars());
-			long endTime = System.nanoTime();
-			long duration = (endTime - startTime);
-			System.out.println("TIME ELAPSED" + duration/1000000);			
-			
 			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
 		}
 	}
