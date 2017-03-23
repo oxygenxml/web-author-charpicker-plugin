@@ -2,15 +2,62 @@
     goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
 
         var translations = {
-            'BY_NAME_': {'en': 'By name'},
-            'BY_CATEGORIES_': {'en': 'By categories'},
-            'BY_CATEGORIES_OR_HEX_CODE_': {'en': 'By categories or hex code'},
-            'NAME_OF_CHARACTER_': {'en': 'Name of character to search for:'},
-            'MORE_SYMBOLS_': {'en': 'More symbols...'},
-            'INSERT_SPECIAL_CHARACTERS_': {'en': 'Insert Special Characters'},
-            'SELECTED_CHARACTERS_': { 'en': 'Selected characters:' },
-            'REMOVE_LAST_CHARACTER_': { 'en': 'Remove last character' },
-            'INSERT_SPECIAL_CHARACTERS_TOOLTIP_': { 'en': 'Insert special characters.' }
+            "BY_NAME_": {
+                "en_US":"By name",
+                "de_DE":"Nach Namen",
+                "fr_FR":"Par nom",
+                "ja_JP":"名前による",
+                "nl_NL":"Op naam"
+            },
+            "BY_CATEGORIES_": {
+                "en_US":"By categories",
+                "de_DE":"Nach Kategorien",
+                "fr_FR":"Par catégories",
+                "ja_JP":"カテゴリによる",
+                "nl_NL":"Op categorie"
+            },
+            "BY_CATEGORIES_OR_HEX_CODE_": {
+                "en_US":"By categories or hex code",
+                "de_DE":"Nach Kategorien oder Hex-Codes",
+                "fr_FR":"Par catégories ou code hexadécimal",
+                "ja_JP":"分類項目または16進数コードによる",
+                "nl_NL":"Op categorie of hexadecimale code"
+            },
+            "NAME_OF_CHARACTER_": {
+                "en_US":"Name of character to search for:",
+                "de_DE":"Name des Zeichens, nach dem gesucht werden soll:",
+                "fr_FR":"Nom du caractère à rechercher:",
+                "ja_JP":"検索するための文字の名前：",
+                "nl_NL":"Naam van teken waarnaar u wilt zoeken:"
+            },
+            "MORE_SYMBOLS_": {
+                "en_US":"More symbols",
+                "de_DE":"Mehr Symbole",
+                "fr_FR":"Plus de symboles",
+                "ja_JP":"さらに多くのシンボル",
+                "nl_NL":"Meer symbolen"
+            },
+            "INSERT_SPECIAL_CHARACTERS_": {
+                "en_US":"Insert special characters",
+                "de_DE":"Sonderzeichen einfügen",
+                "fr_FR":"Insérer des caractère spéciaux",
+                "ja_JP":"特殊文字を挿入する",
+                "nl_NL":"Speciale tekens invoegen"
+            },
+            "SELECTED_CHARACTERS_": {
+                "en_US":"Selected characters:",
+                "de_DE":"Ausgewählte Zeichen:",
+                "fr_FR":"Caractères sélectionnés:",
+                "ja_JP":"選択された文字：",
+                "nl_NL":"Geselecteerde tekens:"
+            },
+            "REMOVE_LAST_CHARACTER_": {
+                "en_US":"Remove last character",
+                "de_DE":"Letztes Zeichen entfernen",
+                "fr_FR":"Supprimer le dernier caractère",
+                "ja_JP":"最後の文字を削除する",
+                "nl_NL":"Laatste teken verwijderen"
+            }
         };
         sync.Translation.addTranslations(translations);
 
@@ -31,6 +78,7 @@
                 "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"];
             /* selector for targeting the recent characters container */
             var container = document.querySelector('.recentCharactersGrid');
+            var i;
 
             /* remove all recent characters to add the new ones again */
             var fc = container.firstChild;
@@ -188,11 +236,19 @@
 							var xhr = e.target;
 							var obj = xhr.getResponseJson();
 
-							for(var code in obj) {
-								var foundByNameItem = goog.dom.createDom('div', {'class': 'characterListSymbol', 'data-symbol-name': capitalizeWords(obj[code]), 'data-symbol-hexcode': code});
-								var decimalCode = parseInt(code, 16);
-								foundByNameItem.textContent = String.fromCharCode(decimalCode);
-								document.getElementById("foundByNameList").appendChild(foundByNameItem);
+							for (var code in obj) {
+                                if (obj.hasOwnProperty(code)) {
+                                    var foundByNameItem = goog.dom.createDom(
+                                        'div',
+                                        {
+                                            'class': 'characterListSymbol',
+                                            'data-symbol-name': capitalizeWords(obj[code]),
+                                            'data-symbol-hexcode': code
+                                        });
+                                    var decimalCode = parseInt(code, 16);
+                                    foundByNameItem.textContent = String.fromCharCode(decimalCode);
+                                    document.getElementById("foundByNameList").appendChild(foundByNameItem);
+                                }
 							}
 							localStorage.setItem("lastCharacterSearch", name);
 						}, "GET");
@@ -334,7 +390,7 @@
             this.csmenu.handleBlur = function () {
             };
 
-            var moreSymbols = new goog.ui.MenuItem(goog.string.htmlEscape(tr(msgs.MORE_SYMBOLS_)));
+            var moreSymbols = new goog.ui.MenuItem(tr(msgs.MORE_SYMBOLS_) + '...');
             this.csmenu.addChild(moreSymbols, true);
             moreSymbols.setId('moreSymbolsButton');
 
@@ -385,7 +441,7 @@
         };
 
 
-        InsertFromMenuAction.prototype.actionPerformed = function (callback) {
+        InsertFromMenuAction.prototype.actionPerformed = function () {
             if (this.csmenu.isOrWasRecentlyVisible()) {
                 this.csmenu.hide();
             } else {
@@ -425,11 +481,12 @@
                         });
                     setTimeout(function () {
                         insertFromMenu.init();
-                        document.getElementsByName("insertfrommenu")[0].setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_TOOLTIP_));
-                    }, 0)
+                        document.querySelector("[name='insertfrommenu']")
+                            .setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+                    }, 0);
                 }
             });
-        };
+        }
         sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/css/plugin.css");
     })
 })();
