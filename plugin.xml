@@ -6,7 +6,7 @@
  id="com.oxygenxml.examples.CharPicker"
  name="UTF-8 Char Picker"
  description="A plugin for oXygen XML WebApp that adds support for inserting special UTF-8 characters"
- version="18.0-SNAPSHOT"
+ version="19.0-SNAPSHOT"
  vendor="SyncRO"
  class="ro.sync.exml.plugin.Plugin">
  <runtime>
