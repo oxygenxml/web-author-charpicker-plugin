@@ -159,6 +159,9 @@
             window.charsToBeInserted = [];
             // if dialog has not been opened yet, load it
             if(document.getElementById('charpickeriframe') === null) {
+                var nameInput = goog.dom.createDom(
+                  'input',
+                  { 'id': 'searchName', 'class': 'charpicker-input', 'type': 'text', 'name': 'searchName' });
                 var tabContainer = goog.dom.createDom(
                     'div', 'tabsContainer',
                     goog.dom.createDom(
@@ -173,7 +176,7 @@
                                     'div', {'style': 'line-height: 1.2em; height: 57px;'},
                                     tr(msgs.NAME_OF_CHARACTER_),
                                     goog.dom.createDom('br'),
-                                    goog.dom.createDom('input', { 'id': 'searchName', 'class': 'charpicker-input', 'type': 'text', 'name': 'searchName' })
+                                    nameInput
                                 ),
                                 goog.dom.createDom('div', {'id': 'foundByNameList'}),
                                 goog.dom.createDom('div', {'id': 'previewCharacterDetails'})
@@ -201,43 +204,53 @@
 
                 this.dialog.getElement().parentElement.classList.add("dialogContainer");
 
-                goog.events.listen(document.getElementById('foundByNameList'),
-                    goog.events.EventType.MOUSEOVER,
-                    function (e){
-                        if(e.target.id !== 'foundByNameList'){
-                            updateCharPreview(e);
-                        }
-                    }
+                var foundByNameList = document.getElementById('foundByNameList');
+                goog.events.listen(
+                  foundByNameList,
+                  goog.events.EventType.MOUSEOVER,
+                  function (e){
+                      if(goog.dom.classlist.contains(e.target, 'characterListSymbol')){
+                          updateCharPreview(e);
+                      }
+                  }
                 );
-                goog.events.listen(document.getElementById('foundByNameList'),
-                    goog.events.EventType.CLICK,
-                    function (e){
-                        if(e.target.id !== 'foundByNameList'){
-                            updateCharPreview(e);
-                            var symbol = e.target.textContent;
-                            charsToBeInserted.push(symbol);
-                            document.getElementById('special_characters').value += symbol;
-                        }
-                    }
+                goog.events.listen(
+                  foundByNameList,
+                  goog.events.EventType.CLICK,
+                  function (e){
+                      if(goog.dom.classlist.contains(e.target, 'characterListSymbol')){
+                          updateCharPreview(e);
+                          var symbol = e.target.textContent;
+                          charsToBeInserted.push(symbol);
+                          document.getElementById('special_characters').value += symbol;
+                      }
+                  }
                 );
 
                 goog.require('goog.net.XhrIo');
                 var findCharByName = function() {
-					
-					var name = document.getElementById("searchName").value;
+                    var name = nameInput.value;
+                    // clear boxes to get ready for results
+                    foundByNameList.innerHTML = '';
 
-					// clear boxes to get ready for results
-                    document.getElementById("foundByNameList").innerHTML = '';
                     document.getElementById("previewCharacterDetails").innerHTML = '';
 
-                    if(name.length !== 0){
-						var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(name);
-						goog.net.XhrIo.send(url, function(e){
-							var xhr = e.target;
-							var obj = xhr.getResponseJson();
+                    if(name.length !== 0) {
+                        var absPosChild = goog.dom.createDom('div', 'smallSpin');
+                        foundByNameList.appendChild(absPosChild);
+                        absPosChild.setAttribute('style', 'text-align:center; width: 100%; left: 0;');
+                        var charSearchSpinner = new sync.view.Spinner(absPosChild, 1, 'iframeSpinner');
+                        charSearchSpinner.show();
 
-							for (var code in obj) {
+                        var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(name);
+                        goog.net.XhrIo.send(url, function(e){
+                            var obj = e.target.getResponseJson();
+
+                            var emptyObject = true;
+                            for (var code in obj) {
                                 if (obj.hasOwnProperty(code)) {
+                                    emptyObject = false;
+
                                     var foundByNameItem = goog.dom.createDom(
                                         'div',
                                         {
@@ -247,50 +260,54 @@
                                         });
                                     var decimalCode = parseInt(code, 16);
                                     foundByNameItem.textContent = String.fromCharCode(decimalCode);
-                                    document.getElementById("foundByNameList").appendChild(foundByNameItem);
+                                    foundByNameList.appendChild(foundByNameItem);
                                 }
-							}
-							localStorage.setItem("lastCharacterSearch", name);
-						}, "GET");
+                            }
+                            charSearchSpinner.hide();
+                            if (emptyObject) {
+                                absPosChild.textContent = 'No results found';
+                            } else {
+                                foundByNameList.removeChild(absPosChild);
+                            }
+                            localStorage.setItem("lastCharacterSearch", name);
+                        }, "GET");
                     }
                 };
-                
+
 
                 // execute query automatically after user stops typing
                 var typingPause = 500;
                 var timeoutfunction;
-				
-				// execute query immediately when user presses enter in the input, prevent dialog closing
-                goog.events.listen(document.getElementById('searchName'), goog.events.EventType.KEYDOWN, function(e){
-                        if(e.keyCode === 13) {
-                            e.preventDefault();
-							clearTimeout(timeoutfunction);
-                            findCharByName();
-                        }
+
+                // execute query immediately when user presses enter in the input, prevent dialog closing
+                goog.events.listen(
+                  nameInput,
+                  goog.events.EventType.KEYDOWN, function(e){
+                    if(e.keyCode === 13) {
+                        e.preventDefault();
+                        clearTimeout(timeoutfunction);
+                        findCharByName();
                     }
-                );
-				
-				// execute query after delay on keyup
-                goog.events.listen(document.getElementById("searchName"),
-                    goog.events.EventType.KEYUP,
-                    function(e) {
-                        // if the key is enter a search is triggered already on keydown
-                        if (e.keyCode !== 13){
-							clearTimeout(timeoutfunction);
-                            timeoutfunction = setTimeout(findCharByName, typingPause);
-                        }
-                    }
-                );
+                });
+
+                // execute query after delay on input
+                goog.events.listen(
+                  nameInput,
+                  goog.events.EventType.INPUT,
+                  function() {
+                      clearTimeout(timeoutfunction);
+                      timeoutfunction = setTimeout(findCharByName, typingPause);
+                });
 
                 document.getElementById('charpicker-advanced').appendChild(charPickerIframe);
 
                 var readOnlyInput = goog.dom.createDom(
                     'input',
                     {
-                        'id': 'special_characters',
-                        'class': 'charpicker-input',
-                        'type': 'text',
-                        'name': 'charsToBeInserted'
+                        id: 'special_characters',
+                        class: 'charpicker-input',
+                        type: 'text',
+                        name: 'charsToBeInserted'
                     }
                 );
                 readOnlyInput.setAttribute('readonly', true);
