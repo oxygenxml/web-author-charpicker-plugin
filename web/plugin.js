@@ -266,10 +266,11 @@
                             charSearchSpinner.hide();
                             if (emptyObject) {
                                 absPosChild.textContent = 'No results found';
+                                localStorage.removeItem("lastCharacterSearch");
                             } else {
                                 foundByNameList.removeChild(absPosChild);
+                                localStorage.setItem("lastCharacterSearch", name);
                             }
-                            localStorage.setItem("lastCharacterSearch", name);
                         }, "GET");
                     }
                 };
@@ -346,9 +347,15 @@
             else {
                 this.dialog.getElement().querySelector('#special_characters').value = '';
                 var searchbox = this.dialog.getElement().querySelector('#searchName');
-				searchbox.value = '';
+                searchbox.value = '';
                 if(localStorage.getItem("lastCharacterSearch") !== null){
                     searchbox.setAttribute("placeholder", localStorage.getItem("lastCharacterSearch") );
+                } else {
+                    // Warning was shown for the last search so remove it.
+                    var warningElement = this.dialog.getElement().querySelector('.smallSpin');
+                    if (warningElement) {
+                        document.getElementById('foundByNameList').removeChild(warningElement);
+                    }
                 }
                 var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
                 var iframeContent = (iframe.contentWindow || iframe.contentDocument);
