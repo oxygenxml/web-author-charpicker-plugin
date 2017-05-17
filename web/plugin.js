@@ -108,10 +108,11 @@
             }
             /* add the characters to the container */
             for (i = 0; i < characters.length; i++) {
-                container.appendChild(goog.dom.createDom('div', {
-                        'class': 'goog-inline-block goog-flat-button char-select-button'
-                    },
-                    characters[i]));
+                container.appendChild(
+                  goog.dom.createDom(
+                    'div', ['goog-inline-block', 'goog-flat-button', 'char-select-button'],
+                    characters[i])
+                );
             }
         };
         var updateCharPreview = function(e) {
@@ -122,11 +123,15 @@
             var previewCharacterDetails = document.getElementById('previewCharacterDetails');
 
             previewCharacterDetails.innerHTML = '';
-            goog.dom.appendChild(previewCharacterDetails, goog.dom.createDom('div', { 'id': 'previewSymbol' }, symbol));
+            goog.dom.appendChild(previewCharacterDetails, goog.dom.createDom('div', {id: 'previewSymbol'}, symbol));
             goog.dom.appendChild(previewCharacterDetails, goog.dom.createDom(
-                'div', { 'id': 'previewSymbolName' },
+                'div', {id: 'previewSymbolName'},
                 symbolName,
-                goog.dom.createDom('span', { 'style': 'white-space: nowrap; vertical-align: top' }, ' (' + symbolCode + ')')
+                goog.dom.createDom(
+                  'span',
+                  {style: 'white-space: nowrap; vertical-align: top'},
+                  ' (' + symbolCode + ')'
+                )
             ));
         };
 
@@ -161,7 +166,7 @@
             if(document.getElementById('charpickeriframe') === null) {
                 var nameInput = goog.dom.createDom(
                   'input',
-                  { 'id': 'searchName', 'class': 'charpicker-input', 'type': 'text', 'name': 'searchName' });
+                  {id: 'searchName', class: 'charpicker-input', type: 'text', name: 'searchName'});
                 var tabContainer = goog.dom.createDom(
                     'div', 'tabsContainer',
                     goog.dom.createDom(
@@ -420,6 +425,17 @@
 
             goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(this.displayDialog, this));
 
+            // Add classes so charpicker button gets the same styles as other dropdowns from the toolbar.
+            if (!this.charPickerToolbarButton_) {
+                this.charPickerToolbarButton_ = document.querySelector('[name=insertfrommenu]');
+            }
+            goog.events.listen(this.csmenu, goog.ui.Component.EventType.HIDE, goog.bind(function () {
+                goog.dom.classlist.remove(this.charPickerToolbarButton_, 'goog-toolbar-menu-button-open');
+            }, this));
+            goog.events.listen(this.csmenu, goog.ui.Component.EventType.SHOW, goog.bind(function () {
+                goog.dom.classlist.add(this.charPickerToolbarButton_, 'goog-toolbar-menu-button-open');
+            }, this));
+
             this.csmenu.render();
             goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
 
@@ -471,7 +487,7 @@
             } else {
                 displayRecentCharacters();
                 this.csmenu.showAtElement(
-                    document.querySelector('[name=insertfrommenu]'),
+                    this.charPickerToolbarButton_,
                     goog.positioning.Corner.BOTTOM_START);
             }
         };
