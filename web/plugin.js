@@ -491,6 +491,11 @@
                     goog.positioning.Corner.BOTTOM_START);
             }
         };
+
+        InsertFromMenuAction.prototype.isEnabled = function () {
+          return !this.editor.getReadOnlyState().readOnly;
+        };
+
         var editor = e.editor;
 
         var insertFromMenu = new InsertFromMenuAction(editor);

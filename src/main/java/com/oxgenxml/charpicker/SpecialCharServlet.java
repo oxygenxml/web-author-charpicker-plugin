@@ -57,7 +57,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		query = query.replaceAll("\\s+", " ");
 		
 		// Remove special characters.
-		query = query.replaceAll("[+.^:,*{}]", " ");
+		query = query.replaceAll("[+.^:,*{}\\(\\)\\[\\]]", "");
 		
 		
 		String[] queryWords = query.split("\\s+");
