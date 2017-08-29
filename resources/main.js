@@ -6,48 +6,42 @@ goog.require('goog.ui.CharPicker');
 
 
 window["initCharPicker"] = function () {
-    var picker = new goog.ui.CharPicker(new goog.i18n.CharPickerData(),
-        new goog.i18n.uChar.LocalNameFetcher());
-    var el = goog.dom.getElement('char-picker');
-    picker.render(el);
-    var parent = window.parent;
-    parent["charsToBeInserted"] = [];
-    var output = parent.document.getElementById('special_characters');
-    // Action on selection
-    var selectionAction = function () {
-        output.value += picker.getSelectedChar();
-        parent["charsToBeInserted"].push(picker.getSelectedChar());
-    };
-    var charpicker = document.getElementsByClassName("goog-char-picker")[0];
+  var cD = goog.dom.createDom;
+  var insertBefore = goog.dom.insertSiblingBefore;
 
-    var categoriesBar = document.createElement("div");
-    categoriesBar.id = "categories";
-    charpicker.insertBefore(categoriesBar, charpicker.firstChild);
+  var picker = new goog.ui.CharPicker(
+    new goog.i18n.CharPickerData(),
+    new goog.i18n.uChar.LocalNameFetcher());
+  picker.render(el);
 
-    var label = document.createElement("div");
-    label.id = "label-categories";
-    label.textContent = "Categories:";
-    categoriesBar.insertBefore(label, categoriesBar.firstChild);
+  var el = document.getElementById('char-picker');
 
-    var wrapper = document.createElement("div");
-    wrapper.id = "dropdown-wrapper";
+  var parent = window.parent;
+  parent["charsToBeInserted"] = [];
+  var output = parent.document.getElementById('special_characters');
 
+  // Action on selection
+  var selectionAction = function () {
+    var selectedChar = picker.getSelectedChar();
+    output.value += selectedChar;
+    parent["charsToBeInserted"].push(selectedChar);
+  };
 
-    var dropdowns = document.querySelectorAll(".goog-inline-block.goog-menu-button");
-    for(var i = 0; i < dropdowns.length; i++) {
-        wrapper.appendChild(dropdowns[i]);
-    }
-    categoriesBar.insertBefore(wrapper, categoriesBar.firstChild.nextSibling);
+  var dropdowns = document.querySelectorAll(".goog-inline-block.goog-menu-button");
+  var categoriesBar = cD("div", {id: "categories"},
+    cD("div", { id: "label-categories" }, "Categories:"),
+    cD("div", { id: 'dropdown-wrapper' }, dropdowns)
+  );
 
+  insertBefore(categoriesBar,
+    document.getElementsByClassName("goog-char-picker")[0].firstChild);
 
-    var hexCodeSpan = document.createElement("span");
-    hexCodeSpan.id = "label-hexcode";
-    hexCodeSpan.innerHTML = "Hex code:";
-    charpicker.insertBefore(hexCodeSpan, document.querySelector(".goog-char-picker-uplus"));
+  insertBefore(
+    cD('span', { id: 'label-hexcode' }, "Hex code:"),
+    document.querySelector(".goog-char-picker-uplus")
+  );
 
 
-    // Get selected locale from the char picker.
-    goog.events.listen(picker, 'action', function (e) {
-        selectionAction();
-    });
+  // Get selected locale from the char picker.
+  goog.events.listen(picker, 'action', selectionAction);
 };
