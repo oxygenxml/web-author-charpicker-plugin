@@ -12,9 +12,9 @@ window["initCharPicker"] = function () {
   var picker = new goog.ui.CharPicker(
     new goog.i18n.CharPickerData(),
     new goog.i18n.uChar.LocalNameFetcher());
-  picker.render(el);
-
+  
   var el = document.getElementById('char-picker');
+  picker.render(el);
 
   var parent = window.parent;
   parent["charsToBeInserted"] = [];
