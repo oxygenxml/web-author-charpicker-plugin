@@ -483,7 +483,8 @@
     };
 
     InsertFromMenuAction.prototype.isEnabled = function () {
-      return !this.editor.getReadOnlyState().readOnly;
+      return !sync.util.isInReadOnlyContent.apply(editor.getSelectionManager().getSelection()) && 
+        !this.editor.getReadOnlyState().readOnly;
     };
 
     var editor = e.editor;
