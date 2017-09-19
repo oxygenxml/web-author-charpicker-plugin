@@ -147,14 +147,6 @@
 
     InsertFromMenuAction.prototype.displayDialog = function () {
 
-      // Resize the dialog when the window resizes (keep it usable on smaller devices after the keyboard pops up).
-      var resizeListenerKey = goog.events.listen(window, goog.events.EventType.RESIZE, goog.bind(function () {
-        this.dialog.setPreferredSize(420, 550);
-      }, this));
-
-      goog.events.listenOnce(this.dialog.dialog, goog.ui.Dialog.EventType.AFTER_HIDE, function () {
-        goog.events.unlistenByKey(resizeListenerKey);
-      });
 
       window.charsToBeInserted = [];
       // if dialog has not been opened yet, load it
