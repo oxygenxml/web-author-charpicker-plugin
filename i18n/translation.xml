@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<translation>
+    <languageList>
+        <language description="English" lang="en_US"/>
+        <language description="German" lang="de_DE"/>
+        <language description="French" lang="fr_FR"/>
+        <language description="Japanese" lang="ja_JP"/>
+        <language description="Dutch" lang="nl_NL"/>
+    </languageList>
+    <!-- server-side tags must have the 'destination' attribute set -->
+    <key distribution="webauthor" value="BY_NAME_">
+        <comment>title of tab for 'Search for characters by name' action</comment>
+        <val lang="en_US">By name</val>
+        <val lang="de_DE">Nach Namen</val>
+        <val lang="fr_FR">Par nom</val>
+        <val lang="ja_JP">名前による</val>
+        <val lang="nl_NL">Op naam</val>
+    </key>
+    <key distribution="webauthor" value="BY_CATEGORIES_">
+        <comment>title of tab for 'Search for characters by categories' action. Should be fairly short form.</comment>
+        <val lang="en_US">By categories</val>
+        <val lang="de_DE">Nach Kategorien</val>
+        <val lang="fr_FR">Par catégories</val>
+        <val lang="ja_JP">カテゴリによる</val>
+        <val lang="nl_NL">Op categorie</val>
+    </key>
+    <key distribution="webauthor" value="BY_CATEGORIES_OR_HEX_CODE_">
+        <comment>title of tab for 'Search for characters by categories or by hexadecimal code' action</comment>
+        <val lang="en_US">By categories or hex code</val>
+        <val lang="de_DE">Nach Kategorien oder Hex-Codes</val>
+        <val lang="fr_FR">Par catégories ou code hexadécimal</val>
+        <val lang="ja_JP">分類項目または16進数コードによる</val>
+        <val lang="nl_NL">Op categorie of hexadecimale code</val>
+    </key>
+    <key distribution="webauthor" value="NAME_OF_CHARACTER_">
+        <comment>Label of input for searching through characters by name</comment>
+        <val lang="en_US">Name of character to search for:</val>
+        <val lang="de_DE">Name des Zeichens, nach dem gesucht werden soll:</val>
+        <val lang="fr_FR">Nom du caractère à rechercher:</val>
+        <val lang="ja_JP">検索するための文字の名前：</val>
+        <val lang="nl_NL">Naam van teken waarnaar u wilt zoeken:</val>
+    </key>
+    <key distribution="webauthor" value="INSERT_SPECIAL_CHARACTERS_">
+        <comment>Title of dialog for inserting special characters</comment>
+        <val lang="en_US">Insert special characters</val>
+        <val lang="de_DE">Sonderzeichen einfügen</val>
+        <val lang="fr_FR">Insérer des caractère spéciaux</val>
+        <val lang="ja_JP">特殊文字を挿入する</val>
+        <val lang="nl_NL">Speciale tekens invoegen</val>
+    </key>
+    <key distribution="webauthor" value="SELECTED_CHARACTERS_">
+        <comment>Label for area previewing the special characters selected so far to be inserted.</comment>
+        <val lang="en_US">Selected characters:</val>
+        <val lang="de_DE">Ausgewählte Zeichen:</val>
+        <val lang="fr_FR">Caractères sélectionnés:</val>
+        <val lang="ja_JP">選択された文字：</val>
+        <val lang="nl_NL">Geselecteerde tekens:</val>
+    </key>
+    <key distribution="webauthor" value="REMOVE_LAST_CHARACTER_">
+        <comment>Tooltip shown on button for removing the last character selected for insertion</comment>
+        <val lang="en_US">Remove last character</val>
+        <val lang="de_DE">Letztes Zeichen entfernen</val>
+        <val lang="fr_FR">Supprimer le dernier caractère</val>
+        <val lang="ja_JP">最後の文字を削除する</val>
+        <val lang="nl_NL">Laatste teken verwijderen</val>
+    </key>
+    <key value="NO_RESULTS_FOUND_">
+        <comment>Info message</comment>
+        <val lang="en_US">No results found</val>
+        <val lang="de_DE">Keine Ergebnisse gefunden</val>
+        <val lang="fr_FR">Aucun résultat n'a été trouvé</val>
+        <val lang="ja_JP">ひとつも見つかりません</val>
+        <val lang="nl_NL">Geen resultaten gevonden</val>
+    </key>
+</translation>
