@@ -62,12 +62,32 @@
     sync.Translation.addTranslations(translations);
 
     var cD = goog.dom.createDom;
+    var gClassList = goog.dom.classlist;
+    var gEvents = goog.events.EventType;
 
     //quickly change urls that have the plugin name hardcoded
     var pluginResourcesFolder = 'char-picker';
 
-    var localStorageUsable = function () { return typeof (Storage) !== 'undefined'; };
-    var storedRecentChars = function () { return localStorage.getItem("recentlyUsedCharacters"); };
+    var localStorageUsable = typeof (Storage) !== 'undefined';
+
+    var recentCharsItemName = 'recentlyUsedCharacters';
+    var lastCharacterSearchItemName = 'lastCharacterSearch';
+    var getRecentChars = function () {
+      var recentChars = [];
+      if (localStorageUsable) {
+        var itemFromStorage = localStorage.getItem(recentCharsItemName);
+        if (itemFromStorage) {
+          recentChars = JSON.parse(itemFromStorage);
+        }
+      }
+      return recentChars;
+    };
+    var setRecentChars = function (characters) {
+      if (localStorageUsable) {
+        localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
+      }
+    };
+
     var capitalizeWords = function(text) {
       var splitText = text.toLowerCase().split(' ');
       for(var i = 0; i < splitText.length; i++) {
@@ -85,24 +105,20 @@
       /* remove all recent characters to add the new ones again */
       goog.dom.removeChildren(container);
 
-      var characters = [];
-      if (localStorageUsable()) {
-        if (storedRecentChars()) {
-          characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
-        }
-      }
+
 
       /* adjust the character array so it is the desired length.
        Fill it up with default recent characters if needed.  */
       var maxChars = 21;
+      var characters = getRecentChars();
       if (characters.length < maxChars) {
         characters = characters.concat(defaultRecentCharacters);
         goog.array.removeDuplicates(characters);
         characters = characters.slice(0, maxChars);
-        localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
+        setRecentChars(characters);
       } else if (characters.length > maxChars) {
         characters = characters.slice(0, maxChars);
-        localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
+        setRecentChars(characters);
       }
       /* add the characters to the container */
       for (i = 0; i < characters.length; i++) {
@@ -161,6 +177,8 @@
             name: 'searchName'
           });
         var foundByNameList = cD('div', { id: 'foundByNameList'});
+        var charPickerAdvanced = cD('div', { id: 'charpicker-advanced' });
+
         var tabContainer = cD(
           'div', 'tabsContainer',
           cD('ul', '',
@@ -188,30 +206,31 @@
                 cD('span', 'low-width-hide', tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)),
                 cD('span', 'big-width-hide', tr(msgs.BY_CATEGORIES_))
               ),
-              cD('div', { id: 'charpicker-advanced' })
+              charPickerAdvanced
             )
           )
         );
 
-        var charPickerIframe = cD('iframe', {
+        this.charPickerIframe_ = cD('iframe', {
           id: 'charpickeriframe',
           src: '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html'
         });
-        this.dialog.getElement().id = 'charPicker';
-        goog.dom.appendChild(this.dialog.getElement(), tabContainer);
+        var dialogElement = this.dialog.getElement();
+        dialogElement.id = 'charPicker';
+        goog.dom.appendChild(dialogElement, tabContainer);
 
-        this.dialog.getElement().parentElement.classList.add("dialogContainer");
+        dialogElement.parentElement.classList.add("dialogContainer");
 
-        goog.events.listen(foundByNameList, goog.events.EventType.MOUSEOVER,
+        goog.events.listen(foundByNameList, gEvents.MOUSEOVER,
           function (e){
-            if(goog.dom.classlist.contains(e.target, 'characterListSymbol')){
+            if(gClassList.contains(e.target, 'characterListSymbol')){
               updateCharPreview(e);
             }
           }
         );
-        goog.events.listen(foundByNameList, goog.events.EventType.CLICK,
+        goog.events.listen(foundByNameList, gEvents.CLICK,
           function (e){
-            if(goog.dom.classlist.contains(e.target, 'characterListSymbol')){
+            if(gClassList.contains(e.target, 'characterListSymbol')){
               updateCharPreview(e);
               var symbol = e.target.textContent;
               charsToBeInserted.push(symbol);
@@ -229,9 +248,11 @@
           document.getElementById("previewCharacterDetails").innerHTML = '';
 
           if(name.length !== 0) {
-            var absPosChild = cD('div', 'smallSpin');
+            var absPosChild = cD('div', {
+              className: 'smallSpin',
+              style: 'text-align:center; width: 100%; left: 0;'
+            });
             foundByNameList.appendChild(absPosChild);
-            absPosChild.setAttribute('style', 'text-align:center; width: 100%; left: 0;');
             var charSearchSpinner = new sync.view.Spinner(absPosChild, 1, 'iframeSpinner');
             charSearchSpinner.show();
 
@@ -258,11 +279,11 @@
               }
               charSearchSpinner.hide();
               if (emptyObject) {
-                absPosChild.textContent = 'No results found'; // todo: translate
-                localStorage.removeItem("lastCharacterSearch");
+                absPosChild.textContent = tr(msgs.NO_RESULTS_FOUND_);
+                localStorage.removeItem(lastCharacterSearchItemName);
               } else {
                 foundByNameList.removeChild(absPosChild);
-                localStorage.setItem("lastCharacterSearch", name);
+                localStorage.setItem(lastCharacterSearchItemName, name);
               }
             }, "GET");
           }
@@ -274,7 +295,7 @@
         var timeoutfunction;
 
         // execute query immediately when user presses enter in the input, prevent dialog closing
-        goog.events.listen(nameInput, goog.events.EventType.KEYDOWN, function(e){
+        goog.events.listen(nameInput, gEvents.KEYDOWN, function(e){
           if(e.keyCode === 13) {
             e.preventDefault();
             clearTimeout(timeoutfunction);
@@ -283,18 +304,18 @@
         });
 
         // execute query after delay on input
-        goog.events.listen(nameInput, goog.events.EventType.INPUT, function() {
+        goog.events.listen(nameInput, gEvents.INPUT, function() {
           clearTimeout(timeoutfunction);
           timeoutfunction = setTimeout(findCharByName, typingPause);
         });
 
-        document.getElementById('charpicker-advanced').appendChild(charPickerIframe);
+        charPickerAdvanced.appendChild(this.charPickerIframe_);
 
         var readOnlyInput = cD(
           'input',
           {
             id: 'special_characters',
-            class: 'charpicker-input',
+            className: 'charpicker-input',
             type: 'text',
             name: 'charsToBeInserted'
           }
@@ -302,41 +323,41 @@
         readOnlyInput.setAttribute('readonly', true);
         readOnlyInput.setAttribute('onFocus', 'this.setSelectionRange(0, this.value.length)');
 
+        var removeLastCharButton = cD('button',
+          {
+            id: 'removeLastChar',
+            className: 'goog-button goog-char-picker-okbutton',
+            title: tr(msgs.REMOVE_LAST_CHARACTER_),
+            value: ''
+          }
+        );
+
         var div = cD(
           'div', { 'id': 'selectedCharsWrapper' },
           cD('span', '', tr(msgs.SELECTED_CHARACTERS_)),
           readOnlyInput,
-          cD('button',
-            {
-              id: 'removeLastChar',
-              class: 'goog-button goog-char-picker-okbutton',
-              title: tr(msgs.REMOVE_LAST_CHARACTER_),
-              value: ''
-            }
-          )
+          removeLastCharButton
         );
 
         goog.dom.appendChild(this.dialog.getElement(), div);
 
-        var textarea = document.getElementById('special_characters');
-        textarea.scrollTop = textarea.scrollHeight;
-        goog.events.listen(this.dialog.getElement().querySelector('#removeLastChar'), goog.events.EventType.CLICK, function(){
-          var preview = document.getElementById('special_characters');
-          preview.value = '';
+        readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
+        goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
+          readOnlyInput.value = '';
           charsToBeInserted.pop();
           for(var i = 0; i < charsToBeInserted.length; i++){
-            preview.value += charsToBeInserted[i];
+            readOnlyInput.value += charsToBeInserted[i];
           }
         });
-
+        this.readOnlyInput_ = readOnlyInput;
       }
       // if dialog has been populated already just reset the textboxes
       else {
-        this.dialog.getElement().querySelector('#special_characters').value = '';
+        this.readOnlyInput_.value = '';
         var searchbox = this.dialog.getElement().querySelector('#searchName');
         searchbox.value = '';
-        if(localStorage.getItem("lastCharacterSearch") !== null){
-          searchbox.setAttribute("placeholder", localStorage.getItem("lastCharacterSearch") );
+        if(localStorage.getItem(lastCharacterSearchItemName) !== null){
+          searchbox.setAttribute("placeholder", localStorage.getItem(lastCharacterSearchItemName) );
         } else {
           // Warning was shown for the last search so remove it.
           var warningElement = this.dialog.getElement().querySelector('.smallSpin');
@@ -344,8 +365,8 @@
             document.getElementById('foundByNameList').removeChild(warningElement);
           }
         }
-        var iframe = this.dialog.getElement().querySelector('#charpickeriframe');
-        var iframeContent = (iframe.contentWindow || iframe.contentDocument);
+
+        var iframeContent = (this.charPickerIframe_.contentWindow || this.charPickerIframe_.contentDocument);
         if (iframeContent.document) {
           iframeContent = iframeContent.document;
           iframeContent.querySelector('.goog-char-picker-input-box').value = '';
@@ -370,20 +391,12 @@
                 fragment: stringifiedText
               },
               function () {
-                if (localStorageUsable()) {
-                  /* if using the localStorage is possible, add the text to the START of the array - queue system */
-                  if (storedRecentChars()) {
-                    var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
-                    characters = (dialogInsertChars.reverse()).concat(characters);
-                    goog.array.removeDuplicates(characters);
-                    localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-                    displayRecentCharacters();
-                  } else {
-                    characters = dialogInsertChars;
-                    localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-                    displayRecentCharacters();
-                  }
-                }
+                /* add the text to the START of the array - queue system */
+                var characters = getRecentChars();
+                characters = (dialogInsertChars.reverse()).concat(characters);
+                goog.array.removeDuplicates(characters);
+                setRecentChars(characters);
+                displayRecentCharacters();
               })
           }
         }
@@ -395,34 +408,37 @@
     InsertFromMenuAction.prototype.init = function () {
       window.charsToBeInserted = [];
 
-      this.csmenu = new goog.ui.PopupMenu();
+      var csmenu = new goog.ui.PopupMenu();
 
       //overwrite the handleBlur function to prevent the popup from closing after inserting a character
-      this.csmenu.handleBlur = function () {
+      csmenu.handleBlur = function () {
       };
 
       var moreSymbols = new goog.ui.MenuItem(tr(msgs.MORE_SYMBOLS_) + '...');
-      this.csmenu.addChild(moreSymbols, true);
+      csmenu.addChild(moreSymbols, true);
       moreSymbols.setId('moreSymbolsButton');
 
-      goog.events.listen(moreSymbols, goog.ui.Component.EventType.ACTION, goog.bind(this.displayDialog, this));
+      var gComponentEvent = goog.ui.Component.EventType;
+      goog.events.listen(moreSymbols, gComponentEvent.ACTION, goog.bind(this.displayDialog, this));
 
       // Add classes so charpicker button gets the same styles as other dropdowns from the toolbar.
-      if (!this.charPickerToolbarButton_) {
-        this.charPickerToolbarButton_ = document.querySelector('[name=insertfrommenu]');
+      var toolbarButton = this.charPickerToolbarButton_;
+      if (!toolbarButton) {
+        toolbarButton = document.querySelector('[name=insertfrommenu]');
+        this.charPickerToolbarButton_ = toolbarButton;
       }
-      goog.events.listen(this.csmenu, goog.ui.Component.EventType.HIDE, goog.bind(function () {
-        goog.dom.classlist.remove(this.charPickerToolbarButton_, 'goog-toolbar-menu-button-open');
+      goog.events.listen(csmenu, gComponentEvent.HIDE, goog.bind(function () {
+        gClassList.remove(toolbarButton, 'goog-toolbar-menu-button-open');
       }, this));
-      goog.events.listen(this.csmenu, goog.ui.Component.EventType.SHOW, goog.bind(function () {
-        goog.dom.classlist.add(this.charPickerToolbarButton_, 'goog-toolbar-menu-button-open');
+      goog.events.listen(csmenu, gComponentEvent.SHOW, goog.bind(function () {
+        gClassList.add(toolbarButton, 'goog-toolbar-menu-button-open');
       }, this));
 
-      this.csmenu.render();
-      goog.dom.setProperties(this.csmenu.getElement(), {'id': 'pickermenu'});
+      csmenu.render();
+      var parentElement = csmenu.getElement();
+      goog.dom.setProperties(parentElement, {'id': 'pickermenu'});
 
       // add the characters grid before the "more symbols..." button
-      var parentElement = this.csmenu.getElement();
       var theFirstChild = parentElement.firstChild;
       var newElement = cD('div', {
         className: 'goog-char-picker-grid recentCharactersGrid',
@@ -430,33 +446,24 @@
       });
       parentElement.insertBefore(newElement, theFirstChild);
 
-      this.csmenu.setToggleMode(true);
+      csmenu.setToggleMode(true);
+      this.csmenu_ = csmenu; // save for later.
 
       // QUICK INSERT GRID
-      goog.events.listen(document.querySelector('.goog-char-picker-grid'),
-        goog.events.EventType.CLICK,
+      goog.events.listen(document.querySelector('.goog-char-picker-grid'), gEvents.CLICK,
         function (e) {
-          if (goog.dom.classlist.contains(e.target, 'goog-flat-button')) {
+          var target = e.target;
+          if (gClassList.contains(target, 'goog-flat-button')) {
+            var quickInsertChar = target.textContent;
             editor.getActionsManager().invokeOperation(
               'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
-                fragment: e.target.textContent
+                fragment: quickInsertChar
               },
               function () {
-                var quickInsertChar = e.target.textContent;
-                if (localStorageUsable()) {
-                  /* if using the localStorage is possible, add the character to the START of the array - queue system */
-                  if (storedRecentChars()) {
-                    var characters = JSON.parse(localStorage.getItem("recentlyUsedCharacters"));
-                    characters.unshift(quickInsertChar);
-                    goog.array.removeDuplicates(characters);
-                    localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-
-                  } else {
-                    characters = [];
-                    characters.unshift(quickInsertChar);
-                    localStorage.setItem("recentlyUsedCharacters", JSON.stringify(characters));
-                  }
-                }
+                var characters = getRecentChars();
+                characters.unshift(quickInsertChar);
+                goog.array.removeDuplicates(characters);
+                setRecentChars(characters);
               })
           }
         });
@@ -464,11 +471,12 @@
 
 
     InsertFromMenuAction.prototype.actionPerformed = function () {
-      if (this.csmenu.isOrWasRecentlyVisible()) {
-        this.csmenu.hide();
+      var csmenu = this.csmenu_;
+      if (csmenu.isOrWasRecentlyVisible()) {
+        csmenu.hide();
       } else {
         displayRecentCharacters();
-        this.csmenu.showAtElement(
+        csmenu.showAtElement(
           this.charPickerToolbarButton_,
           goog.positioning.Corner.BOTTOM_START);
       }
@@ -481,8 +489,9 @@
 
     var editor = e.editor;
 
+    var insertFromMenuActionId = 'insertfrommenu';
     var insertFromMenu = new InsertFromMenuAction(editor);
-    editor.getActionsManager().registerAction('insertfrommenu', insertFromMenu);
+    editor.getActionsManager().registerAction(insertFromMenuActionId, insertFromMenu);
 
     var addActionOnce = 0;
     addToFrameworkToolbar(editor);
@@ -504,12 +513,12 @@
         if (frameworkToolbar && addActionOnce === 0) {
           addActionOnce++;
           frameworkToolbar.children.push({
-            id: 'insertfrommenu',
+            id: insertFromMenuActionId,
             type: "action"
           });
           setTimeout(function () {
             insertFromMenu.init();
-            document.querySelector("[name='insertfrommenu']")
+            document.querySelector("[name='" + insertFromMenuActionId + "']")
               .setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
           }, 0);
         }
