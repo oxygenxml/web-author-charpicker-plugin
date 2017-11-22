@@ -5,7 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.oxygenxml</groupId>
 	<version>20.0-SNAPSHOT</version>
-	<artifactId>webapp-charpicker-plugin</artifactId>
+  <artifactId>web-author-charpicker-plugin</artifactId>
+  <name>Web Author Charpicker Plugin</name>
+  <description>A plugin for oXygen XML Web Author that adds support for inserting special UTF-8 characters</description>
+        
 	<repositories>
 		<repository>
 			<id>public</id>
