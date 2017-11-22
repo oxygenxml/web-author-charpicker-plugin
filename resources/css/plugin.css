@@ -5,6 +5,10 @@
     background-color: #d6e9f8;
 }
 
+#charPicker {
+    overflow-y: hidden;
+}
+
 #simplePickerGrid .recentCharactersGrid {
     height: 130px;
     width: 198px;

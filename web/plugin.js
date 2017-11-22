@@ -137,7 +137,7 @@
 
       var previewCharacterDetails = document.getElementById('previewCharacterDetails');
 
-      previewCharacterDetails.innerHTML = '';
+      goog.dom.removeChildren(previewCharacterDetails);
       goog.dom.append(previewCharacterDetails,
         cD('div', {id: 'previewSymbol'}, symbol),
         cD('div', { id: 'previewSymbolName' },
@@ -243,9 +243,9 @@
         var findCharByName = function() {
           var name = nameInput.value;
           // clear boxes to get ready for results
-          foundByNameList.innerHTML = '';
+          goog.dom.removeChildren(foundByNameList);
 
-          document.getElementById("previewCharacterDetails").innerHTML = '';
+          goog.dom.removeChildren(document.getElementById("previewCharacterDetails"));
 
           if(name.length !== 0) {
             var absPosChild = cD('div', {
@@ -518,8 +518,10 @@
           });
           setTimeout(function () {
             insertFromMenu.init();
-            document.querySelector("[name='" + insertFromMenuActionId + "']")
-              .setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+            var insertSpecialCharButton = document.querySelector("[name='" + insertFromMenuActionId + "']");
+            if (insertSpecialCharButton) {
+              insertSpecialCharButton.setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+            }
           }, 0);
         }
       });
