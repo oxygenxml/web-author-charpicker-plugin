@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.oxygenxml</groupId>
-    <artifactId>oxygen-superpom-standard</artifactId>
+    <artifactId>oxygen-plugins-superpom</artifactId>
     <version>20.0-SNAPSHOT</version>
   </parent>
   <artifactId>web-author-charpicker-plugin</artifactId>
@@ -17,116 +17,80 @@
     <sonar.exclusions>resources/closure-library/**</sonar.exclusions>
   </properties>
   
-	<repositories>
-		<repository>
-			<id>public</id>
-			<name>oXygen public artifacts</name>
-			<url>http://www.oxygenxml.com/maven</url>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.oxygenxml</groupId>
-			<artifactId>oxygen-webapp</artifactId>
-			<version>17.1.0</version>
-			<classifier>classes</classifier>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+  <repositories>
+    <repository>
+      <id>public</id>
+      <name>oXygen public artifacts</name>
+      <url>http://www.oxygenxml.com/maven</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.13</version>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<finalName>${project.artifactId}-${project.nosnapshot.version}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<configuration>
-					<!-- <nodeVersion>v0.12.1</nodeVersion> -->
-					<nodeVersion>v4.4.2</nodeVersion>
-					<npmVersion>2.7.1</npmVersion>
-					<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
-					<npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
-					<installDirectory>target</installDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>install node and npm</id>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<phase>generate-resources</phase>
-					</execution>
-					<execution>
-						<id>npm install</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<phase>generate-resources</phase>
-					</execution>
-					<execution>
-						<id>gulp build</id>
-						<goals>
-							<goal>gulp</goal>
-						</goals>
-						<phase>prepare-package</phase>
-						<configuration>
-							<arguments>prepare-package</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- remove the -SNAPSHOT from packaged plugin -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>set-version-no-snapshot</id>
-						<goals>
-							<goal>regex-property</goal>
-						</goals>
-						<configuration>
-							<name>project.nosnapshot.version</name>
-							<value>${project.version}</value>
-							<regex>-SNAPSHOT</regex>
-							<replacement />
-							<failIfNoMatch>false</failIfNoMatch>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<!-- We only want the final JAR package in the target folder so that 
-						it's easier for users to identify it. -->
-					<outputDirectory>${project.build.directory}/build</outputDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<archiveBaseDirectory>${project.basedir}</archiveBaseDirectory>
-							<descriptors>
-								<descriptor>assembly.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <configuration>
+          <!-- <nodeVersion>v0.12.1</nodeVersion> -->
+          <nodeVersion>v4.4.2</nodeVersion>
+          <npmVersion>2.7.1</npmVersion>
+          <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
+          <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
+          <installDirectory>target</installDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+          <execution>
+            <id>gulp build</id>
+            <goals>
+              <goal>gulp</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <arguments>prepare-package</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archiveBaseDirectory>${project.basedir}</archiveBaseDirectory>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
