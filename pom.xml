@@ -27,9 +27,11 @@
   
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.13</version>
+      <groupId>com.oxygenxml</groupId>
+      <artifactId>oxygen-webapp</artifactId>
+      <classifier>classes</classifier>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
