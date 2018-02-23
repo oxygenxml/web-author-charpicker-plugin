@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+
+import org.apache.log4j.Logger;
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 
 public class SpecialCharServlet extends WebappServletPluginExtension {
@@ -26,6 +28,8 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	private static int maxResults = 500;
 	
 	private Properties chars;
+	
+	private static final Logger logger = Logger.getLogger(SpecialCharServlet.class.getName());
 
 	
 	@Override
@@ -35,7 +39,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		try {
 			getChars().load(charsInputStream);
 		} catch (IOException e) {
-			System.out.println("could not load the special character file");
+			logger.error("could not load the special character file");
 		}
 	}
 	
