@@ -11,66 +11,6 @@
     var typingPause = 500;
     var timeoutfunction;
 
-    var translations = {
-      "BY_NAME_": {
-        "en_US":"By name",
-        "de_DE":"Nach Namen",
-        "fr_FR":"Par nom",
-        "ja_JP":"名前による",
-        "nl_NL":"Op naam"
-      },
-      "BY_CATEGORIES_": {
-        "en_US":"By categories",
-        "de_DE":"Nach Kategorien",
-        "fr_FR":"Par catégories",
-        "ja_JP":"カテゴリによる",
-        "nl_NL":"Op categorie"
-      },
-      "BY_CATEGORIES_OR_HEX_CODE_": {
-        "en_US":"By categories or hex code",
-        "de_DE":"Nach Kategorien oder Hex-Codes",
-        "fr_FR":"Par catégories ou code hexadécimal",
-        "ja_JP":"分類項目または16進数コードによる",
-        "nl_NL":"Op categorie of hexadecimale code"
-      },
-      "NAME_OF_CHARACTER_": {
-        "en_US":"Name of character to search for:",
-        "de_DE":"Name des Zeichens, nach dem gesucht werden soll:",
-        "fr_FR":"Nom du caractère à rechercher:",
-        "ja_JP":"検索するための文字の名前：",
-        "nl_NL":"Naam van teken waarnaar u wilt zoeken:"
-      },
-      "MORE_SYMBOLS_": {
-        "en_US":"More symbols",
-        "de_DE":"Mehr Symbole",
-        "fr_FR":"Plus de symboles",
-        "ja_JP":"さらに多くのシンボル",
-        "nl_NL":"Meer symbolen"
-      },
-      "INSERT_SPECIAL_CHARACTERS_": {
-        "en_US":"Insert special characters",
-        "de_DE":"Sonderzeichen einfügen",
-        "fr_FR":"Insérer des caractère spéciaux",
-        "ja_JP":"特殊文字を挿入する",
-        "nl_NL":"Speciale tekens invoegen"
-      },
-      "SELECTED_CHARACTERS_": {
-        "en_US":"Selected characters:",
-        "de_DE":"Ausgewählte Zeichen:",
-        "fr_FR":"Caractères sélectionnés:",
-        "ja_JP":"選択された文字：",
-        "nl_NL":"Geselecteerde tekens:"
-      },
-      "REMOVE_LAST_CHARACTER_": {
-        "en_US":"Remove last character",
-        "de_DE":"Letztes Zeichen entfernen",
-        "fr_FR":"Supprimer le dernier caractère",
-        "ja_JP":"最後の文字を削除する",
-        "nl_NL":"Laatste teken verwijderen"
-      }
-    };
-    sync.Translation.addTranslations(translations);
-
     var cD = goog.dom.createDom;
     var gClassList = goog.dom.classlist;
     var gEvents = goog.events.EventType;

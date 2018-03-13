@@ -9,13 +9,15 @@ var closureCompiler = require('gulp-closure-compiler');
 var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 
+var Synci18n = require('sync-i18n');
+
 var targetLocation = "target";
 var resourceLocation = 'resources';
 
 var webLocation = 'web';
 
  // Concatenate JS Files, use closure compiler
-gulp.task('minify-js', function() {
+gulp.task('minify-js', ['make-translations'], function() {
     return gulp.src(['node_modules/google-closure-library/closure/goog/**/*.js', resourceLocation + '/deps.js', resourceLocation + '/main.js'])
         .pipe(closureCompiler({
           compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
@@ -31,10 +33,10 @@ gulp.task('minify-js', function() {
       .pipe(gulp.dest(targetLocation + '/js'));
 });
 // uglify plugin.js
-gulp.task('uglifyplugin', function() {
-    return gulp.src(webLocation + '/plugin.js')
+gulp.task('uglifyplugin', ['minify-js'], function() {
+    return gulp.src(webLocation + '/*.js')
+        .pipe(concat('plugin.js'))
         .pipe(uglify())
-        .pipe(rename('plugin.js'))
         .pipe(gulp.dest(targetLocation));
 });
 
@@ -42,7 +44,7 @@ gulp.task('minify-css', function(){
     return gulp.src([ resourceLocation + '/css/common.css', resourceLocation + '/css/charpicker.css'])
         .pipe(concat('concat.css'))
         .pipe(rename('styles.min.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))        
+        .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest(targetLocation + '/css'));
 });
 
@@ -67,7 +69,17 @@ gulp.task('goog_base_js', function(){
         .pipe(gulp.dest(resourceLocation + '/closure-library'));
 });
 
-gulp.task('minify-all', ['minify-js', 'uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
+gulp.task('make-translations', function () {
+  var synci18n = new Synci18n({
+    sourceFile: './i18n/translation.xml',
+    destinationFolder: __dirname + '/i18n',
+    msgsFilePath: __dirname + '/web/0translations.js'
+  });
+  synci18n.makeTranslationJsons();
+  synci18n.makeMsgs();
+});
+
+gulp.task('minify-all', ['uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
 // Default Task
 gulp.task('prepare-package', ['minify-all', 'goog_base_js']);
 gulp.task('default', ['prepare-package']);
