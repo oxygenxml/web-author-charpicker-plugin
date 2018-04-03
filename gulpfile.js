@@ -75,8 +75,7 @@ gulp.task('make-translations', function () {
     destinationFolder: __dirname + '/i18n',
     msgsFilePath: __dirname + '/web/0translations.js'
   });
-  synci18n.makeTranslationJsons();
-  synci18n.makeMsgs();
+  synci18n.generateTranslations();
 });
 
 gulp.task('minify-all', ['uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
