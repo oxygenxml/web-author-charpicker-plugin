@@ -31,6 +31,6 @@
     "jshint": "^2.9.2"
   },
   "dependencies": {
-    "sync-i18n": "0.0.1"
+    "sync-i18n": "0.0.x"
   }
 }

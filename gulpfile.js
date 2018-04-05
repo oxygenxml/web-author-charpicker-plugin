@@ -70,11 +70,7 @@ gulp.task('goog_base_js', function(){
 });
 
 gulp.task('make-translations', function () {
-  var synci18n = new Synci18n({
-    sourceFile: './i18n/translation.xml',
-    destinationFolder: __dirname + '/i18n',
-    msgsFilePath: __dirname + '/web/0translations.js'
-  });
+  var synci18n = Synci18n();
   synci18n.generateTranslations();
 });
 

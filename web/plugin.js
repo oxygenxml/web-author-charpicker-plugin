@@ -161,8 +161,8 @@
             }
 
             editor.getActionsManager().invokeOperation(
-              'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
-                fragment: stringifiedText
+              'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
+                text: stringifiedText
               },
               function () {
                 addNewRecentCharacters(recentInsertChars);
@@ -422,8 +422,8 @@
         if (gClassList.contains(target, 'goog-flat-button')) {
           var quickInsertChar = target.textContent;
           editor.getActionsManager().invokeOperation(
-            'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceFragmentOperation', {
-              fragment: quickInsertChar
+            'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
+              text: quickInsertChar
             },
             function () {
               addNewRecentCharacters([quickInsertChar]);
