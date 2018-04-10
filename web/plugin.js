@@ -135,8 +135,6 @@
     };
 
 
-    var insertCharactersFromDialog = null;
-
     /**
      * Refresh the char picker dialog - reset inputs.
      */
@@ -144,6 +142,25 @@
       this.editor = editor;
       this.dialog = workspace.createDialog();
       this.dialog.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+    };
+
+    InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
+    InsertFromMenuAction.prototype.getDisplayName = function () {
+      return 'insert from menu';
+    };
+
+    InsertFromMenuAction.prototype.getLargeIcon = function () {
+      return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
+    };
+
+    InsertFromMenuAction.prototype.displayDialog = function () {
+      window.charsToBeInserted = [];
+      // if dialog has not been opened yet, load it
+      if(document.getElementById('charpickeriframe') === null) {
+        this.createCharPickerDialog_();
+      } else {
+        this.refreshCharPickerDialog_();
+      }
       this.dialog.onSelect(goog.bind(function (key) {
         // DIALOG INSERT GRID
         if (key === 'ok') {
@@ -170,25 +187,6 @@
           }
         }
       }, this));
-    };
-
-    InsertFromMenuAction.prototype = new sync.actions.AbstractAction('');
-    InsertFromMenuAction.prototype.getDisplayName = function () {
-      return 'insert from menu';
-    };
-
-    InsertFromMenuAction.prototype.getLargeIcon = function () {
-      return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
-    };
-
-    InsertFromMenuAction.prototype.displayDialog = function () {
-      window.charsToBeInserted = [];
-      // if dialog has not been opened yet, load it
-      if(document.getElementById('charpickeriframe') === null) {
-        this.createCharPickerDialog_();
-      } else {
-        this.refreshCharPickerDialog_();
-      }
       this.dialog.show();
     };
 
@@ -346,8 +344,6 @@
     };
 
     InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
-      console.log(this.dialog);
-      console.log('onselect tho', this.dialog.onSelect);
 
       // if dialog has been populated already just reset the textboxes
       this.readOnlyInput_.value = '';
