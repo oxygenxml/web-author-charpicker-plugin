@@ -153,6 +153,38 @@
       return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
     };
 
+    /**
+     * Insert characters from the dialog.
+     * @param key The dialog button which was pressed.
+     * @private
+     */
+    InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
+      // DIALOG INSERT GRID
+      if (key === 'ok') {
+        var dialogInsertChars = window.charsToBeInserted;
+        if (dialogInsertChars) {
+          var stringifiedText = '';
+          var recentInsertChars = [];
+          // Go in reverse order to also extract recently used characters.
+          for(var i = dialogInsertChars.length - 1; i >= 0; i--){
+            var character = dialogInsertChars[i];
+            stringifiedText = character + stringifiedText;
+            if (recentInsertChars.length < maxRecentChars && recentInsertChars.indexOf(character) === -1) {
+              recentInsertChars.push(character);
+            }
+          }
+
+          editor.getActionsManager().invokeOperation(
+            'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
+              text: stringifiedText
+            },
+            function () {
+              addNewRecentCharacters(recentInsertChars);
+            });
+        }
+      }
+    };
+
     InsertFromMenuAction.prototype.displayDialog = function () {
       window.charsToBeInserted = [];
       // if dialog has not been opened yet, load it
@@ -161,32 +193,7 @@
       } else {
         this.refreshCharPickerDialog_();
       }
-      this.dialog.onSelect(goog.bind(function (key) {
-        // DIALOG INSERT GRID
-        if (key === 'ok') {
-          var dialogInsertChars = window.charsToBeInserted;
-          if (dialogInsertChars) {
-            var stringifiedText = '';
-            var recentInsertChars = [];
-            // Go in reverse order to also extract recently used characters.
-            for(var i = dialogInsertChars.length - 1; i >= 0; i--){
-              var character = dialogInsertChars[i];
-              stringifiedText = character + stringifiedText;
-              if (recentInsertChars.length < maxRecentChars && recentInsertChars.indexOf(character) === -1) {
-                recentInsertChars.push(character);
-              }
-            }
-
-            editor.getActionsManager().invokeOperation(
-              'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
-                text: stringifiedText
-              },
-              function () {
-                addNewRecentCharacters(recentInsertChars);
-              });
-          }
-        }
-      }, this));
+      this.dialog.onSelect(goog.bind(this.charPickerDialogOnSelect_, this));
       this.dialog.show();
     };
 
