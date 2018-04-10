@@ -40,6 +40,14 @@
         <val lang="ja_JP">検索するための文字の名前：</val>
         <val lang="nl_NL">Naam van teken waarnaar u wilt zoeken:</val>
     </key>
+    <key distribution="webauthor" value="MORE_SYMBOLS_">
+        <comment>Caption of button</comment>
+        <val lang="en_US">More symbols</val>
+        <val lang="de_DE">Mehr Symbole</val>
+        <val lang="fr_FR">Plus de symboles</val>
+        <val lang="ja_JP">さらに多くのシンボル</val>
+        <val lang="nl_NL">Meer symbolen</val>
+    </key>
     <key distribution="webauthor" value="INSERT_SPECIAL_CHARACTERS_">
         <comment>Title of dialog for inserting special characters</comment>
         <val lang="en_US">Insert special characters</val>

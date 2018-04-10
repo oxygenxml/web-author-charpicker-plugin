@@ -1,4 +1,5 @@
 target/
+web/0translations.js
 .idea/
 node_modules/
 resources/closure-library/

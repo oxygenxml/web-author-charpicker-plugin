@@ -29,5 +29,8 @@
     "gulp-uglify": "^1.5.3",
     "gulp-zip": "^3.2.0",
     "jshint": "^2.9.2"
+  },
+  "dependencies": {
+    "sync-i18n": "0.0.x"
   }
 }
