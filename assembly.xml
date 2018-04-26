@@ -38,6 +38,10 @@
 	
 	<files>
 		<file>
+			<source>LICENSE</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
 			<source>plugin.xml</source>
 			<outputDirectory>/</outputDirectory>
 			<filtered>true</filtered>
