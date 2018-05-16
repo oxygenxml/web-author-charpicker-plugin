@@ -70,8 +70,7 @@ gulp.task('goog_base_js', function(){
 });
 
 gulp.task('make-translations', function () {
-  var synci18n = Synci18n();
-  synci18n.generateTranslations();
+  Synci18n().generateTranslations();
 });
 
 gulp.task('minify-all', ['uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
