@@ -26,7 +26,11 @@
     // Add the new characters to the list of recent characters.
     var setRecentChars = function (characters) {
       if (localStorageUsable) {
-        localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
+        try {
+          localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
+        } catch (e) {
+          console.warn(e);
+        }
       }
     };
 
@@ -51,7 +55,12 @@
     var getRecentChars = function () {
       var recentChars = [];
       if (localStorageUsable) {
-        var itemFromStorage = localStorage.getItem(recentCharsItemName);
+        var itemFromStorage;
+        try {
+          var itemFromStorage = localStorage.getItem(recentCharsItemName);
+        } catch (e) {
+          console.warn(e);
+        }
         if (itemFromStorage) {
           recentChars = JSON.parse(itemFromStorage);
         }
@@ -295,10 +304,18 @@
             charSearchSpinner.hide();
             if (emptyObject) {
               absPosChild.textContent = tr(msgs.NO_RESULTS_FOUND_);
-              localStorage.removeItem(lastCharacterSearchItemName);
+              try {
+                localStorage.removeItem(lastCharacterSearchItemName);
+              } catch (e) {
+                console.warn(e);
+              }
             } else {
               foundByNameList.removeChild(absPosChild);
-              localStorage.setItem(lastCharacterSearchItemName, name);
+              try {
+                localStorage.setItem(lastCharacterSearchItemName, name);
+              } catch (e) {
+                console.warn(e);
+              }
             }
           }, "GET");
         }
@@ -357,8 +374,18 @@
       var dialogElement = this.dialog.getElement();
       var searchbox = dialogElement.querySelector('#searchName');
       searchbox.value = '';
-      if(localStorage.getItem(lastCharacterSearchItemName) !== null){
-        searchbox.setAttribute("placeholder", localStorage.getItem(lastCharacterSearchItemName) );
+      var lastCharacterSearchItemNameLs;
+      try {
+        lastCharacterSearchItemNameLs = localStorage.getItem(lastCharacterSearchItemName)
+      } catch (e) {
+        console.warn(e);
+      }
+      if(lastCharacterSearchItemNameLs !== null){
+        try {
+          searchbox.setAttribute("placeholder", localStorage.getItem(lastCharacterSearchItemName) );
+        } catch (e) {
+          console.warn(e);
+        }
       } else {
         // Warning was shown for the last search so remove it.
         var warningElement = dialogElement.querySelector('.smallSpin');
