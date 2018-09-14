@@ -46,7 +46,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String query = req.getParameter("q");
-		Map<String, String> charResult = new LinkedHashMap<String, String>();
+		Map<String, String> charResult = new LinkedHashMap<>();
 		if(query.length() == 0) {
 			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
 		}
@@ -73,9 +73,9 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		int relevanceThreshold = queryWords.length * scoreFullMatch/2;
 		
 		Map<String, String> charsFromProperties = propsAsMap(chars);
-		Map<String, String> matches = new LinkedHashMap<String, String>();
+		Map<String, String> matches = new LinkedHashMap<>();
 		
-		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<Integer, Set<Map.Entry<String, String>>>();
+		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<>();
 
 		
 		ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
@@ -101,7 +101,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			if(score >= relevanceThreshold) {
 				Set<Entry<String, String>> charsWithCurrentScore = charactersByScore.get(score);
 				if(charsWithCurrentScore == null) {
-					charsWithCurrentScore = new HashSet<Map.Entry<String, String>>();
+					charsWithCurrentScore = new HashSet<>();
 					charactersByScore.put(score, charsWithCurrentScore);
 				}
 				charsWithCurrentScore.add(entry);
@@ -123,7 +123,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	}
 	
 	private Map<String, String> propsAsMap(Properties props) {
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		for (Map.Entry<Object, Object> entry: props.entrySet()) {
 			map.put((String)entry.getKey(), (String)entry.getValue());
 		}
@@ -132,7 +132,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	}
 	
 	private ArrayList<Pattern> getFullPatterns(String[] queryWords) {
-		ArrayList<Pattern> fullPatterns = new ArrayList<Pattern>();
+		ArrayList<Pattern> fullPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
 			Pattern pattern = Pattern.compile("\\b" + queryWords[i] + "\\b", Pattern.CASE_INSENSITIVE);
@@ -143,7 +143,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	}
 	
 	private ArrayList<Pattern> getPartialPatterns(String[] queryWords) {
-		ArrayList<Pattern> partialPatterns = new ArrayList<Pattern>();
+		ArrayList<Pattern> partialPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
 			Pattern pattern = Pattern.compile("\\b" + queryWords[i] + "[a-zA-Z]+\\b", Pattern.CASE_INSENSITIVE);
