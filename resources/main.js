@@ -51,7 +51,13 @@ window["initCharPicker"] = function () {
     new goog.i18n.uChar.LocalNameFetcher());
 
   // Make it easier to add custom character categories.
-  var decompressor = picker.decompressor_;
+  var decompressor = null;
+  for (var prop in picker) {
+    if (picker[prop] instanceof goog.i18n.CharListDecompressor) {
+      decompressor = picker[prop];
+      break;
+    }
+  }
   var toCharList = decompressor.toCharList;
   decompressor.toCharList = function (str) {
     if (goog.isArray(str)) {
