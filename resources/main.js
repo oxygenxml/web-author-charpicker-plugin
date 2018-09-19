@@ -58,16 +58,18 @@ window["initCharPicker"] = function () {
       break;
     }
   }
-  var toCharList = decompressor.toCharList;
-  decompressor.toCharList = function (str) {
-    if (goog.isArray(str)) {
-      // Already decompressed.
-      return str;
-    } else {
-      return toCharList.call(decompressor, str);
-    }
-  };
-  
+  if (decompressor) {
+    var toCharList = decompressor.toCharList;
+    decompressor.toCharList = function (str) {
+      if (goog.isArray(str)) {
+        // Already decompressed.
+        return str;
+      } else {
+        return toCharList.call(decompressor, str);
+      }
+    };
+  }
+
   var el = document.getElementById('char-picker');
   picker.render(el);
 
