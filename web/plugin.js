@@ -57,7 +57,7 @@
       if (localStorageUsable) {
         var itemFromStorage;
         try {
-          var itemFromStorage = localStorage.getItem(recentCharsItemName);
+          itemFromStorage = localStorage.getItem(recentCharsItemName);
         } catch (e) {
           console.warn(e);
         }
@@ -80,7 +80,7 @@
       if (characters.length < maxRecentChars) {
         characters = characters.concat(defaultRecentCharacters);
       }
-      characters = characters.slice(0, maxRecentChars - 1);
+      characters = characters.slice(0, maxRecentChars);
       setRecentChars(characters);
     };
 
