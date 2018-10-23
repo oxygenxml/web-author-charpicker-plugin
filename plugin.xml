@@ -16,4 +16,5 @@
 
  <extension type="WebappStaticResourcesFolder" path="resources/" href="char-picker/"/>
  <extension type="WebappServlet" class="com.oxygenxml.charpicker.SpecialCharServlet"/>
+ <extension type="WebappServlet" class="com.oxygenxml.charpicker.ConfigurationPage" role="config"/>
 </plugin>
