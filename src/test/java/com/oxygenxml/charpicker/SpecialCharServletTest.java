@@ -18,7 +18,7 @@ import javax.servlet.ServletException;
 
 import org.junit.Test;
 
-import com.oxgenxml.charpicker.SpecialCharServlet;
+import com.oxygenxml.charpicker.SpecialCharServlet;
 
 public class SpecialCharServletTest {
 	

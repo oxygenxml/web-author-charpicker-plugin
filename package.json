@@ -1,7 +1,7 @@
 {
   "name": "webapp-charpicker-plugin",
   "version": "18.0.0",
-  "description": "A plugin for oXygen XML WebApp that adds support for inserting special UTF-8 characters",
+  "description": "A plugin for oXygen XML Web Author that adds support for inserting special UTF-8 characters",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oxygenxml/webapp-charpicker-plugin.git"

@@ -1,4 +1,4 @@
-package com.oxgenxml.charpicker;
+package com.oxygenxml.charpicker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +17,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
-
-import org.apache.log4j.Logger;
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 
 public class SpecialCharServlet extends WebappServletPluginExtension {
