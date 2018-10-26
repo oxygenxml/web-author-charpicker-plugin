@@ -3,6 +3,7 @@ package com.oxygenxml.charpicker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,12 @@ public class CategoryNames extends WebappServletPluginExtension {
 
     StringBuilder sb = new StringBuilder();
     sb.append("window.charpickerCategories='").append(categoriesAsString).append("';");
+    
+    Map<String, String> otherMessages = new HashMap<>();
+    otherMessages.put(TranslationTags.Category, rb.getMessage(TranslationTags.Category));
+    otherMessages.put(TranslationTags.Hex_code, rb.getMessage(TranslationTags.Hex_code));
+    String otherMessagesAsString = new ObjectMapper().writeValueAsString(otherMessages);
+    sb.append("window.msgs='").append(otherMessagesAsString).append("';");
     return sb.toString();
   }
 

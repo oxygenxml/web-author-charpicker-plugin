@@ -8,6 +8,29 @@
         <language description="Dutch" lang="nl_NL"/>
     </languageList>
     <!-- server-side tags must have the 'destination' attribute set -->
+    <key distribution="webauthor" value="Category">
+    <val lang="en_US">Category</val>
+        <val lang="de_DE">Kategorie</val>
+        <val lang="fr_FR">Catégorie</val>
+        <val lang="ja_JP">カテゴリ</val>
+        <val lang="nl_NL">Categorie</val>
+    </key>
+    <key distribution="webauthor" value="Categories">
+        <comment>Label for a set of category and subcategory dropdowns.</comment>
+        <val lang="en_US">Categories</val>
+        <val lang="de_DE">Categories</val>
+        <val lang="fr_FR">Categories</val>
+        <val lang="ja_JP">Categories</val>
+        <val lang="nl_NL">Categories</val>
+    </key>
+    <key distribution="webauthor" value="Hex_code">
+        <comment>Label for input. Short form for hexadecimal code.</comment>
+        <val lang="en_US">Hex code</val>
+        <val lang="de_DE">Hex code</val>
+        <val lang="fr_FR">Hex code</val>
+        <val lang="ja_JP">Hex code</val>
+        <val lang="nl_NL">Hex code</val>
+    </key>
     <key distribution="webauthor" value="BY_NAME_">
         <comment>title of tab for 'Search for characters by name' action</comment>
         <val lang="en_US">By name</val>

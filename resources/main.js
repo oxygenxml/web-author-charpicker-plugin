@@ -31,30 +31,6 @@ var addCategory = function (charPickerData, categoryName, subcategories, charLis
   return charPickerData;
 };
 
-var getURLParameter = function(name) {
-  var urlParams = window.location.search.substring(1).split('&');
-  var paramValue = null;
-  for(var i = 0; i < urlParams.length; i++) {
-    var fullParam = urlParams[i].split('=');
-    var param = {
-      name: fullParam[0],
-      value: fullParam[1]
-    };
-    if(param.name === name) {
-      paramValue = param.value;
-      break;
-    }
-  }
-  return paramValue;
-};
-
-var decodeTagName = function (tagName) {
-  var decoded = tagName.split('_');
-  decoded = decoded.slice(1);
-  decoded = decoded.join(' ');
-  return decoded;
-};
-
 window["initCharPicker"] = function () {
   var cD = goog.dom.createDom;
   var insertBefore = goog.dom.insertSiblingBefore;
@@ -71,6 +47,10 @@ window["initCharPicker"] = function () {
   // -------- Translate category names --------
   if (window.charpickerCategories) {
     var customCategories = JSON.parse(window.charpickerCategories);
+    // Get the other messages ready too.
+    if (window.msgs) {
+      window.msgs = JSON.parse(window.msgs);
+    }
     for (var category in customCategories) {
       if (customCategories.hasOwnProperty(category)) {
         var originalName = category.split('|')[0];
@@ -143,7 +123,7 @@ window["initCharPicker"] = function () {
 
   var dropdowns = document.querySelectorAll(".goog-inline-block.goog-menu-button");
   var categoriesBar = cD("div", {id: "categories"},
-    cD("div", { id: "label-categories" }, "Categories:"),
+    cD("div", { id: "label-categories" }, getMsgs('Category') + ':' || "Categories:"),
     cD("div", { id: 'dropdown-wrapper' }, dropdowns)
   );
 
@@ -151,7 +131,7 @@ window["initCharPicker"] = function () {
     document.getElementsByClassName("goog-char-picker")[0].firstChild);
 
   insertBefore(
-    cD('span', { id: 'label-hexcode' }, "Hex code:"),
+    cD('span', { id: 'label-hexcode' }, getMsgs('Hex_code') + ':' || "Hex code:"),
     document.querySelector(".goog-char-picker-uplus")
   );
 
@@ -159,3 +139,35 @@ window["initCharPicker"] = function () {
   // Get selected locale from the char picker.
   goog.events.listen(picker, 'action', selectionAction);
 };
+
+function getURLParameter(name) {
+  var urlParams = window.location.search.substring(1).split('&');
+  var paramValue = null;
+  for(var i = 0; i < urlParams.length; i++) {
+    var fullParam = urlParams[i].split('=');
+    var param = {
+      name: fullParam[0],
+      value: fullParam[1]
+    };
+    if(param.name === name) {
+      paramValue = param.value;
+      break;
+    }
+  }
+  return paramValue;
+}
+
+function decodeTagName(tagName) {
+  var decoded = tagName.split('_');
+  decoded = decoded.slice(1);
+  decoded = decoded.join(' ');
+  return decoded;
+}
+
+function getMsgs(tagName) {
+  var translatedMessageFromServer = null;
+  if (window.msgs) {
+    translatedMessageFromServer = window.msgs[tagName];
+  }
+  return translatedMessageFromServer;
+}

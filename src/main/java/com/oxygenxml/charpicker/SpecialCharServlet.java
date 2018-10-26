@@ -33,7 +33,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	private static final Logger logger = Logger.getLogger(SpecialCharServlet.class.getName());
 	
-	private final static List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
+	private static final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
 	
 
 	

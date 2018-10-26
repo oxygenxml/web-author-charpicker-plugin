@@ -22,17 +22,6 @@
     var gClassList = goog.dom.classlist;
     var gEvents = goog.events.EventType;
 
-    // Add the new characters to the list of recent characters.
-    var setRecentChars = function (characters) {
-      if (localStorageUsable) {
-        try {
-          localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
-        } catch (e) {
-          console.warn(e);
-        }
-      }
-    };
-
     var displayRecentCharacters = function (characters) {
       /* selector for targeting the recent characters container */
       var container = document.querySelector('.recentCharactersGrid');
@@ -522,25 +511,39 @@
    * Get the url for the charpicker iframe.
    * @returns {string} The charpicker iframe URL.
    */
-  var getIframeUrl = function () {
+  function getIframeUrl() {
     var iframeUrl = '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html';
     var removeCategories = sync.options.PluginsOptions.getClientOption('charp.remove_categories');
     if (removeCategories) {
       iframeUrl += '?remove-categories=' + encodeURIComponent(removeCategories);
     }
     return iframeUrl;
-  };
+  }
 
   /**
    * Capitalize the words in the character description.
    * @param text The original character description.
    * @returns {string} Character description with capitalized words.
    */
-  var capitalizeWords = function(text) {
+  function capitalizeWords(text) {
     var splitText = text.toLowerCase().split(' ');
     for(var i = 0; i < splitText.length; i++) {
       splitText[i] = splitText[i].substr(0,1).toUpperCase() + splitText[i].substring(1);
     }
     return splitText.join(' ');
-  };
+  }
+
+  /**
+   * Add the new characters to the list of recent characters.
+   * @param characters The characters to set as recent characters.
+   */
+  function setRecentChars(characters) {
+    if (localStorageUsable) {
+      try {
+        localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  }
 })();

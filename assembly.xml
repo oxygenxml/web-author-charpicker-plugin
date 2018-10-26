@@ -22,6 +22,10 @@
         <include>translation_categories.xml</include>
       </includes>
     </fileSet> 
+    <fileSet>
+      <directory>target/i18n/</directory>
+      <outputDirectory>/i18n</outputDirectory>
+    </fileSet> 
 		<fileSet>
 			<directory>target/</directory>
 			<outputDirectory>/resources</outputDirectory>
