@@ -11,6 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;
@@ -27,29 +29,71 @@ public class CategoryNames extends WebappServletPluginExtension {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    Map<String, List<String>> categories = new LinkedHashMap<>();
-
     String cookieLanguage = SpecialCharServlet.getCookieLanguage(req.getCookies());
     if (cookieLanguage != null && !cookieLanguage.contains("en")) {
-      // Translate category names only if needed.
-      PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-      
-      // Keep the original name by writing in the format: tag|translated_message.
-      for (int i = 0; i < initialCategories.size(); i++) {
-        List<String> translatedSubcategories = new ArrayList<>();
-        for (int j = 0; j < initialSubcategories.get(i).size(); j++) {
-          translatedSubcategories.add(j,
-              initialSubcategories.get(i).get(j) + "|" + rb.getMessage(initialSubcategories.get(i).get(j)));
-        }
-        categories.put(initialCategories.get(i) + "|" + rb.getMessage(initialCategories.get(i)),
-            translatedSubcategories);
-      }
-      String categoriesAsString = new ObjectMapper().writeValueAsString(categories);
-
-      StringBuilder sb = new StringBuilder();
-      sb.append("window.charpickerCategories='").append(categoriesAsString).append("';");
-      resp.getOutputStream().write(sb.toString().getBytes());
+      resp.getOutputStream().write(getTranslatedCategories().getBytes());
     }
+  }
+  
+  /**
+   * Get the subcategory name from a tag.
+   * @param tagName The tag name.
+   * @param categoryName The original category name (decoded).
+   * @return The original subcategory name.
+   */
+  private String getOriginalFromTagName(String tagName, String categoryName) {
+    String original = "";
+    String[] pieces = tagName.split("_");
+    // Cut out the prefix and category pieces, assume they are here correctly.
+    int categoryPiecesLength = categoryName != null ? categoryName.split(" ").length : 0;
+    pieces = Arrays.copyOfRange(pieces, categoryPiecesLength + 1, pieces.length);
+    original = String.join(" ", pieces);
+    return original;
+  }
+  
+  /**
+   * Get the category name from a tag.
+   * @param tagName The tag name.
+   * @return The original category name.
+   */
+  private String getOriginalFromTagName(String tagName) {
+    return getOriginalFromTagName(tagName, null);
+  }
+  
+  private String getTranslatedCategories() throws IOException {
+    Map<String, List<String>> categories = new LinkedHashMap<>();
+    // Translate category names only if needed.
+    PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+    
+    // Keep the original name by writing in the format: tag|translated_message.
+    for (int i = 0; i < initialCategories.size(); i++) {
+      String currentCategory = initialCategories.get(i);
+      String originalCategory = getOriginalFromTagName(currentCategory);
+      
+      
+      List<String> translatedSubcategories = new ArrayList<>();
+      for (int j = 0; j < initialSubcategories.get(i).size(); j++) {
+        String currentSubcategory = initialSubcategories.get(i).get(j);
+        
+        String translatedSubcat = rb.getMessage(currentSubcategory);
+        String originalSubcat = getOriginalFromTagName(currentSubcategory, originalCategory);
+        // If translations are incomplete, add only translated pieces.
+        if (!translatedSubcat.equals(originalSubcat)) {
+          translatedSubcategories.add(j, currentSubcategory + "|" + translatedSubcat);
+        }
+      }
+      
+      String translatedCategory = rb.getMessage(currentCategory);
+      // If neither category name nor any subcategory was translated, there's no point to send it.
+      if (!originalCategory.equals(translatedCategory) || !translatedSubcategories.isEmpty()) {
+        categories.put(currentCategory + "|" + translatedCategory, translatedSubcategories);
+      }
+    }
+    String categoriesAsString = new ObjectMapper().writeValueAsString(categories);
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("window.charpickerCategories='").append(categoriesAsString).append("';");
+    return sb.toString();
   }
 
   List<String> initialCategories = Arrays.asList("c_Symbol", "c_Emoji", "c_Punctuation", "c_Number",

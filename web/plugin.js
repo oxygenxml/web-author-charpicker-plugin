@@ -1,7 +1,14 @@
 (function () {
+  var localStorageUsable = typeof (Storage) !== 'undefined';
+
+  //quickly change urls that have the plugin name hardcoded
+  var pluginResourcesFolder = 'char-picker';
+  var recentCharsItemName = 'recentlyUsedCharacters';
+  var lastCharacterSearchItemName = 'lastCharacterSearch';
+  var insertSpecialCharActionId = 'insertfrommenu';
+
   goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
     var editor = e.editor;
-    var insertSpecialCharActionId = 'insertfrommenu';
 
     var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
       "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"];
@@ -14,14 +21,6 @@
     var cD = goog.dom.createDom;
     var gClassList = goog.dom.classlist;
     var gEvents = goog.events.EventType;
-
-    //quickly change urls that have the plugin name hardcoded
-    var pluginResourcesFolder = 'char-picker';
-
-    var localStorageUsable = typeof (Storage) !== 'undefined';
-
-    var recentCharsItemName = 'recentlyUsedCharacters';
-    var lastCharacterSearchItemName = 'lastCharacterSearch';
 
     // Add the new characters to the list of recent characters.
     var setRecentChars = function (characters) {
@@ -82,15 +81,6 @@
       }
       characters = characters.slice(0, maxRecentChars);
       setRecentChars(characters);
-    };
-
-    // Capitalize the words in the character description.
-    var capitalizeWords = function(text) {
-      var splitText = text.toLowerCase().split(' ');
-      for(var i = 0; i < splitText.length; i++) {
-        splitText[i] = splitText[i].substr(0,1).toUpperCase() + splitText[i].substring(1);
-      }
-      return splitText.join(' ');
     };
 
     var updateCharPreview = function (e) {
@@ -253,8 +243,7 @@
 
       this.charPickerIframe_ = cD('iframe', {
         id: 'charpickeriframe',
-        src: '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html?remove-categories=' +
-        encodeURIComponent(sync.options.PluginsOptions.getClientOption('charp.remove_categories'))
+        src:  getIframeUrl()
       });
       var dialogElement = this.dialog.getElement();
       dialogElement.id = 'charPicker';
@@ -527,5 +516,31 @@
       });
     }
     sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/css/plugin.css");
-  })
+  });
+
+  /**
+   * Get the url for the charpicker iframe.
+   * @returns {string} The charpicker iframe URL.
+   */
+  var getIframeUrl = function () {
+    var iframeUrl = '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html';
+    var removeCategories = sync.options.PluginsOptions.getClientOption('charp.remove_categories');
+    if (removeCategories) {
+      iframeUrl += '?remove-categories=' + encodeURIComponent(removeCategories);
+    }
+    return iframeUrl;
+  };
+
+  /**
+   * Capitalize the words in the character description.
+   * @param text The original character description.
+   * @returns {string} Character description with capitalized words.
+   */
+  var capitalizeWords = function(text) {
+    var splitText = text.toLowerCase().split(' ');
+    for(var i = 0; i < splitText.length; i++) {
+      splitText[i] = splitText[i].substr(0,1).toUpperCase() + splitText[i].substring(1);
+    }
+    return splitText.join(' ');
+  };
 })();

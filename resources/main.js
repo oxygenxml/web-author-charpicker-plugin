@@ -34,7 +34,7 @@ var addCategory = function (charPickerData, categoryName, subcategories, charLis
 var getURLParameter = function(name) {
   var urlParams = window.location.search.substring(1).split('&');
   var paramValue = null;
-  for(var i =0; i <  urlParams.length; i++) {
+  for(var i = 0; i < urlParams.length; i++) {
     var fullParam = urlParams[i].split('=');
     var param = {
       name: fullParam[0],
