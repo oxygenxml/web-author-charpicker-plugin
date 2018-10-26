@@ -34,13 +34,13 @@ window.convertCharPickerData = function () {
   var skippedCategories = [];
   for (var category_index = 0; category_index<charPickerData.categories.length; category_index++) {
     if (charPickerData.categories[category_index].indexOf('Han') === -1) {
-      var tt = getTagName('c_' + charPickerData.categories[category_index]);
+      var tt = getTagName('utfc_' + charPickerData.categories[category_index]);
       output += makeXmlEntryWithEnglishMessage(tt, charPickerData.categories[category_index]);
       categories_list += '"' + tt + '",\n';
 
       var listOfSubcategories = "";
       for (var subcat_index = 0; subcat_index < charPickerData.subcategories[category_index].length; subcat_index++) {
-        var sc = getTagName('sc_' + charPickerData.categories[category_index] + '_' + charPickerData.subcategories[category_index][subcat_index]);
+        var sc = getTagName('utfsc_' + charPickerData.categories[category_index] + '_' + charPickerData.subcategories[category_index][subcat_index]);
         output += makeXmlEntryWithEnglishMessage(sc, charPickerData.subcategories[category_index][subcat_index]);
 
         listOfSubcategories += '"' + sc + '",\n';
