@@ -306,10 +306,10 @@
     <key value="utfsc_Punctuation_Other">
         <comment>Name of Unicode block (set of special characters).</comment>
         <val lang="en_US">Other</val>
-        <val lang="de_DE">Other</val>
-        <val lang="fr_FR">Other</val>
-        <val lang="ja_JP">Other</val>
-        <val lang="nl_NL">Other</val>
+        <val lang="de_DE">Andere</val>
+        <val lang="fr_FR">Autre</val>
+        <val lang="ja_JP">その他</val>
+        <val lang="nl_NL">Overig</val>
     </key>
     <key value="utfsc_Punctuation_Paired">
         <comment>Name of Unicode block (set of special characters).</comment>
@@ -338,18 +338,18 @@
     <key value="utfc_Number">
         <comment>Name of Unicode block (set of special characters).</comment>
         <val lang="en_US">Number</val>
-        <val lang="de_DE">Number</val>
-        <val lang="fr_FR">Number</val>
-        <val lang="ja_JP">Number</val>
-        <val lang="nl_NL">Number</val>
+        <val lang="de_DE">Nummer</val>
+        <val lang="fr_FR">Nombre</val>
+        <val lang="ja_JP">数</val>
+        <val lang="nl_NL">Getal</val>
     </key>
     <key value="utfsc_Number_Decimal">
         <comment>Name of Unicode block (set of special characters).</comment>
-        <val lang="en_US">Decimal</val>
-        <val lang="de_DE">Decimal</val>
-        <val lang="fr_FR">Decimal</val>
-        <val lang="ja_JP">Decimal</val>
-        <val lang="nl_NL">Decimal</val>
+        <val lang="en_US">decimal</val>
+        <val lang="de_DE">dezimal</val>
+        <val lang="fr_FR">décimal</val>
+        <val lang="ja_JP">10進数</val>
+        <val lang="nl_NL">decimaal</val>
     </key>
     <key value="utfsc_Number_Enclosed/Dotted">
         <comment>Name of Unicode block (set of special characters).</comment>
@@ -370,10 +370,10 @@
     <key value="utfsc_Number_Other">
         <comment>Name of Unicode block (set of special characters).</comment>
         <val lang="en_US">Other</val>
-        <val lang="de_DE">Other</val>
-        <val lang="fr_FR">Other</val>
-        <val lang="ja_JP">Other</val>
-        <val lang="nl_NL">Other</val>
+        <val lang="de_DE">Andere</val>
+        <val lang="fr_FR">Autre</val>
+        <val lang="ja_JP">その他</val>
+        <val lang="nl_NL">Overig</val>
     </key>
     <key value="utfsc_Number_Historic">
         <comment>Name of Unicode block (set of special characters).</comment>
@@ -522,10 +522,10 @@
     <key value="utfsc_Latin_Other">
         <comment>Name of Unicode block (set of special characters).</comment>
         <val lang="en_US">Other</val>
-        <val lang="de_DE">Other</val>
-        <val lang="fr_FR">Other</val>
-        <val lang="ja_JP">Other</val>
-        <val lang="nl_NL">Other</val>
+        <val lang="de_DE">Andere</val>
+        <val lang="fr_FR">Autre</val>
+        <val lang="ja_JP">その他</val>
+        <val lang="nl_NL">Overig</val>
     </key>
     <key value="utfsc_Latin_Phonetics_(IPA)">
         <comment>Name of Unicode block (set of special characters).</comment>
