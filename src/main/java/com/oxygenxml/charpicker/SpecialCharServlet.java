@@ -33,7 +33,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	private static final Logger logger = Logger.getLogger(SpecialCharServlet.class.getName());
 	
-	private final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
+	private final static List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
 	
 
 	
@@ -96,7 +96,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
    * @param cookies The request cookies.
    * @return The user interface language.
    */
-	private String getCookieLanguage(Cookie[] cookies) {
+	protected static String getCookieLanguage(Cookie[] cookies) {
 	  String prefix = null;
     if (cookies != null && cookies.length != 0) {      
       for (Cookie cookie : cookies) {

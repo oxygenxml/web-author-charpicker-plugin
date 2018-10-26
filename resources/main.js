@@ -31,21 +31,78 @@ var addCategory = function (charPickerData, categoryName, subcategories, charLis
   return charPickerData;
 };
 
+var getURLParameter = function(name) {
+  var urlParams = window.location.search.substring(1).split('&');
+  var paramValue = null;
+  for(var i =0; i <  urlParams.length; i++) {
+    var fullParam = urlParams[i].split('=');
+    var param = {
+      name: fullParam[0],
+      value: fullParam[1]
+    };
+    if(param.name === name) {
+      paramValue = param.value;
+      break;
+    }
+  }
+  return paramValue;
+};
+
+var decodeTagName = function (tagName) {
+  var decoded = tagName.split('_');
+  decoded = decoded.slice(1);
+  decoded = decoded.join(' ');
+  return decoded;
+};
+
 window["initCharPicker"] = function () {
   var cD = goog.dom.createDom;
   var insertBefore = goog.dom.insertSiblingBefore;
 
-  var charPickerData = new goog.i18n.CharPickerData();
-  // Remove one of the default categories.
-  /*charPickerData = removeCategory(charPickerData, 'Emoji');*/
+  var removeCategoriesOption = getURLParameter('remove-categories');
+  var categoriesToRemove = decodeURIComponent(removeCategoriesOption).split(',');
 
-  // Add a custom category.
-  /*var charList = [
-    ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc"],
-    ["\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"]
-  ];
-  charPickerData = addCategory(charPickerData, 'custom', ['one', 'two'], charList, 5);*/
-  
+  var charPickerData = new goog.i18n.CharPickerData();
+
+  goog.array.forEach(categoriesToRemove, function (category) {
+    removeCategory(charPickerData, category.trim());
+  });
+
+  // -------- Translate category names --------
+  if (window.charpickerCategories) {
+    var customCategories = JSON.parse(window.charpickerCategories);
+    for (var category in customCategories) {
+      if (customCategories.hasOwnProperty(category)) {
+        var originalName = category.split('|')[0];
+        var translatedName = category.split('|')[1];
+
+        var decoded = decodeTagName(originalName);
+        var categoryFoundIndex = charPickerData.categories.indexOf(decoded);
+        if (categoryFoundIndex !== -1) {
+          charPickerData.categories[categoryFoundIndex] = translatedName;
+
+          // Translate the subcategories.
+          for (var subcategoryIndex = 0; subcategoryIndex < customCategories[category].length; subcategoryIndex++) {
+            var subcategoryString = customCategories[category][subcategoryIndex];
+            originalName = subcategoryString.split('|')[0];
+            translatedName = subcategoryString.split('|')[1];
+
+            var decodedSubcat = decodeTagName(originalName);
+            // Remove category name from it.
+            decodedSubcat = decodedSubcat.slice(decodedSubcat.indexOf(decoded) + decoded.length + 1);
+
+            var subcatFoundIndex = charPickerData.subcategories[categoryFoundIndex].indexOf(decodedSubcat);
+            if (subcatFoundIndex !== -1) {
+              charPickerData.subcategories[categoryFoundIndex][subcatFoundIndex] = translatedName;
+            }
+          }
+        }
+      }
+    }
+  } else {
+    console.warn('Could not get translated categories for Character Picker plugin.');
+  }
+
   var picker = new goog.ui.CharPicker(
     charPickerData,
     new goog.i18n.uChar.LocalNameFetcher());

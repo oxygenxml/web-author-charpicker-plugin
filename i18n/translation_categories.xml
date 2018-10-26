@@ -1,0 +1,1586 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<translation>
+    <languageList>
+        <language description="English" lang="en_US"/>
+        <language description="German" lang="de_DE"/>
+        <language description="French" lang="fr_FR"/>
+        <language description="Japanese" lang="ja_JP"/>
+        <language description="Dutch" lang="nl_NL"/>
+    </languageList>
+    <key value="c_Symbol">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Symbol</val>
+        <val lang="de_DE">Symbol</val>
+        <val lang="fr_FR">Symbol</val>
+        <val lang="ja_JP">Symbol</val>
+        <val lang="nl_NL">Symbol</val>
+    </key>
+    <key value="sc_Symbol_Arrows">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Arrows</val>
+        <val lang="de_DE">Arrows</val>
+        <val lang="fr_FR">Arrows</val>
+        <val lang="ja_JP">Arrows</val>
+        <val lang="nl_NL">Arrows</val>
+    </key>
+    <key value="sc_Symbol_Braille">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Braille</val>
+        <val lang="de_DE">Braille</val>
+        <val lang="fr_FR">Braille</val>
+        <val lang="ja_JP">Braille</val>
+        <val lang="nl_NL">Braille</val>
+    </key>
+    <key value="sc_Symbol_Control_Pictures">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Control Pictures</val>
+        <val lang="de_DE">Control Pictures</val>
+        <val lang="fr_FR">Control Pictures</val>
+        <val lang="ja_JP">Control Pictures</val>
+        <val lang="nl_NL">Control Pictures</val>
+    </key>
+    <key value="sc_Symbol_Currency">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Currency</val>
+        <val lang="de_DE">Currency</val>
+        <val lang="fr_FR">Currency</val>
+        <val lang="ja_JP">Currency</val>
+        <val lang="nl_NL">Currency</val>
+    </key>
+    <key value="sc_Symbol_Emoticons">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Emoticons</val>
+        <val lang="de_DE">Emoticons</val>
+        <val lang="fr_FR">Emoticons</val>
+        <val lang="ja_JP">Emoticons</val>
+        <val lang="nl_NL">Emoticons</val>
+    </key>
+    <key value="sc_Symbol_Game_Pieces">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Game Pieces</val>
+        <val lang="de_DE">Game Pieces</val>
+        <val lang="fr_FR">Game Pieces</val>
+        <val lang="ja_JP">Game Pieces</val>
+        <val lang="nl_NL">Game Pieces</val>
+    </key>
+    <key value="sc_Symbol_Gender_and_Genealogical">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Gender and Genealogical</val>
+        <val lang="de_DE">Gender and Genealogical</val>
+        <val lang="fr_FR">Gender and Genealogical</val>
+        <val lang="ja_JP">Gender and Genealogical</val>
+        <val lang="nl_NL">Gender and Genealogical</val>
+    </key>
+    <key value="sc_Symbol_Geometric_Shapes">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Geometric Shapes</val>
+        <val lang="de_DE">Geometric Shapes</val>
+        <val lang="fr_FR">Geometric Shapes</val>
+        <val lang="ja_JP">Geometric Shapes</val>
+        <val lang="nl_NL">Geometric Shapes</val>
+    </key>
+    <key value="sc_Symbol_Keyboard_and_UI">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Keyboard and UI</val>
+        <val lang="de_DE">Keyboard and UI</val>
+        <val lang="fr_FR">Keyboard and UI</val>
+        <val lang="ja_JP">Keyboard and UI</val>
+        <val lang="nl_NL">Keyboard and UI</val>
+    </key>
+    <key value="sc_Symbol_Latin_1_Supplement">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Latin 1 Supplement</val>
+        <val lang="de_DE">Latin 1 Supplement</val>
+        <val lang="fr_FR">Latin 1 Supplement</val>
+        <val lang="ja_JP">Latin 1 Supplement</val>
+        <val lang="nl_NL">Latin 1 Supplement</val>
+    </key>
+    <key value="sc_Symbol_Math">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Math</val>
+        <val lang="de_DE">Math</val>
+        <val lang="fr_FR">Math</val>
+        <val lang="ja_JP">Math</val>
+        <val lang="nl_NL">Math</val>
+    </key>
+    <key value="sc_Symbol_Math_Alphanumeric">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Math Alphanumeric</val>
+        <val lang="de_DE">Math Alphanumeric</val>
+        <val lang="fr_FR">Math Alphanumeric</val>
+        <val lang="ja_JP">Math Alphanumeric</val>
+        <val lang="nl_NL">Math Alphanumeric</val>
+    </key>
+    <key value="sc_Symbol_Miscellaneous">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Miscellaneous</val>
+        <val lang="de_DE">Miscellaneous</val>
+        <val lang="fr_FR">Miscellaneous</val>
+        <val lang="ja_JP">Miscellaneous</val>
+        <val lang="nl_NL">Miscellaneous</val>
+    </key>
+    <key value="sc_Symbol_Musical">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Musical</val>
+        <val lang="de_DE">Musical</val>
+        <val lang="fr_FR">Musical</val>
+        <val lang="ja_JP">Musical</val>
+        <val lang="nl_NL">Musical</val>
+    </key>
+    <key value="sc_Symbol_Stars/Asterisks">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Stars/Asterisks</val>
+        <val lang="de_DE">Stars/Asterisks</val>
+        <val lang="fr_FR">Stars/Asterisks</val>
+        <val lang="ja_JP">Stars/Asterisks</val>
+        <val lang="nl_NL">Stars/Asterisks</val>
+    </key>
+    <key value="sc_Symbol_Subscript">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Subscript</val>
+        <val lang="de_DE">Subscript</val>
+        <val lang="fr_FR">Subscript</val>
+        <val lang="ja_JP">Subscript</val>
+        <val lang="nl_NL">Subscript</val>
+    </key>
+    <key value="sc_Symbol_Superscript">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Superscript</val>
+        <val lang="de_DE">Superscript</val>
+        <val lang="fr_FR">Superscript</val>
+        <val lang="ja_JP">Superscript</val>
+        <val lang="nl_NL">Superscript</val>
+    </key>
+    <key value="sc_Symbol_Technical">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Technical</val>
+        <val lang="de_DE">Technical</val>
+        <val lang="fr_FR">Technical</val>
+        <val lang="ja_JP">Technical</val>
+        <val lang="nl_NL">Technical</val>
+    </key>
+    <key value="sc_Symbol_Transport_And_Map">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Transport And Map</val>
+        <val lang="de_DE">Transport And Map</val>
+        <val lang="fr_FR">Transport And Map</val>
+        <val lang="ja_JP">Transport And Map</val>
+        <val lang="nl_NL">Transport And Map</val>
+    </key>
+    <key value="sc_Symbol_Weather_and_Astrological">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Weather and Astrological</val>
+        <val lang="de_DE">Weather and Astrological</val>
+        <val lang="fr_FR">Weather and Astrological</val>
+        <val lang="ja_JP">Weather and Astrological</val>
+        <val lang="nl_NL">Weather and Astrological</val>
+    </key>
+    <key value="sc_Symbol_Yijing_/_Tai_Xuan_Jing">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Yijing / Tai Xuan Jing</val>
+        <val lang="de_DE">Yijing / Tai Xuan Jing</val>
+        <val lang="fr_FR">Yijing / Tai Xuan Jing</val>
+        <val lang="ja_JP">Yijing / Tai Xuan Jing</val>
+        <val lang="nl_NL">Yijing / Tai Xuan Jing</val>
+    </key>
+    <key value="sc_Symbol_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Symbol_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Emoji">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Emoji</val>
+        <val lang="de_DE">Emoji</val>
+        <val lang="fr_FR">Emoji</val>
+        <val lang="ja_JP">Emoji</val>
+        <val lang="nl_NL">Emoji</val>
+    </key>
+    <key value="sc_Emoji_People_and_Emotions">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">People and Emotions</val>
+        <val lang="de_DE">People and Emotions</val>
+        <val lang="fr_FR">People and Emotions</val>
+        <val lang="ja_JP">People and Emotions</val>
+        <val lang="nl_NL">People and Emotions</val>
+    </key>
+    <key value="sc_Emoji_Animals,_Plants_and_Food">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Animals, Plants and Food</val>
+        <val lang="de_DE">Animals, Plants and Food</val>
+        <val lang="fr_FR">Animals, Plants and Food</val>
+        <val lang="ja_JP">Animals, Plants and Food</val>
+        <val lang="nl_NL">Animals, Plants and Food</val>
+    </key>
+    <key value="sc_Emoji_Objects">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Objects</val>
+        <val lang="de_DE">Objects</val>
+        <val lang="fr_FR">Objects</val>
+        <val lang="ja_JP">Objects</val>
+        <val lang="nl_NL">Objects</val>
+    </key>
+    <key value="sc_Emoji_Sports,_Celebrations_and_Activities">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Sports, Celebrations and Activities</val>
+        <val lang="de_DE">Sports, Celebrations and Activities</val>
+        <val lang="fr_FR">Sports, Celebrations and Activities</val>
+        <val lang="ja_JP">Sports, Celebrations and Activities</val>
+        <val lang="nl_NL">Sports, Celebrations and Activities</val>
+    </key>
+    <key value="sc_Emoji_Transport,_Maps_and_Signage">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Transport, Maps and Signage</val>
+        <val lang="de_DE">Transport, Maps and Signage</val>
+        <val lang="fr_FR">Transport, Maps and Signage</val>
+        <val lang="ja_JP">Transport, Maps and Signage</val>
+        <val lang="nl_NL">Transport, Maps and Signage</val>
+    </key>
+    <key value="sc_Emoji_Weather,_Scenes_and_Zodiac_signs">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Weather, Scenes and Zodiac signs</val>
+        <val lang="de_DE">Weather, Scenes and Zodiac signs</val>
+        <val lang="fr_FR">Weather, Scenes and Zodiac signs</val>
+        <val lang="ja_JP">Weather, Scenes and Zodiac signs</val>
+        <val lang="nl_NL">Weather, Scenes and Zodiac signs</val>
+    </key>
+    <key value="sc_Emoji_Enclosed">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Enclosed</val>
+        <val lang="de_DE">Enclosed</val>
+        <val lang="fr_FR">Enclosed</val>
+        <val lang="ja_JP">Enclosed</val>
+        <val lang="nl_NL">Enclosed</val>
+    </key>
+    <key value="sc_Emoji_Marks">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Marks</val>
+        <val lang="de_DE">Marks</val>
+        <val lang="fr_FR">Marks</val>
+        <val lang="ja_JP">Marks</val>
+        <val lang="nl_NL">Marks</val>
+    </key>
+    <key value="sc_Emoji_Symbols">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Symbols</val>
+        <val lang="de_DE">Symbols</val>
+        <val lang="fr_FR">Symbols</val>
+        <val lang="ja_JP">Symbols</val>
+        <val lang="nl_NL">Symbols</val>
+    </key>
+    <key value="c_Punctuation">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Punctuation</val>
+        <val lang="de_DE">Punctuation</val>
+        <val lang="fr_FR">Punctuation</val>
+        <val lang="ja_JP">Punctuation</val>
+        <val lang="nl_NL">Punctuation</val>
+    </key>
+    <key value="sc_Punctuation_ASCII_Based">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">ASCII Based</val>
+        <val lang="de_DE">ASCII Based</val>
+        <val lang="fr_FR">ASCII Based</val>
+        <val lang="ja_JP">ASCII Based</val>
+        <val lang="nl_NL">ASCII Based</val>
+    </key>
+    <key value="sc_Punctuation_Dash/Connector">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Dash/Connector</val>
+        <val lang="de_DE">Dash/Connector</val>
+        <val lang="fr_FR">Dash/Connector</val>
+        <val lang="ja_JP">Dash/Connector</val>
+        <val lang="nl_NL">Dash/Connector</val>
+    </key>
+    <key value="sc_Punctuation_Other">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Other</val>
+        <val lang="de_DE">Other</val>
+        <val lang="fr_FR">Other</val>
+        <val lang="ja_JP">Other</val>
+        <val lang="nl_NL">Other</val>
+    </key>
+    <key value="sc_Punctuation_Paired">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Paired</val>
+        <val lang="de_DE">Paired</val>
+        <val lang="fr_FR">Paired</val>
+        <val lang="ja_JP">Paired</val>
+        <val lang="nl_NL">Paired</val>
+    </key>
+    <key value="sc_Punctuation_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Punctuation_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Number">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Number</val>
+        <val lang="de_DE">Number</val>
+        <val lang="fr_FR">Number</val>
+        <val lang="ja_JP">Number</val>
+        <val lang="nl_NL">Number</val>
+    </key>
+    <key value="sc_Number_Decimal">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Decimal</val>
+        <val lang="de_DE">Decimal</val>
+        <val lang="fr_FR">Decimal</val>
+        <val lang="ja_JP">Decimal</val>
+        <val lang="nl_NL">Decimal</val>
+    </key>
+    <key value="sc_Number_Enclosed/Dotted">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Enclosed/Dotted</val>
+        <val lang="de_DE">Enclosed/Dotted</val>
+        <val lang="fr_FR">Enclosed/Dotted</val>
+        <val lang="ja_JP">Enclosed/Dotted</val>
+        <val lang="nl_NL">Enclosed/Dotted</val>
+    </key>
+    <key value="sc_Number_Fractions/Related">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Fractions/Related</val>
+        <val lang="de_DE">Fractions/Related</val>
+        <val lang="fr_FR">Fractions/Related</val>
+        <val lang="ja_JP">Fractions/Related</val>
+        <val lang="nl_NL">Fractions/Related</val>
+    </key>
+    <key value="sc_Number_Other">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Other</val>
+        <val lang="de_DE">Other</val>
+        <val lang="fr_FR">Other</val>
+        <val lang="ja_JP">Other</val>
+        <val lang="nl_NL">Other</val>
+    </key>
+    <key value="sc_Number_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Number_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Format_and_Whitespace">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Format and Whitespace</val>
+        <val lang="de_DE">Format and Whitespace</val>
+        <val lang="fr_FR">Format and Whitespace</val>
+        <val lang="ja_JP">Format and Whitespace</val>
+        <val lang="nl_NL">Format and Whitespace</val>
+    </key>
+    <key value="sc_Format_and_Whitespace_Format">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Format</val>
+        <val lang="de_DE">Format</val>
+        <val lang="fr_FR">Format</val>
+        <val lang="ja_JP">Format</val>
+        <val lang="nl_NL">Format</val>
+    </key>
+    <key value="sc_Format_and_Whitespace_Variation_Selector">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Variation Selector</val>
+        <val lang="de_DE">Variation Selector</val>
+        <val lang="fr_FR">Variation Selector</val>
+        <val lang="ja_JP">Variation Selector</val>
+        <val lang="nl_NL">Variation Selector</val>
+    </key>
+    <key value="sc_Format_and_Whitespace_Whitespace">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Whitespace</val>
+        <val lang="de_DE">Whitespace</val>
+        <val lang="fr_FR">Whitespace</val>
+        <val lang="ja_JP">Whitespace</val>
+        <val lang="nl_NL">Whitespace</val>
+    </key>
+    <key value="sc_Format_and_Whitespace_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Format_and_Whitespace_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Modifier">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Modifier</val>
+        <val lang="de_DE">Modifier</val>
+        <val lang="fr_FR">Modifier</val>
+        <val lang="ja_JP">Modifier</val>
+        <val lang="nl_NL">Modifier</val>
+    </key>
+    <key value="sc_Modifier_Enclosing">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Enclosing</val>
+        <val lang="de_DE">Enclosing</val>
+        <val lang="fr_FR">Enclosing</val>
+        <val lang="ja_JP">Enclosing</val>
+        <val lang="nl_NL">Enclosing</val>
+    </key>
+    <key value="sc_Modifier_Nonspacing">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Nonspacing</val>
+        <val lang="de_DE">Nonspacing</val>
+        <val lang="fr_FR">Nonspacing</val>
+        <val lang="ja_JP">Nonspacing</val>
+        <val lang="nl_NL">Nonspacing</val>
+    </key>
+    <key value="sc_Modifier_Spacing">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Spacing</val>
+        <val lang="de_DE">Spacing</val>
+        <val lang="fr_FR">Spacing</val>
+        <val lang="ja_JP">Spacing</val>
+        <val lang="nl_NL">Spacing</val>
+    </key>
+    <key value="sc_Modifier_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Modifier_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Latin">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Latin</val>
+        <val lang="de_DE">Latin</val>
+        <val lang="fr_FR">Latin</val>
+        <val lang="ja_JP">Latin</val>
+        <val lang="nl_NL">Latin</val>
+    </key>
+    <key value="sc_Latin_Common">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Common</val>
+        <val lang="de_DE">Common</val>
+        <val lang="fr_FR">Common</val>
+        <val lang="ja_JP">Common</val>
+        <val lang="nl_NL">Common</val>
+    </key>
+    <key value="sc_Latin_Enclosed">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Enclosed</val>
+        <val lang="de_DE">Enclosed</val>
+        <val lang="fr_FR">Enclosed</val>
+        <val lang="ja_JP">Enclosed</val>
+        <val lang="nl_NL">Enclosed</val>
+    </key>
+    <key value="sc_Latin_Flipped/Mirrored">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Flipped/Mirrored</val>
+        <val lang="de_DE">Flipped/Mirrored</val>
+        <val lang="fr_FR">Flipped/Mirrored</val>
+        <val lang="ja_JP">Flipped/Mirrored</val>
+        <val lang="nl_NL">Flipped/Mirrored</val>
+    </key>
+    <key value="sc_Latin_Other">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Other</val>
+        <val lang="de_DE">Other</val>
+        <val lang="fr_FR">Other</val>
+        <val lang="ja_JP">Other</val>
+        <val lang="nl_NL">Other</val>
+    </key>
+    <key value="sc_Latin_Phonetics_(IPA)">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Phonetics (IPA)</val>
+        <val lang="de_DE">Phonetics (IPA)</val>
+        <val lang="fr_FR">Phonetics (IPA)</val>
+        <val lang="ja_JP">Phonetics (IPA)</val>
+        <val lang="nl_NL">Phonetics (IPA)</val>
+    </key>
+    <key value="sc_Latin_Phonetics_(X-IPA)">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Phonetics (X-IPA)</val>
+        <val lang="de_DE">Phonetics (X-IPA)</val>
+        <val lang="fr_FR">Phonetics (X-IPA)</val>
+        <val lang="ja_JP">Phonetics (X-IPA)</val>
+        <val lang="nl_NL">Phonetics (X-IPA)</val>
+    </key>
+    <key value="sc_Latin_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_Latin_Compatibility">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility</val>
+        <val lang="de_DE">Compatibility</val>
+        <val lang="fr_FR">Compatibility</val>
+        <val lang="ja_JP">Compatibility</val>
+        <val lang="nl_NL">Compatibility</val>
+    </key>
+    <key value="c_Other_European_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Other European Scripts</val>
+        <val lang="de_DE">Other European Scripts</val>
+        <val lang="fr_FR">Other European Scripts</val>
+        <val lang="ja_JP">Other European Scripts</val>
+        <val lang="nl_NL">Other European Scripts</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Armenian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Armenian</val>
+        <val lang="de_DE">Armenian</val>
+        <val lang="fr_FR">Armenian</val>
+        <val lang="ja_JP">Armenian</val>
+        <val lang="nl_NL">Armenian</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Cyrillic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Cyrillic</val>
+        <val lang="de_DE">Cyrillic</val>
+        <val lang="fr_FR">Cyrillic</val>
+        <val lang="ja_JP">Cyrillic</val>
+        <val lang="nl_NL">Cyrillic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Georgian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Georgian</val>
+        <val lang="de_DE">Georgian</val>
+        <val lang="fr_FR">Georgian</val>
+        <val lang="ja_JP">Georgian</val>
+        <val lang="nl_NL">Georgian</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Greek">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Greek</val>
+        <val lang="de_DE">Greek</val>
+        <val lang="fr_FR">Greek</val>
+        <val lang="ja_JP">Greek</val>
+        <val lang="nl_NL">Greek</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Cypriot">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Cypriot</val>
+        <val lang="de_DE">Historic - Cypriot</val>
+        <val lang="fr_FR">Historic - Cypriot</val>
+        <val lang="ja_JP">Historic - Cypriot</val>
+        <val lang="nl_NL">Historic - Cypriot</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Cyrillic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Cyrillic</val>
+        <val lang="de_DE">Historic - Cyrillic</val>
+        <val lang="fr_FR">Historic - Cyrillic</val>
+        <val lang="ja_JP">Historic - Cyrillic</val>
+        <val lang="nl_NL">Historic - Cyrillic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Georgian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Georgian</val>
+        <val lang="de_DE">Historic - Georgian</val>
+        <val lang="fr_FR">Historic - Georgian</val>
+        <val lang="ja_JP">Historic - Georgian</val>
+        <val lang="nl_NL">Historic - Georgian</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Glagolitic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Glagolitic</val>
+        <val lang="de_DE">Historic - Glagolitic</val>
+        <val lang="fr_FR">Historic - Glagolitic</val>
+        <val lang="ja_JP">Historic - Glagolitic</val>
+        <val lang="nl_NL">Historic - Glagolitic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Gothic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Gothic</val>
+        <val lang="de_DE">Historic - Gothic</val>
+        <val lang="fr_FR">Historic - Gothic</val>
+        <val lang="ja_JP">Historic - Gothic</val>
+        <val lang="nl_NL">Historic - Gothic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Greek">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Greek</val>
+        <val lang="de_DE">Historic - Greek</val>
+        <val lang="fr_FR">Historic - Greek</val>
+        <val lang="ja_JP">Historic - Greek</val>
+        <val lang="nl_NL">Historic - Greek</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Linear_B">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Linear B</val>
+        <val lang="de_DE">Historic - Linear B</val>
+        <val lang="fr_FR">Historic - Linear B</val>
+        <val lang="ja_JP">Historic - Linear B</val>
+        <val lang="nl_NL">Historic - Linear B</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Ogham">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Ogham</val>
+        <val lang="de_DE">Historic - Ogham</val>
+        <val lang="fr_FR">Historic - Ogham</val>
+        <val lang="ja_JP">Historic - Ogham</val>
+        <val lang="nl_NL">Historic - Ogham</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Old_Italic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Old Italic</val>
+        <val lang="de_DE">Historic - Old Italic</val>
+        <val lang="fr_FR">Historic - Old Italic</val>
+        <val lang="ja_JP">Historic - Old Italic</val>
+        <val lang="nl_NL">Historic - Old Italic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Runic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Runic</val>
+        <val lang="de_DE">Historic - Runic</val>
+        <val lang="fr_FR">Historic - Runic</val>
+        <val lang="ja_JP">Historic - Runic</val>
+        <val lang="nl_NL">Historic - Runic</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Historic_-_Shavian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Shavian</val>
+        <val lang="de_DE">Historic - Shavian</val>
+        <val lang="fr_FR">Historic - Shavian</val>
+        <val lang="ja_JP">Historic - Shavian</val>
+        <val lang="nl_NL">Historic - Shavian</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Compatibility_-_Armenian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Armenian</val>
+        <val lang="de_DE">Compatibility - Armenian</val>
+        <val lang="fr_FR">Compatibility - Armenian</val>
+        <val lang="ja_JP">Compatibility - Armenian</val>
+        <val lang="nl_NL">Compatibility - Armenian</val>
+    </key>
+    <key value="sc_Other_European_Scripts_Compatibility_-_Greek">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Greek</val>
+        <val lang="de_DE">Compatibility - Greek</val>
+        <val lang="fr_FR">Compatibility - Greek</val>
+        <val lang="ja_JP">Compatibility - Greek</val>
+        <val lang="nl_NL">Compatibility - Greek</val>
+    </key>
+    <key value="c_American_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">American Scripts</val>
+        <val lang="de_DE">American Scripts</val>
+        <val lang="fr_FR">American Scripts</val>
+        <val lang="ja_JP">American Scripts</val>
+        <val lang="nl_NL">American Scripts</val>
+    </key>
+    <key value="sc_American_Scripts_Canadian_Aboriginal">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Canadian Aboriginal</val>
+        <val lang="de_DE">Canadian Aboriginal</val>
+        <val lang="fr_FR">Canadian Aboriginal</val>
+        <val lang="ja_JP">Canadian Aboriginal</val>
+        <val lang="nl_NL">Canadian Aboriginal</val>
+    </key>
+    <key value="sc_American_Scripts_Cherokee">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Cherokee</val>
+        <val lang="de_DE">Cherokee</val>
+        <val lang="fr_FR">Cherokee</val>
+        <val lang="ja_JP">Cherokee</val>
+        <val lang="nl_NL">Cherokee</val>
+    </key>
+    <key value="sc_American_Scripts_Historic_-_Deseret">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Deseret</val>
+        <val lang="de_DE">Historic - Deseret</val>
+        <val lang="fr_FR">Historic - Deseret</val>
+        <val lang="ja_JP">Historic - Deseret</val>
+        <val lang="nl_NL">Historic - Deseret</val>
+    </key>
+    <key value="c_African_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">African Scripts</val>
+        <val lang="de_DE">African Scripts</val>
+        <val lang="fr_FR">African Scripts</val>
+        <val lang="ja_JP">African Scripts</val>
+        <val lang="nl_NL">African Scripts</val>
+    </key>
+    <key value="sc_African_Scripts_Egyptian_Hieroglyphs">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Egyptian Hieroglyphs</val>
+        <val lang="de_DE">Egyptian Hieroglyphs</val>
+        <val lang="fr_FR">Egyptian Hieroglyphs</val>
+        <val lang="ja_JP">Egyptian Hieroglyphs</val>
+        <val lang="nl_NL">Egyptian Hieroglyphs</val>
+    </key>
+    <key value="sc_African_Scripts_Ethiopic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Ethiopic</val>
+        <val lang="de_DE">Ethiopic</val>
+        <val lang="fr_FR">Ethiopic</val>
+        <val lang="ja_JP">Ethiopic</val>
+        <val lang="nl_NL">Ethiopic</val>
+    </key>
+    <key value="sc_African_Scripts_Meroitic_Cursive">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Meroitic Cursive</val>
+        <val lang="de_DE">Meroitic Cursive</val>
+        <val lang="fr_FR">Meroitic Cursive</val>
+        <val lang="ja_JP">Meroitic Cursive</val>
+        <val lang="nl_NL">Meroitic Cursive</val>
+    </key>
+    <key value="sc_African_Scripts_Meroitic_Hieroglyphs">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Meroitic Hieroglyphs</val>
+        <val lang="de_DE">Meroitic Hieroglyphs</val>
+        <val lang="fr_FR">Meroitic Hieroglyphs</val>
+        <val lang="ja_JP">Meroitic Hieroglyphs</val>
+        <val lang="nl_NL">Meroitic Hieroglyphs</val>
+    </key>
+    <key value="sc_African_Scripts_Nko">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Nko</val>
+        <val lang="de_DE">Nko</val>
+        <val lang="fr_FR">Nko</val>
+        <val lang="ja_JP">Nko</val>
+        <val lang="nl_NL">Nko</val>
+    </key>
+    <key value="sc_African_Scripts_Tifinagh">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tifinagh</val>
+        <val lang="de_DE">Tifinagh</val>
+        <val lang="fr_FR">Tifinagh</val>
+        <val lang="ja_JP">Tifinagh</val>
+        <val lang="nl_NL">Tifinagh</val>
+    </key>
+    <key value="sc_African_Scripts_Vai">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Vai</val>
+        <val lang="de_DE">Vai</val>
+        <val lang="fr_FR">Vai</val>
+        <val lang="ja_JP">Vai</val>
+        <val lang="nl_NL">Vai</val>
+    </key>
+    <key value="sc_African_Scripts_Historic_-_Bamum">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Bamum</val>
+        <val lang="de_DE">Historic - Bamum</val>
+        <val lang="fr_FR">Historic - Bamum</val>
+        <val lang="ja_JP">Historic - Bamum</val>
+        <val lang="nl_NL">Historic - Bamum</val>
+    </key>
+    <key value="sc_African_Scripts_Historic_-_Coptic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Coptic</val>
+        <val lang="de_DE">Historic - Coptic</val>
+        <val lang="fr_FR">Historic - Coptic</val>
+        <val lang="ja_JP">Historic - Coptic</val>
+        <val lang="nl_NL">Historic - Coptic</val>
+    </key>
+    <key value="sc_African_Scripts_Historic_-_Nko">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Nko</val>
+        <val lang="de_DE">Historic - Nko</val>
+        <val lang="fr_FR">Historic - Nko</val>
+        <val lang="ja_JP">Historic - Nko</val>
+        <val lang="nl_NL">Historic - Nko</val>
+    </key>
+    <key value="sc_African_Scripts_Historic_-_Osmanya">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Osmanya</val>
+        <val lang="de_DE">Historic - Osmanya</val>
+        <val lang="fr_FR">Historic - Osmanya</val>
+        <val lang="ja_JP">Historic - Osmanya</val>
+        <val lang="nl_NL">Historic - Osmanya</val>
+    </key>
+    <key value="c_Middle_Eastern_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Middle Eastern Scripts</val>
+        <val lang="de_DE">Middle Eastern Scripts</val>
+        <val lang="fr_FR">Middle Eastern Scripts</val>
+        <val lang="ja_JP">Middle Eastern Scripts</val>
+        <val lang="nl_NL">Middle Eastern Scripts</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Arabic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Arabic</val>
+        <val lang="de_DE">Arabic</val>
+        <val lang="fr_FR">Arabic</val>
+        <val lang="ja_JP">Arabic</val>
+        <val lang="nl_NL">Arabic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Hebrew">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Hebrew</val>
+        <val lang="de_DE">Hebrew</val>
+        <val lang="fr_FR">Hebrew</val>
+        <val lang="ja_JP">Hebrew</val>
+        <val lang="nl_NL">Hebrew</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Imperial_Aramaic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Imperial Aramaic</val>
+        <val lang="de_DE">Imperial Aramaic</val>
+        <val lang="fr_FR">Imperial Aramaic</val>
+        <val lang="ja_JP">Imperial Aramaic</val>
+        <val lang="nl_NL">Imperial Aramaic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Inscriptional_Pahlavi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Inscriptional Pahlavi</val>
+        <val lang="de_DE">Inscriptional Pahlavi</val>
+        <val lang="fr_FR">Inscriptional Pahlavi</val>
+        <val lang="ja_JP">Inscriptional Pahlavi</val>
+        <val lang="nl_NL">Inscriptional Pahlavi</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Inscriptional_Parthian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Inscriptional Parthian</val>
+        <val lang="de_DE">Inscriptional Parthian</val>
+        <val lang="fr_FR">Inscriptional Parthian</val>
+        <val lang="ja_JP">Inscriptional Parthian</val>
+        <val lang="nl_NL">Inscriptional Parthian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Mandaic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Mandaic</val>
+        <val lang="de_DE">Mandaic</val>
+        <val lang="fr_FR">Mandaic</val>
+        <val lang="ja_JP">Mandaic</val>
+        <val lang="nl_NL">Mandaic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Old_South_Arabian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Old South Arabian</val>
+        <val lang="de_DE">Old South Arabian</val>
+        <val lang="fr_FR">Old South Arabian</val>
+        <val lang="ja_JP">Old South Arabian</val>
+        <val lang="nl_NL">Old South Arabian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Samaritan">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Samaritan</val>
+        <val lang="de_DE">Samaritan</val>
+        <val lang="fr_FR">Samaritan</val>
+        <val lang="ja_JP">Samaritan</val>
+        <val lang="nl_NL">Samaritan</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Syriac">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Syriac</val>
+        <val lang="de_DE">Syriac</val>
+        <val lang="fr_FR">Syriac</val>
+        <val lang="ja_JP">Syriac</val>
+        <val lang="nl_NL">Syriac</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Arabic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Arabic</val>
+        <val lang="de_DE">Historic - Arabic</val>
+        <val lang="fr_FR">Historic - Arabic</val>
+        <val lang="ja_JP">Historic - Arabic</val>
+        <val lang="nl_NL">Historic - Arabic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Avestan">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Avestan</val>
+        <val lang="de_DE">Historic - Avestan</val>
+        <val lang="fr_FR">Historic - Avestan</val>
+        <val lang="ja_JP">Historic - Avestan</val>
+        <val lang="nl_NL">Historic - Avestan</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Carian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Carian</val>
+        <val lang="de_DE">Historic - Carian</val>
+        <val lang="fr_FR">Historic - Carian</val>
+        <val lang="ja_JP">Historic - Carian</val>
+        <val lang="nl_NL">Historic - Carian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Cuneiform">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Cuneiform</val>
+        <val lang="de_DE">Historic - Cuneiform</val>
+        <val lang="fr_FR">Historic - Cuneiform</val>
+        <val lang="ja_JP">Historic - Cuneiform</val>
+        <val lang="nl_NL">Historic - Cuneiform</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Hebrew">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Hebrew</val>
+        <val lang="de_DE">Historic - Hebrew</val>
+        <val lang="fr_FR">Historic - Hebrew</val>
+        <val lang="ja_JP">Historic - Hebrew</val>
+        <val lang="nl_NL">Historic - Hebrew</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Lycian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Lycian</val>
+        <val lang="de_DE">Historic - Lycian</val>
+        <val lang="fr_FR">Historic - Lycian</val>
+        <val lang="ja_JP">Historic - Lycian</val>
+        <val lang="nl_NL">Historic - Lycian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Lydian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Lydian</val>
+        <val lang="de_DE">Historic - Lydian</val>
+        <val lang="fr_FR">Historic - Lydian</val>
+        <val lang="ja_JP">Historic - Lydian</val>
+        <val lang="nl_NL">Historic - Lydian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Old_Persian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Old Persian</val>
+        <val lang="de_DE">Historic - Old Persian</val>
+        <val lang="fr_FR">Historic - Old Persian</val>
+        <val lang="ja_JP">Historic - Old Persian</val>
+        <val lang="nl_NL">Historic - Old Persian</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Phoenician">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Phoenician</val>
+        <val lang="de_DE">Historic - Phoenician</val>
+        <val lang="fr_FR">Historic - Phoenician</val>
+        <val lang="ja_JP">Historic - Phoenician</val>
+        <val lang="nl_NL">Historic - Phoenician</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Syriac">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Syriac</val>
+        <val lang="de_DE">Historic - Syriac</val>
+        <val lang="fr_FR">Historic - Syriac</val>
+        <val lang="ja_JP">Historic - Syriac</val>
+        <val lang="nl_NL">Historic - Syriac</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Historic_-_Ugaritic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Ugaritic</val>
+        <val lang="de_DE">Historic - Ugaritic</val>
+        <val lang="fr_FR">Historic - Ugaritic</val>
+        <val lang="ja_JP">Historic - Ugaritic</val>
+        <val lang="nl_NL">Historic - Ugaritic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Compatibility_-_Arabic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Arabic</val>
+        <val lang="de_DE">Compatibility - Arabic</val>
+        <val lang="fr_FR">Compatibility - Arabic</val>
+        <val lang="ja_JP">Compatibility - Arabic</val>
+        <val lang="nl_NL">Compatibility - Arabic</val>
+    </key>
+    <key value="sc_Middle_Eastern_Scripts_Compatibility_-_Hebrew">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Hebrew</val>
+        <val lang="de_DE">Compatibility - Hebrew</val>
+        <val lang="fr_FR">Compatibility - Hebrew</val>
+        <val lang="ja_JP">Compatibility - Hebrew</val>
+        <val lang="nl_NL">Compatibility - Hebrew</val>
+    </key>
+    <key value="c_South_Asian_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">South Asian Scripts</val>
+        <val lang="de_DE">South Asian Scripts</val>
+        <val lang="fr_FR">South Asian Scripts</val>
+        <val lang="ja_JP">South Asian Scripts</val>
+        <val lang="nl_NL">South Asian Scripts</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Bengali">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Bengali</val>
+        <val lang="de_DE">Bengali</val>
+        <val lang="fr_FR">Bengali</val>
+        <val lang="ja_JP">Bengali</val>
+        <val lang="nl_NL">Bengali</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Chakma">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Chakma</val>
+        <val lang="de_DE">Chakma</val>
+        <val lang="fr_FR">Chakma</val>
+        <val lang="ja_JP">Chakma</val>
+        <val lang="nl_NL">Chakma</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Devanagari">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Devanagari</val>
+        <val lang="de_DE">Devanagari</val>
+        <val lang="fr_FR">Devanagari</val>
+        <val lang="ja_JP">Devanagari</val>
+        <val lang="nl_NL">Devanagari</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Gujarati">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Gujarati</val>
+        <val lang="de_DE">Gujarati</val>
+        <val lang="fr_FR">Gujarati</val>
+        <val lang="ja_JP">Gujarati</val>
+        <val lang="nl_NL">Gujarati</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Gurmukhi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Gurmukhi</val>
+        <val lang="de_DE">Gurmukhi</val>
+        <val lang="fr_FR">Gurmukhi</val>
+        <val lang="ja_JP">Gurmukhi</val>
+        <val lang="nl_NL">Gurmukhi</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Kannada">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Kannada</val>
+        <val lang="de_DE">Kannada</val>
+        <val lang="fr_FR">Kannada</val>
+        <val lang="ja_JP">Kannada</val>
+        <val lang="nl_NL">Kannada</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Lepcha">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Lepcha</val>
+        <val lang="de_DE">Lepcha</val>
+        <val lang="fr_FR">Lepcha</val>
+        <val lang="ja_JP">Lepcha</val>
+        <val lang="nl_NL">Lepcha</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Limbu">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Limbu</val>
+        <val lang="de_DE">Limbu</val>
+        <val lang="fr_FR">Limbu</val>
+        <val lang="ja_JP">Limbu</val>
+        <val lang="nl_NL">Limbu</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Malayalam">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Malayalam</val>
+        <val lang="de_DE">Malayalam</val>
+        <val lang="fr_FR">Malayalam</val>
+        <val lang="ja_JP">Malayalam</val>
+        <val lang="nl_NL">Malayalam</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Meetei_Mayek">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Meetei Mayek</val>
+        <val lang="de_DE">Meetei Mayek</val>
+        <val lang="fr_FR">Meetei Mayek</val>
+        <val lang="ja_JP">Meetei Mayek</val>
+        <val lang="nl_NL">Meetei Mayek</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Ol_Chiki">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Ol Chiki</val>
+        <val lang="de_DE">Ol Chiki</val>
+        <val lang="fr_FR">Ol Chiki</val>
+        <val lang="ja_JP">Ol Chiki</val>
+        <val lang="nl_NL">Ol Chiki</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Oriya">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Oriya</val>
+        <val lang="de_DE">Oriya</val>
+        <val lang="fr_FR">Oriya</val>
+        <val lang="ja_JP">Oriya</val>
+        <val lang="nl_NL">Oriya</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Saurashtra">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Saurashtra</val>
+        <val lang="de_DE">Saurashtra</val>
+        <val lang="fr_FR">Saurashtra</val>
+        <val lang="ja_JP">Saurashtra</val>
+        <val lang="nl_NL">Saurashtra</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Sinhala">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Sinhala</val>
+        <val lang="de_DE">Sinhala</val>
+        <val lang="fr_FR">Sinhala</val>
+        <val lang="ja_JP">Sinhala</val>
+        <val lang="nl_NL">Sinhala</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Sora_Sompeng">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Sora Sompeng</val>
+        <val lang="de_DE">Sora Sompeng</val>
+        <val lang="fr_FR">Sora Sompeng</val>
+        <val lang="ja_JP">Sora Sompeng</val>
+        <val lang="nl_NL">Sora Sompeng</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Tamil">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tamil</val>
+        <val lang="de_DE">Tamil</val>
+        <val lang="fr_FR">Tamil</val>
+        <val lang="ja_JP">Tamil</val>
+        <val lang="nl_NL">Tamil</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Telugu">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Telugu</val>
+        <val lang="de_DE">Telugu</val>
+        <val lang="fr_FR">Telugu</val>
+        <val lang="ja_JP">Telugu</val>
+        <val lang="nl_NL">Telugu</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Thaana">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Thaana</val>
+        <val lang="de_DE">Thaana</val>
+        <val lang="fr_FR">Thaana</val>
+        <val lang="ja_JP">Thaana</val>
+        <val lang="nl_NL">Thaana</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Tibetan">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tibetan</val>
+        <val lang="de_DE">Tibetan</val>
+        <val lang="fr_FR">Tibetan</val>
+        <val lang="ja_JP">Tibetan</val>
+        <val lang="nl_NL">Tibetan</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic</val>
+        <val lang="de_DE">Historic</val>
+        <val lang="fr_FR">Historic</val>
+        <val lang="ja_JP">Historic</val>
+        <val lang="nl_NL">Historic</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Brahmi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Brahmi</val>
+        <val lang="de_DE">Historic - Brahmi</val>
+        <val lang="fr_FR">Historic - Brahmi</val>
+        <val lang="ja_JP">Historic - Brahmi</val>
+        <val lang="nl_NL">Historic - Brahmi</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Kaithi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Kaithi</val>
+        <val lang="de_DE">Historic - Kaithi</val>
+        <val lang="fr_FR">Historic - Kaithi</val>
+        <val lang="ja_JP">Historic - Kaithi</val>
+        <val lang="nl_NL">Historic - Kaithi</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Kannada">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Kannada</val>
+        <val lang="de_DE">Historic - Kannada</val>
+        <val lang="fr_FR">Historic - Kannada</val>
+        <val lang="ja_JP">Historic - Kannada</val>
+        <val lang="nl_NL">Historic - Kannada</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Kharoshthi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Kharoshthi</val>
+        <val lang="de_DE">Historic - Kharoshthi</val>
+        <val lang="fr_FR">Historic - Kharoshthi</val>
+        <val lang="ja_JP">Historic - Kharoshthi</val>
+        <val lang="nl_NL">Historic - Kharoshthi</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Sharada">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Sharada</val>
+        <val lang="de_DE">Historic - Sharada</val>
+        <val lang="fr_FR">Historic - Sharada</val>
+        <val lang="ja_JP">Historic - Sharada</val>
+        <val lang="nl_NL">Historic - Sharada</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Syloti_Nagri">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Syloti Nagri</val>
+        <val lang="de_DE">Historic - Syloti Nagri</val>
+        <val lang="fr_FR">Historic - Syloti Nagri</val>
+        <val lang="ja_JP">Historic - Syloti Nagri</val>
+        <val lang="nl_NL">Historic - Syloti Nagri</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Historic_-_Takri">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Takri</val>
+        <val lang="de_DE">Historic - Takri</val>
+        <val lang="fr_FR">Historic - Takri</val>
+        <val lang="ja_JP">Historic - Takri</val>
+        <val lang="nl_NL">Historic - Takri</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Compatibility_-_Bengali">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Bengali</val>
+        <val lang="de_DE">Compatibility - Bengali</val>
+        <val lang="fr_FR">Compatibility - Bengali</val>
+        <val lang="ja_JP">Compatibility - Bengali</val>
+        <val lang="nl_NL">Compatibility - Bengali</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Compatibility_-_Devanagari">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Devanagari</val>
+        <val lang="de_DE">Compatibility - Devanagari</val>
+        <val lang="fr_FR">Compatibility - Devanagari</val>
+        <val lang="ja_JP">Compatibility - Devanagari</val>
+        <val lang="nl_NL">Compatibility - Devanagari</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Compatibility_-_Gurmukhi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Gurmukhi</val>
+        <val lang="de_DE">Compatibility - Gurmukhi</val>
+        <val lang="fr_FR">Compatibility - Gurmukhi</val>
+        <val lang="ja_JP">Compatibility - Gurmukhi</val>
+        <val lang="nl_NL">Compatibility - Gurmukhi</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Compatibility_-_Oriya">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Oriya</val>
+        <val lang="de_DE">Compatibility - Oriya</val>
+        <val lang="fr_FR">Compatibility - Oriya</val>
+        <val lang="ja_JP">Compatibility - Oriya</val>
+        <val lang="nl_NL">Compatibility - Oriya</val>
+    </key>
+    <key value="sc_South_Asian_Scripts_Compatibility_-_Tibetan">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Tibetan</val>
+        <val lang="de_DE">Compatibility - Tibetan</val>
+        <val lang="fr_FR">Compatibility - Tibetan</val>
+        <val lang="ja_JP">Compatibility - Tibetan</val>
+        <val lang="nl_NL">Compatibility - Tibetan</val>
+    </key>
+    <key value="c_Southeast_Asian_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Southeast Asian Scripts</val>
+        <val lang="de_DE">Southeast Asian Scripts</val>
+        <val lang="fr_FR">Southeast Asian Scripts</val>
+        <val lang="ja_JP">Southeast Asian Scripts</val>
+        <val lang="nl_NL">Southeast Asian Scripts</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Balinese">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Balinese</val>
+        <val lang="de_DE">Balinese</val>
+        <val lang="fr_FR">Balinese</val>
+        <val lang="ja_JP">Balinese</val>
+        <val lang="nl_NL">Balinese</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Batak">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Batak</val>
+        <val lang="de_DE">Batak</val>
+        <val lang="fr_FR">Batak</val>
+        <val lang="ja_JP">Batak</val>
+        <val lang="nl_NL">Batak</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Cham">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Cham</val>
+        <val lang="de_DE">Cham</val>
+        <val lang="fr_FR">Cham</val>
+        <val lang="ja_JP">Cham</val>
+        <val lang="nl_NL">Cham</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Javanese">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Javanese</val>
+        <val lang="de_DE">Javanese</val>
+        <val lang="fr_FR">Javanese</val>
+        <val lang="ja_JP">Javanese</val>
+        <val lang="nl_NL">Javanese</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Kayah_Li">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Kayah Li</val>
+        <val lang="de_DE">Kayah Li</val>
+        <val lang="fr_FR">Kayah Li</val>
+        <val lang="ja_JP">Kayah Li</val>
+        <val lang="nl_NL">Kayah Li</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Khmer">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Khmer</val>
+        <val lang="de_DE">Khmer</val>
+        <val lang="fr_FR">Khmer</val>
+        <val lang="ja_JP">Khmer</val>
+        <val lang="nl_NL">Khmer</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Lao">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Lao</val>
+        <val lang="de_DE">Lao</val>
+        <val lang="fr_FR">Lao</val>
+        <val lang="ja_JP">Lao</val>
+        <val lang="nl_NL">Lao</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Myanmar">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Myanmar</val>
+        <val lang="de_DE">Myanmar</val>
+        <val lang="fr_FR">Myanmar</val>
+        <val lang="ja_JP">Myanmar</val>
+        <val lang="nl_NL">Myanmar</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_New_Tai_Lue">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">New Tai Lue</val>
+        <val lang="de_DE">New Tai Lue</val>
+        <val lang="fr_FR">New Tai Lue</val>
+        <val lang="ja_JP">New Tai Lue</val>
+        <val lang="nl_NL">New Tai Lue</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Tai_Le">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tai Le</val>
+        <val lang="de_DE">Tai Le</val>
+        <val lang="fr_FR">Tai Le</val>
+        <val lang="ja_JP">Tai Le</val>
+        <val lang="nl_NL">Tai Le</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Tai_Tham">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tai Tham</val>
+        <val lang="de_DE">Tai Tham</val>
+        <val lang="fr_FR">Tai Tham</val>
+        <val lang="ja_JP">Tai Tham</val>
+        <val lang="nl_NL">Tai Tham</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Tai_Viet">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Tai Viet</val>
+        <val lang="de_DE">Tai Viet</val>
+        <val lang="fr_FR">Tai Viet</val>
+        <val lang="ja_JP">Tai Viet</val>
+        <val lang="nl_NL">Tai Viet</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Thai">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Thai</val>
+        <val lang="de_DE">Thai</val>
+        <val lang="fr_FR">Thai</val>
+        <val lang="ja_JP">Thai</val>
+        <val lang="nl_NL">Thai</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Buginese">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Buginese</val>
+        <val lang="de_DE">Historic - Buginese</val>
+        <val lang="fr_FR">Historic - Buginese</val>
+        <val lang="ja_JP">Historic - Buginese</val>
+        <val lang="nl_NL">Historic - Buginese</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Buhid">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Buhid</val>
+        <val lang="de_DE">Historic - Buhid</val>
+        <val lang="fr_FR">Historic - Buhid</val>
+        <val lang="ja_JP">Historic - Buhid</val>
+        <val lang="nl_NL">Historic - Buhid</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Hanunoo">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Hanunoo</val>
+        <val lang="de_DE">Historic - Hanunoo</val>
+        <val lang="fr_FR">Historic - Hanunoo</val>
+        <val lang="ja_JP">Historic - Hanunoo</val>
+        <val lang="nl_NL">Historic - Hanunoo</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Khmer">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Khmer</val>
+        <val lang="de_DE">Historic - Khmer</val>
+        <val lang="fr_FR">Historic - Khmer</val>
+        <val lang="ja_JP">Historic - Khmer</val>
+        <val lang="nl_NL">Historic - Khmer</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Rejang">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Rejang</val>
+        <val lang="de_DE">Historic - Rejang</val>
+        <val lang="fr_FR">Historic - Rejang</val>
+        <val lang="ja_JP">Historic - Rejang</val>
+        <val lang="nl_NL">Historic - Rejang</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Sundanese">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Sundanese</val>
+        <val lang="de_DE">Historic - Sundanese</val>
+        <val lang="fr_FR">Historic - Sundanese</val>
+        <val lang="ja_JP">Historic - Sundanese</val>
+        <val lang="nl_NL">Historic - Sundanese</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Tagalog">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Tagalog</val>
+        <val lang="de_DE">Historic - Tagalog</val>
+        <val lang="fr_FR">Historic - Tagalog</val>
+        <val lang="ja_JP">Historic - Tagalog</val>
+        <val lang="nl_NL">Historic - Tagalog</val>
+    </key>
+    <key value="sc_Southeast_Asian_Scripts_Historic_-_Tagbanwa">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Tagbanwa</val>
+        <val lang="de_DE">Historic - Tagbanwa</val>
+        <val lang="fr_FR">Historic - Tagbanwa</val>
+        <val lang="ja_JP">Historic - Tagbanwa</val>
+        <val lang="nl_NL">Historic - Tagbanwa</val>
+    </key>
+    <key value="c_Other_East_Asian_Scripts">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Other East Asian Scripts</val>
+        <val lang="de_DE">Other East Asian Scripts</val>
+        <val lang="fr_FR">Other East Asian Scripts</val>
+        <val lang="ja_JP">Other East Asian Scripts</val>
+        <val lang="nl_NL">Other East Asian Scripts</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Bopomofo">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Bopomofo</val>
+        <val lang="de_DE">Bopomofo</val>
+        <val lang="fr_FR">Bopomofo</val>
+        <val lang="ja_JP">Bopomofo</val>
+        <val lang="nl_NL">Bopomofo</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Hiragana">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Hiragana</val>
+        <val lang="de_DE">Hiragana</val>
+        <val lang="fr_FR">Hiragana</val>
+        <val lang="ja_JP">Hiragana</val>
+        <val lang="nl_NL">Hiragana</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Katakana">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Katakana</val>
+        <val lang="de_DE">Katakana</val>
+        <val lang="fr_FR">Katakana</val>
+        <val lang="ja_JP">Katakana</val>
+        <val lang="nl_NL">Katakana</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Lisu">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Lisu</val>
+        <val lang="de_DE">Lisu</val>
+        <val lang="fr_FR">Lisu</val>
+        <val lang="ja_JP">Lisu</val>
+        <val lang="nl_NL">Lisu</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Miao">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Miao</val>
+        <val lang="de_DE">Miao</val>
+        <val lang="fr_FR">Miao</val>
+        <val lang="ja_JP">Miao</val>
+        <val lang="nl_NL">Miao</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Mongolian">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Mongolian</val>
+        <val lang="de_DE">Mongolian</val>
+        <val lang="fr_FR">Mongolian</val>
+        <val lang="ja_JP">Mongolian</val>
+        <val lang="nl_NL">Mongolian</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Old_Turkic">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Old Turkic</val>
+        <val lang="de_DE">Old Turkic</val>
+        <val lang="fr_FR">Old Turkic</val>
+        <val lang="ja_JP">Old Turkic</val>
+        <val lang="nl_NL">Old Turkic</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Phags_Pa">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Phags Pa</val>
+        <val lang="de_DE">Phags Pa</val>
+        <val lang="fr_FR">Phags Pa</val>
+        <val lang="ja_JP">Phags Pa</val>
+        <val lang="nl_NL">Phags Pa</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Yi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Yi</val>
+        <val lang="de_DE">Yi</val>
+        <val lang="fr_FR">Yi</val>
+        <val lang="ja_JP">Yi</val>
+        <val lang="nl_NL">Yi</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Historic_-_Phags_Pa">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Historic - Phags Pa</val>
+        <val lang="de_DE">Historic - Phags Pa</val>
+        <val lang="fr_FR">Historic - Phags Pa</val>
+        <val lang="ja_JP">Historic - Phags Pa</val>
+        <val lang="nl_NL">Historic - Phags Pa</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Compatibility_-_Bopomofo">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Bopomofo</val>
+        <val lang="de_DE">Compatibility - Bopomofo</val>
+        <val lang="fr_FR">Compatibility - Bopomofo</val>
+        <val lang="ja_JP">Compatibility - Bopomofo</val>
+        <val lang="nl_NL">Compatibility - Bopomofo</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Compatibility_-_Hiragana">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Hiragana</val>
+        <val lang="de_DE">Compatibility - Hiragana</val>
+        <val lang="fr_FR">Compatibility - Hiragana</val>
+        <val lang="ja_JP">Compatibility - Hiragana</val>
+        <val lang="nl_NL">Compatibility - Hiragana</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Compatibility_-_Katakana">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Katakana</val>
+        <val lang="de_DE">Compatibility - Katakana</val>
+        <val lang="fr_FR">Compatibility - Katakana</val>
+        <val lang="ja_JP">Compatibility - Katakana</val>
+        <val lang="nl_NL">Compatibility - Katakana</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Compatibility_-_Phags_Pa">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Phags Pa</val>
+        <val lang="de_DE">Compatibility - Phags Pa</val>
+        <val lang="fr_FR">Compatibility - Phags Pa</val>
+        <val lang="ja_JP">Compatibility - Phags Pa</val>
+        <val lang="nl_NL">Compatibility - Phags Pa</val>
+    </key>
+    <key value="sc_Other_East_Asian_Scripts_Compatibility_-_Yi">
+        <comment>Name of Unicode block (set of special characters).</comment>
+        <val lang="en_US">Compatibility - Yi</val>
+        <val lang="de_DE">Compatibility - Yi</val>
+        <val lang="fr_FR">Compatibility - Yi</val>
+        <val lang="ja_JP">Compatibility - Yi</val>
+        <val lang="nl_NL">Compatibility - Yi</val>
+    </key>
+</translation>

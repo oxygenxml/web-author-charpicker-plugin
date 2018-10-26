@@ -253,7 +253,8 @@
 
       this.charPickerIframe_ = cD('iframe', {
         id: 'charpickeriframe',
-        src: '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html'
+        src: '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html?remove-categories=' +
+        encodeURIComponent(sync.options.PluginsOptions.getClientOption('charp.remove_categories'))
       });
       var dialogElement = this.dialog.getElement();
       dialogElement.id = 'charPicker';
