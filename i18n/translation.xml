@@ -8,8 +8,24 @@
         <language description="Dutch" lang="nl_NL"/>
     </languageList>
     <!-- server-side tags must have the 'destination' attribute set -->
+    <key distribution="webauthor" value="Initial_categories">
+        <comment>Text preceding a list of category names</comment>
+        <val lang="en_US">Initial categories</val>
+        <val lang="de_DE">Initial categories</val>
+        <val lang="fr_FR">Initial categories</val>
+        <val lang="ja_JP">Initial categories</val>
+        <val lang="nl_NL">Initial categories</val>
+    </key>
+    <key distribution="webauthor" value="Remove_categories">
+        <comment>Label for input expecting a list of category names, separated by commas.</comment>
+        <val lang="en_US">Remove categories (comma separated)</val>
+        <val lang="de_DE">Remove categories (comma separated)</val>
+        <val lang="fr_FR">Remove categories (comma separated)</val>
+        <val lang="ja_JP">Remove categories (comma separated)</val>
+        <val lang="nl_NL">Remove categories (comma separated)</val>
+    </key>
     <key distribution="webauthor" value="Category">
-    <val lang="en_US">Category</val>
+        <val lang="en_US">Category</val>
         <val lang="de_DE">Kategorie</val>
         <val lang="fr_FR">Catégorie</val>
         <val lang="ja_JP">カテゴリ</val>

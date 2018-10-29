@@ -3,7 +3,10 @@ package com.oxygenxml.charpicker;
 import java.util.ArrayList;
 import java.util.List;
 
+import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;
 import ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class ConfigurationPage extends PluginConfigExtension {
 
@@ -16,19 +19,18 @@ public class ConfigurationPage extends PluginConfigExtension {
 
   @Override
   public String getOptionsForm() {
-    StringBuilder sb = new StringBuilder(2000);
     List<String> defaultCategories = new ArrayList<String>();
-        
+    PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+    
     CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
-    sb.append("<div class=\"roboto\">"
-          + "<div>Default categories: " 
-            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + "</div>"        
+    return "<div>"
+          + "<div>" + rb.getMessage(TranslationTags.Initial_categories) 
+            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + ".</div>"        
           + "</div>"
-          + "<label>Remove categories (comma separated):"
+          + "<label>" + rb.getMessage(TranslationTags.Remove_categories) + ":"
             + "<input style=\"display: block; width: 100%;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
           + "</label>"
-        + "</div>");
-    return sb.toString();
+        + "</div>";
   }
 
   @Override
