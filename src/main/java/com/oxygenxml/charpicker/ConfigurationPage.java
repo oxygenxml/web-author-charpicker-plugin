@@ -23,12 +23,12 @@ public class ConfigurationPage extends PluginConfigExtension {
     PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
     
     CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
-    return "<div>"
+    return "<div style=\"font-family: robotolight, Arial, Helvetica, sans-serif;\">"
           + "<div>" + rb.getMessage(TranslationTags.Initial_categories) 
             + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + ".</div>"        
           + "</div>"
           + "<label>" + rb.getMessage(TranslationTags.Remove_categories) + ":"
-            + "<input style=\"display: block; width: 100%;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
+            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
           + "</label>"
         + "</div>";
   }
