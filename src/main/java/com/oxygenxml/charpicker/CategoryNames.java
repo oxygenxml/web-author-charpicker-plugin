@@ -40,7 +40,7 @@ public class CategoryNames extends WebappServletPluginExtension {
    * @param categoryName The original category name (decoded).
    * @return The original subcategory name.
    */
-  private String getOriginalFromTagName(String tagName, String categoryName) {
+  private static String getOriginalFromTagName(String tagName, String categoryName) {
     String original = "";
     String[] pieces = tagName.split("_");
     // Cut out the prefix and category pieces, assume they are here correctly.
@@ -55,7 +55,7 @@ public class CategoryNames extends WebappServletPluginExtension {
    * @param tagName The tag name.
    * @return The original category name.
    */
-  private String getOriginalFromTagName(String tagName) {
+  static String getOriginalFromTagName(String tagName) {
     return getOriginalFromTagName(tagName, null);
   }
   
@@ -102,7 +102,7 @@ public class CategoryNames extends WebappServletPluginExtension {
     return sb.toString();
   }
 
-  List<String> initialCategories = Arrays.asList("utfc_Symbol", "utfc_Emoji", "utfc_Punctuation", "utfc_Number",
+  static List<String> initialCategories = Arrays.asList("utfc_Symbol", "utfc_Emoji", "utfc_Punctuation", "utfc_Number",
       "utfc_Format_and_Whitespace", "utfc_Modifier", "utfc_Latin", "utfc_Other_European_Scripts", "utfc_American_Scripts",
       "utfc_African_Scripts", "utfc_Middle_Eastern_Scripts", "utfc_South_Asian_Scripts", "utfc_Southeast_Asian_Scripts",
       "utfc_Other_East_Asian_Scripts"

@@ -1,5 +1,8 @@
 package com.oxygenxml.charpicker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension;
 
 public class ConfigurationPage extends PluginConfigExtension {
@@ -13,13 +16,16 @@ public class ConfigurationPage extends PluginConfigExtension {
 
   @Override
   public String getOptionsForm() {
-    
-    
-    
     StringBuilder sb = new StringBuilder(2000);
-    sb.append("<div>"
-          + "<label>Remove categories:"
-            + "<input name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
+    List<String> defaultCategories = new ArrayList<String>();
+        
+    CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
+    sb.append("<div class=\"roboto\">"
+          + "<div>Default categories: " 
+            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + "</div>"        
+          + "</div>"
+          + "<label>Remove categories (comma separated):"
+            + "<input style=\"display: block; width: 100%;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
           + "</label>"
         + "</div>");
     return sb.toString();
