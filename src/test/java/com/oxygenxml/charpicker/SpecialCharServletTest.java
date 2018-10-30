@@ -25,7 +25,7 @@ public class SpecialCharServletTest {
 		Properties chars = new Properties();
 		InputStream charsInputStream = null;
 		try{
-			charsInputStream = new FileInputStream("resources/" + prefix + "_unicodechars.properties");
+			charsInputStream = new FileInputStream("test/" + prefix + "_unicodechars.properties");
 			chars.load(charsInputStream);
 		} catch (IOException ex) {
 			ex.printStackTrace();
