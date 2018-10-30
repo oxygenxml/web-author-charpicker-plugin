@@ -1,4 +1,4 @@
-/* Un-comment this file in charpicker.html to work with default charpickerdata translation. */
+/* Add this file in charpicker.html before main.js to generate translation xml from default charpickerdata. */
 var getTagName = function (dirtyTagName) {
   var tagName = dirtyTagName.split(' ').join('_');
   tagName = tagName.replace('&', 'and');

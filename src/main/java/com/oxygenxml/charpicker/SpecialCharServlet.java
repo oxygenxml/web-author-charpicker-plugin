@@ -126,16 +126,13 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
   public Map<String, String> findCharByName(String query, Properties chars) {
 		// Remove extra spaces.
 		query = query.replaceAll("\\s+", " ");
-		
 		// Remove special characters.
 		query = query.replaceAll("[+.^:,*{}\\(\\)\\[\\]]", "");
-		
 		
 		String[] queryWords = query.split("\\s+");
 		int maxScore = queryWords.length * scoreFullMatch;
 		
 		int relevanceThreshold = getRelevanceThreshold(queryWords.length);
-		
 		Map<String, String> charsFromProperties = propsAsMap(chars);
 		Map<String, String> matches = new LinkedHashMap<>();
 		
