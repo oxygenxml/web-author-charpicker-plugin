@@ -40,6 +40,7 @@ window["initCharPicker"] = function () {
 
   var charPickerData = new goog.i18n.CharPickerData();
 
+  // -------- Remove categories ---------------
   goog.array.forEach(categoriesToRemove, function (category) {
     removeCategory(charPickerData, category.trim());
   });
@@ -47,38 +48,7 @@ window["initCharPicker"] = function () {
   // -------- Translate category names --------
   if (window.charpickerCategories) {
     var customCategories = JSON.parse(window.charpickerCategories);
-    // Get the other messages ready too.
-    if (window.msgs) {
-      window.msgs = JSON.parse(window.msgs);
-    }
-    for (var category in customCategories) {
-      if (customCategories.hasOwnProperty(category)) {
-        var originalName = category.split('|')[0];
-        var translatedName = category.split('|')[1];
-
-        var decoded = decodeTagName(originalName);
-        var categoryFoundIndex = charPickerData.categories.indexOf(decoded);
-        if (categoryFoundIndex !== -1) {
-          charPickerData.categories[categoryFoundIndex] = translatedName;
-
-          // Translate the subcategories.
-          for (var subcategoryIndex = 0; subcategoryIndex < customCategories[category].length; subcategoryIndex++) {
-            var subcategoryString = customCategories[category][subcategoryIndex];
-            originalName = subcategoryString.split('|')[0];
-            translatedName = subcategoryString.split('|')[1];
-
-            var decodedSubcat = decodeTagName(originalName);
-            // Remove category name from it.
-            decodedSubcat = decodedSubcat.slice(decodedSubcat.indexOf(decoded) + decoded.length + 1);
-
-            var subcatFoundIndex = charPickerData.subcategories[categoryFoundIndex].indexOf(decodedSubcat);
-            if (subcatFoundIndex !== -1) {
-              charPickerData.subcategories[categoryFoundIndex][subcatFoundIndex] = translatedName;
-            }
-          }
-        }
-      }
-    }
+    translateCategories(charPickerData, customCategories);
   } else {
     console.warn('Could not get translated categories for Character Picker plugin.');
   }
@@ -121,17 +91,23 @@ window["initCharPicker"] = function () {
     parent["charsToBeInserted"].push(selectedChar);
   };
 
+  // Get the UI messages ready.
+  if (window.msgs) {
+    window.msgs = JSON.parse(window.msgs);
+  }
+  var categoriesLabel = getTranslatedLabel('Category', 'Categories:');
+  var hexCodeLabel = getTranslatedLabel('Hex_code', 'Hex code:');
+
   var dropdowns = document.querySelectorAll(".goog-inline-block.goog-menu-button");
   var categoriesBar = cD("div", {id: "categories"},
-    cD("div", { id: "label-categories" }, getMsgs('Category') + ':' || "Categories:"),
+    cD("div", { id: "label-categories" }, categoriesLabel),
     cD("div", { id: 'dropdown-wrapper' }, dropdowns)
   );
 
-  insertBefore(categoriesBar,
-    document.getElementsByClassName("goog-char-picker")[0].firstChild);
+  insertBefore(categoriesBar, document.getElementsByClassName("goog-char-picker")[0].firstChild);
 
   insertBefore(
-    cD('span', { id: 'label-hexcode' }, getMsgs('Hex_code') + ':' || "Hex code:"),
+    cD('span', { id: 'label-hexcode' }, hexCodeLabel),
     document.querySelector(".goog-char-picker-uplus")
   );
 
@@ -139,6 +115,40 @@ window["initCharPicker"] = function () {
   // Get selected locale from the char picker.
   goog.events.listen(picker, 'action', selectionAction);
 };
+
+/**
+ * Replace default category names with translated names.
+ * @param charPickerData The default charpicker data object.
+ * @param customCategories Object containing translated category/subcategory names, received from the server.
+ */
+function translateCategories(charPickerData, customCategories) {
+  for (var category in customCategories) {
+    var originalName = category.split('|')[0];
+    var translatedName = category.split('|')[1];
+
+    var decoded = decodeTagName(originalName);
+    var categoryFoundIndex = charPickerData.categories.indexOf(decoded);
+    if (categoryFoundIndex !== -1) {
+      charPickerData.categories[categoryFoundIndex] = translatedName;
+
+      // Translate the subcategories.
+      for (var subcategoryIndex = 0; subcategoryIndex < customCategories[category].length; subcategoryIndex++) {
+        var subcategoryString = customCategories[category][subcategoryIndex];
+        originalName = subcategoryString.split('|')[0];
+        translatedName = subcategoryString.split('|')[1];
+
+        var decodedSubcat = decodeTagName(originalName);
+        // Remove category name from it.
+        decodedSubcat = decodedSubcat.slice(decodedSubcat.indexOf(decoded) + decoded.length + 1);
+
+        var subcatFoundIndex = charPickerData.subcategories[categoryFoundIndex].indexOf(decodedSubcat);
+        if (subcatFoundIndex !== -1) {
+          charPickerData.subcategories[categoryFoundIndex][subcatFoundIndex] = translatedName;
+        }
+      }
+    }
+  }
+}
 
 function getURLParameter(name) {
   var urlParams = window.location.search.substring(1).split('&');
@@ -164,10 +174,10 @@ function decodeTagName(tagName) {
   return decoded;
 }
 
-function getMsgs(tagName) {
-  var translatedMessageFromServer = null;
-  if (window.msgs) {
-    translatedMessageFromServer = window.msgs[tagName];
+function getTranslatedLabel(tagName, defaultValue) {
+  var translatedMessageFromServer = defaultValue;
+  if (window.msgs && window.msgs[tagName]) {
+    translatedMessageFromServer = window.msgs[tagName] + ':';
   }
   return translatedMessageFromServer;
 }

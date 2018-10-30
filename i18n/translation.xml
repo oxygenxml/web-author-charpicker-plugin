@@ -24,13 +24,6 @@
         <val lang="ja_JP">Remove categories (comma separated)</val>
         <val lang="nl_NL">Remove categories (comma separated)</val>
     </key>
-    <key distribution="webauthor" value="Category">
-        <val lang="en_US">Category</val>
-        <val lang="de_DE">Kategorie</val>
-        <val lang="fr_FR">Catégorie</val>
-        <val lang="ja_JP">カテゴリ</val>
-        <val lang="nl_NL">Categorie</val>
-    </key>
     <key distribution="webauthor" value="Categories">
         <comment>Label for a set of category and subcategory dropdowns.</comment>
         <val lang="en_US">Categories</val>

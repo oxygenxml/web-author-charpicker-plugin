@@ -6,28 +6,26 @@ public interface TranslationTags {
    * 
    * en: Categories
    */
-  String Categories = "Categories";
+  String CATEGORIES = "Categories";
   
   /**
    * Label for input. Short form for hexadecimal code.
    * 
    * en: Hex code
    */
-  String Hex_code = "Hex_code";
-
-  String Category = "Category";
+  String HEX_CODE = "Hex_code";
 
   /**
    * Label for input expecting a list of category names, separated by commas.
    * 
    * en: Remove categories
    */
-  String Remove_categories = "Remove_categories";
+  String REMOVE_CATEGORIES = "Remove_categories";
 
   /**
    * Text preceding a list of category names.
    * 
    * en: Initial categories
    */
-  String Initial_categories = "Initial_categories";
+  String INITIAL_CATEGORIES = "Initial_categories";
 }

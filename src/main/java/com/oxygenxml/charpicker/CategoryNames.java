@@ -19,6 +19,11 @@ import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
+/**
+ * Servlet which handles translation of category/subcategory names and UI messages. 
+ * 
+ * @author andrei_popa
+ */
 public class CategoryNames extends WebappServletPluginExtension {
 
   @Override
@@ -30,7 +35,8 @@ public class CategoryNames extends WebappServletPluginExtension {
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     String cookieLanguage = SpecialCharServlet.getCookieLanguage(req.getCookies());
     if (cookieLanguage != null && !cookieLanguage.contains("en")) {
-      resp.getOutputStream().write(getTranslatedCategories().getBytes());
+      resp.getOutputStream()
+        .write((getTranslatedCategories() + getUITranslation()).getBytes("UTF-8"));
     }
   }
   
@@ -57,6 +63,24 @@ public class CategoryNames extends WebappServletPluginExtension {
    */
   static String getOriginalFromTagName(String tagName) {
     return getOriginalFromTagName(tagName, null);
+  }
+  
+  /**
+   * The charpicker iframe does not get UI messages translated through Web Author's system,
+   * so get them from the server side.  
+   * 
+   * @return String containing the translations for UI messages to be shown in the charpicker iframe.
+   * @throws IOException
+   */
+  private String getUITranslation() throws IOException {
+    PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+    StringBuilder sb = new StringBuilder(); 
+    Map<String, String> otherMessages = new HashMap<>();
+    otherMessages.put(TranslationTags.CATEGORIES, rb.getMessage(TranslationTags.CATEGORIES));
+    otherMessages.put(TranslationTags.HEX_CODE, rb.getMessage(TranslationTags.HEX_CODE));
+    String otherMessagesAsString = new ObjectMapper().writeValueAsString(otherMessages);
+    sb.append("window.msgs='").append(otherMessagesAsString).append("';");
+    return sb.toString();
   }
   
   private String getTranslatedCategories() throws IOException {
@@ -93,12 +117,6 @@ public class CategoryNames extends WebappServletPluginExtension {
 
     StringBuilder sb = new StringBuilder();
     sb.append("window.charpickerCategories='").append(categoriesAsString).append("';");
-    
-    Map<String, String> otherMessages = new HashMap<>();
-    otherMessages.put(TranslationTags.Category, rb.getMessage(TranslationTags.Category));
-    otherMessages.put(TranslationTags.Hex_code, rb.getMessage(TranslationTags.Hex_code));
-    String otherMessagesAsString = new ObjectMapper().writeValueAsString(otherMessages);
-    sb.append("window.msgs='").append(otherMessagesAsString).append("';");
     return sb.toString();
   }
 
