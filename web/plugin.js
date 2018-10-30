@@ -6,105 +6,19 @@
   var recentCharsItemName = 'recentlyUsedCharacters';
   var lastCharacterSearchItemName = 'lastCharacterSearch';
   var insertSpecialCharActionId = 'insertfrommenu';
+  var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
+    "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"];
+
+  var maxRecentChars = 21;
+  var typingPause = 500;
+
+  var cD = goog.dom.createDom;
+  var gClassList = goog.dom.classlist;
 
   goog.events.listen(workspace, sync.api.Workspace.EventType.BEFORE_EDITOR_LOADED, function (e) {
     var editor = e.editor;
-
-    var defaultRecentCharacters = ["\u20ac", "\u00a3", "\u00a5", "\u00a2", "\u00a9", "\u00ae", "\u2122", "\u03b1", "\u03b2", "\u03c0", "\u03bc",
-      "\u03a3", "\u03a9", "\u2264", "\u2265", "\u2260", "\u221e", "\u00b1", "\u00f7", "\u00d7", "\u21d2"];
-
-    var maxRecentChars = 21;
-
-    var typingPause = 500;
     var timeoutfunction;
-
-    var cD = goog.dom.createDom;
-    var gClassList = goog.dom.classlist;
     var gEvents = goog.events.EventType;
-
-    var displayRecentCharacters = function (characters) {
-      /* selector for targeting the recent characters container */
-      var container = document.querySelector('.recentCharactersGrid');
-      var i;
-
-      /* remove all recent characters to add the new ones again */
-      goog.dom.removeChildren(container);
-
-      /* Add the characters to the container */
-      for (i = 0; i < characters.length; i++) {
-        container.appendChild(
-          cD(
-            'div', ['goog-inline-block', 'goog-flat-button', 'char-select-button'],
-            characters[i])
-        );
-      }
-    };
-
-    var getRecentChars = function () {
-      var recentChars = [];
-      if (localStorageUsable) {
-        var itemFromStorage;
-        try {
-          itemFromStorage = localStorage.getItem(recentCharsItemName);
-        } catch (e) {
-          console.warn(e);
-        }
-        if (itemFromStorage) {
-          recentChars = JSON.parse(itemFromStorage);
-        }
-      }
-      return recentChars;
-    };
-
-    /**
-     * After new characters have been inserted, add them to the recent characters grid.
-     * Make sure recent characters are the expected length.
-     * Trim if longer, fill with defaults if shorter.
-     * @param newCharacters The characters which were inserted.
-     */
-    var addNewRecentCharacters = function (newCharacters) {
-      var characters = newCharacters.concat(getRecentChars());
-      goog.array.removeDuplicates(characters);
-      if (characters.length < maxRecentChars) {
-        characters = characters.concat(defaultRecentCharacters);
-      }
-      characters = characters.slice(0, maxRecentChars);
-      setRecentChars(characters);
-    };
-
-    var updateCharPreview = function (e) {
-      var target = e.target;
-      var symbol = target.textContent;
-      var symbolCode = target.getAttribute('data-symbol-hexcode');
-      var symbolName = target.getAttribute('data-symbol-name');
-
-      var previewCharacterDetails = document.getElementById('previewCharacterDetails');
-
-      goog.dom.removeChildren(previewCharacterDetails);
-      goog.dom.append(previewCharacterDetails,
-        cD('div', {id: 'previewSymbol'}, symbol),
-        cD('div', { id: 'previewSymbolName' },
-          symbolName,
-          cD('span',
-            { style: 'white-space: nowrap; vertical-align: top' },
-            ' (' + symbolCode + ')')));
-    };
-
-    var updateCharPreviewHover = function (e) {
-      if(gClassList.contains(e.target, 'characterListSymbol')){
-        updateCharPreview(e);
-      }
-    };
-
-    var updateCharPreviewClick = function (e) {
-      if(gClassList.contains(e.target, 'characterListSymbol')){
-        updateCharPreview(e);
-        var symbol = e.target.textContent;
-        charsToBeInserted.push(symbol);
-        document.getElementById('special_characters').value += symbol;
-      }
-    };
-
     var findCharByName = function () {};
 
     // Execute query immediately when user presses enter in the input, prevent dialog from closing.
@@ -263,23 +177,7 @@
           goog.net.XhrIo.send(url, function(e){
             var obj = e.target.getResponseJson();
 
-            var emptyObject = true;
-            for (var code in obj) {
-              if (obj.hasOwnProperty(code)) {
-                emptyObject = false;
-
-                var foundByNameItem = goog.dom.createDom(
-                  'div',
-                  {
-                    className: 'characterListSymbol',
-                    'data-symbol-name': capitalizeWords(obj[code]),
-                    'data-symbol-hexcode': code
-                  });
-                var decimalCode = parseInt(code, 16);
-                foundByNameItem.textContent = String.fromCharCode(decimalCode);
-                foundByNameList.appendChild(foundByNameItem);
-              }
-            }
+            var emptyObject = JSON.stringify(obj) === '{}';
             charSearchSpinner.hide();
             if (emptyObject) {
               absPosChild.textContent = tr(msgs.NO_RESULTS_FOUND_);
@@ -290,6 +188,7 @@
               }
             } else {
               foundByNameList.removeChild(absPosChild);
+              appendSymbols(obj, foundByNameList);
               try {
                 localStorage.setItem(lastCharacterSearchItemName, name);
               } catch (e) {
@@ -305,29 +204,23 @@
 
       charPickerAdvanced.appendChild(this.charPickerIframe_);
 
-      var readOnlyInput = cD(
-        'input',
-        {
+      var readOnlyInput = cD('input', {
           id: 'special_characters',
           className: 'charpicker-input',
           type: 'text',
           name: 'charsToBeInserted'
-        }
-      );
+      });
       readOnlyInput.setAttribute('readonly', 'true');
       readOnlyInput.setAttribute('onFocus', 'this.setSelectionRange(0, this.value.length)');
 
-      var removeLastCharButton = cD('button',
-        {
+      var removeLastCharButton = cD('button', {
           id: 'removeLastChar',
           className: 'goog-button goog-char-picker-okbutton',
           title: tr(msgs.REMOVE_LAST_CHARACTER_),
           value: ''
-        }
-      );
+      });
 
-      var div = cD(
-        'div', { 'id': 'selectedCharsWrapper' },
+      var div = cD('div', { 'id': 'selectedCharsWrapper' },
         cD('span', '', tr(msgs.SELECTED_CHARACTERS_)),
         readOnlyInput,
         removeLastCharButton
@@ -347,7 +240,6 @@
     };
 
     InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
-
       // if dialog has been populated already just reset the textboxes
       this.readOnlyInput_.value = '';
       var dialogElement = this.dialog.getElement();
@@ -534,8 +426,24 @@
   }
 
   /**
+   * After new characters have been inserted, add them to the recent characters grid.
+   * Make sure recent characters are the expected length.
+   * Trim if longer, fill with defaults if shorter.
+   * @param {Array<String>} newCharacters The characters which were inserted.
+   */
+  function addNewRecentCharacters(newCharacters) {
+    var characters = newCharacters.concat(getRecentChars());
+    goog.array.removeDuplicates(characters);
+    if (characters.length < maxRecentChars) {
+      characters = characters.concat(defaultRecentCharacters);
+    }
+    characters = characters.slice(0, maxRecentChars);
+    setRecentChars(characters);
+  }
+
+  /**
    * Add the new characters to the list of recent characters.
-   * @param characters The characters to set as recent characters.
+   * @param {Array<String>} characters The characters to set as recent characters.
    */
   function setRecentChars(characters) {
     if (localStorageUsable) {
@@ -544,6 +452,101 @@
       } catch (e) {
         console.warn(e);
       }
+    }
+  }
+
+  /**
+   * Get recent characters.
+   * @returns {Array<String>} The list of recently used characters.
+   */
+  function getRecentChars() {
+    var recentChars = [];
+    if (localStorageUsable) {
+      var itemFromStorage;
+      try {
+        itemFromStorage = localStorage.getItem(recentCharsItemName);
+      } catch (e) {
+        console.warn(e);
+      }
+      if (itemFromStorage) {
+        recentChars = JSON.parse(itemFromStorage);
+      }
+    }
+    return recentChars;
+  }
+
+  /**
+   * Render the recent characters grid.
+   * @param {Array<String>} characters The characters to display in the grid.
+   */
+  function displayRecentCharacters(characters) {
+    /* selector for targeting the recent characters container */
+    var container = document.querySelector('.recentCharactersGrid');
+    var i;
+
+    /* remove all recent characters to add the new ones again */
+    goog.dom.removeChildren(container);
+
+    /* Add the characters to the container */
+    for (i = 0; i < characters.length; i++) {
+      container.appendChild(
+        goog.dom.createDom(
+          'div', ['goog-inline-block', 'goog-flat-button', 'char-select-button'],
+          characters[i])
+      );
+    }
+  }
+
+  function updateCharPreviewInternal(e) {
+    var target = e.target;
+    var symbol = target.textContent;
+    var symbolCode = target.getAttribute('data-symbol-hexcode');
+    var symbolName = target.getAttribute('data-symbol-name');
+
+    var previewCharacterDetails = document.getElementById('previewCharacterDetails');
+
+    goog.dom.removeChildren(previewCharacterDetails);
+    goog.dom.append(previewCharacterDetails,
+      cD('div', {id: 'previewSymbol'}, symbol),
+      cD('div', { id: 'previewSymbolName' },
+        symbolName,
+        cD('span',
+          { style: 'white-space: nowrap; vertical-align: top' },
+          ' (' + symbolCode + ')')));
+  }
+
+  function updateCharPreviewHover(e) {
+    if(gClassList.contains(e.target, 'characterListSymbol')){
+      updateCharPreviewInternal(e);
+    }
+  }
+
+  function updateCharPreviewClick(e) {
+    if(gClassList.contains(e.target, 'characterListSymbol')){
+      updateCharPreviewInternal(e);
+      var symbol = e.target.textContent;
+      charsToBeInserted.push(symbol);
+      document.getElementById('special_characters').value += symbol;
+    }
+  }
+
+  /**
+   * Add symbol elements to the "find by name" results container.
+   * @param obj The object containing symbol results for the find by name query.
+   * @param {Element} element The results container element.
+   */
+  function appendSymbols(obj, element) {
+    for (var code in obj) {
+      var foundByNameItem = goog.dom.createDom(
+        'div',
+        {
+          className: 'characterListSymbol',
+          'data-symbol-name': capitalizeWords(obj[code]),
+          'data-symbol-hexcode': code
+        });
+      var decimalCode = parseInt(code, 16);
+      foundByNameItem.textContent = String.fromCharCode(decimalCode);
+      element.appendChild(foundByNameItem);
     }
   }
 })();

@@ -29,6 +29,8 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	private static int maxResults = 500;
 	
+	private static int scoreFullMatch = 3;
+	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
 	
 	private static final Logger logger = Logger.getLogger(SpecialCharServlet.class.getName());
@@ -115,6 +117,12 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
     return prefix;
   }
 
+	/**
+	 * Find character by name or part of name.
+	 * @param query The user input query.
+	 * @param chars The list of characters to search in.
+	 * @return The list of characters that match the query.
+	 */
   public Map<String, String> findCharByName(String query, Properties chars) {
 		// Remove extra spaces.
 		query = query.replaceAll("\\s+", " ");
@@ -124,23 +132,54 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 		
 		
 		String[] queryWords = query.split("\\s+");
-		int scoreFullMatch = 3;
-		int scorePartialMatch = 1;
 		int maxScore = queryWords.length * scoreFullMatch;
 		
-		// Score equivalent to over half of query words matching fully.
-		int relevanceThreshold = queryWords.length * scoreFullMatch/2;
+		int relevanceThreshold = getRelevanceThreshold(queryWords.length);
 		
 		Map<String, String> charsFromProperties = propsAsMap(chars);
 		Map<String, String> matches = new LinkedHashMap<>();
 		
-		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<>();
+		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = getCharactersByScore(queryWords, charsFromProperties);
+		int results = 0;
+		for(int score = maxScore; score >= relevanceThreshold; score--){
+			if(charactersByScore.get(score) != null) {
+				for(Entry<String, String> entry : charactersByScore.get(score)) {				
+					matches.put(entry.getKey(), entry.getValue());
+					results++;
+					if(results >= maxResults){
+		    			break;
+	    		}
+				}
+			}
+		}		
+		return matches;
+	}
+  
+  /**
+   * Score equivalent to over half of query words matching fully.
+   * @param queryWordsLength Number of query words.
+   * @return The relevance threshold score.
+   */
+  private int getRelevanceThreshold (int queryWordsLength) {
+    return queryWordsLength * scoreFullMatch/2;
+  }
 
-		
-		ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
-		ArrayList<Pattern> partialPatterns = getPartialPatterns(queryWords);
-		
-		for(Map.Entry<String, String> entry : charsFromProperties.entrySet()) {
+  /**
+   * Get character results ordered by relevance.
+   * @param queryWords The query words.
+   * @param charsFromProperties The list of available characters.
+   * @return A subset of characters which pass a relevance threshold. 
+   */
+  private Map<Integer, Set<Entry<String, String>>> getCharactersByScore(String[] queryWords, Map<String, String> charsFromProperties) {
+    Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<>();
+    
+    ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
+    ArrayList<Pattern> partialPatterns = getPartialPatterns(queryWords);
+    
+    int scorePartialMatch = 1;
+    int relevanceThreshold = getRelevanceThreshold(queryWords.length);
+    
+    for(Map.Entry<String, String> entry : charsFromProperties.entrySet()) {
 			String charDescription = entry.getValue();
 			
 			int score = 0;
@@ -157,29 +196,14 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 			}			
 			
 			// Score equivalent to partial matches for all or full matches for half of query parameters.
-			if(score >= relevanceThreshold) {
-				Set<Entry<String, String>> charsWithCurrentScore = charactersByScore.get(score);
-				if(charsWithCurrentScore == null) {
-					charsWithCurrentScore = new HashSet<>();
-					charactersByScore.put(score, charsWithCurrentScore);
-				}
-				charsWithCurrentScore.add(entry);
+			if(score >= relevanceThreshold) {				
+				charactersByScore
+          .computeIfAbsent(score, s -> new HashSet<>())
+          .add(entry);
 			}
 		}
-		int results = 0;
-		for(int score = maxScore; score >= relevanceThreshold; score--){
-			if(charactersByScore.get(score) != null) {
-				for(Entry<String, String> entry : charactersByScore.get(score)) {				
-					matches.put(entry.getKey(), entry.getValue());
-					results++;
-					if(results >= maxResults){
-		    			break;
-		    		}				
-				}
-			}
-		}		
-		return matches;
-	}
+    return charactersByScore;
+  }
 	
 	private Map<String, String> propsAsMap(Properties props) {
 		Map<String, String> map = new LinkedHashMap<>();
