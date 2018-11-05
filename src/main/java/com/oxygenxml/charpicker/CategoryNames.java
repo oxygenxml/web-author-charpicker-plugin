@@ -83,6 +83,11 @@ public class CategoryNames extends WebappServletPluginExtension {
     return sb.toString();
   }
   
+  /**
+   * Get translated messages for UI components for the charpicker iframe.
+   * @return String object containing translated messages. 
+   * @throws IOException
+   */
   private String getTranslatedCategories() throws IOException {
     Map<String, List<String>> categories = new LinkedHashMap<>();
     // Translate category names only if needed.

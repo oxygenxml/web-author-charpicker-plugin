@@ -46,8 +46,8 @@ window["initCharPicker"] = function () {
   });
 
   // -------- Translate category names --------
-  if (window.charpickerCategories) {
-    var customCategories = JSON.parse(window.charpickerCategories);
+  if (window['charpickerCategories']) {
+    var customCategories = JSON.parse(window['charpickerCategories']);
     translateCategories(charPickerData, customCategories);
   } else {
     console.warn('Could not get translated categories for Character Picker plugin.');
@@ -92,8 +92,8 @@ window["initCharPicker"] = function () {
   };
 
   // Get the UI messages ready.
-  if (window.msgs) {
-    window.msgs = JSON.parse(window.msgs);
+  if (window['msgs']) {
+    window['msgs'] = JSON.parse(window['msgs']);
   }
   var categoriesLabel = getTranslatedLabel('Category', 'Categories:');
   var hexCodeLabel = getTranslatedLabel('Hex_code', 'Hex code:');
@@ -176,8 +176,9 @@ function decodeTagName(tagName) {
 
 function getTranslatedLabel(tagName, defaultValue) {
   var translatedMessageFromServer = defaultValue;
-  if (window.msgs && window.msgs[tagName]) {
-    translatedMessageFromServer = window.msgs[tagName] + ':';
+  var msgs = window['msgs'];
+  if (msgs && msgs[tagName]) {
+    translatedMessageFromServer = msgs[tagName] + ':';
   }
   return translatedMessageFromServer;
 }
