@@ -95,7 +95,7 @@ window["initCharPicker"] = function () {
   if (window['msgs']) {
     window['msgs'] = JSON.parse(window['msgs']);
   }
-  var categoriesLabel = getTranslatedLabel('Category', 'Categories:');
+  var categoriesLabel = getTranslatedLabel('Categories', 'Categories:');
   var hexCodeLabel = getTranslatedLabel('Hex_code', 'Hex code:');
 
   var dropdowns = document.querySelectorAll(".goog-inline-block.goog-menu-button");
