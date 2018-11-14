@@ -1,6 +1,7 @@
 package com.oxygenxml.charpicker;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class CategoryNames extends WebappServletPluginExtension {
     String cookieLanguage = SpecialCharServlet.getCookieLanguage(req.getCookies());
     if (cookieLanguage != null && !cookieLanguage.contains("en")) {
       resp.getOutputStream()
-        .write((getTranslatedCategories() + getUITranslation()).getBytes("UTF-8"));
+        .write((getTranslatedCategories() + getUITranslation()).getBytes(StandardCharsets.UTF_8));
     }
   }
   

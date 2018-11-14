@@ -128,6 +128,10 @@ function translateCategories(charPickerData, customCategories) {
 
     var decoded = decodeTagName(originalName);
     var categoryFoundIndex = charPickerData.categories.indexOf(decoded);
+    // Give Format & Whitespace another chance.
+    if (decoded === 'Format and Whitespace') {
+      categoryFoundIndex = charPickerData.categories.indexOf('Format & Whitespace');
+    }
     if (categoryFoundIndex !== -1) {
       charPickerData.categories[categoryFoundIndex] = translatedName;
 
