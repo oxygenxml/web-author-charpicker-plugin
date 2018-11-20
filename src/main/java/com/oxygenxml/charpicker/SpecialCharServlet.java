@@ -85,10 +85,14 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
     }
 
     // Translated props files might be incomplete so fill up with results from English.
-    Map<String, String> englishResults = findCharByName(query, charsMap.get("en"));
-    // Overwrite the general English results with more specific translated results if available.
-    englishResults.putAll(charResult);
-    charResult = englishResults;
+    // Removing the English character list is a way to force translated results only.
+    Properties englishChars = charsMap.get("en");
+    if (englishChars != null) {
+      Map<String, String> englishResults = findCharByName(query, englishChars);
+      // Overwrite the general English results with more specific translated results if available.
+      englishResults.putAll(charResult);
+      charResult = englishResults;
+    }  
     
     return charResult;
   }
