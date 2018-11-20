@@ -49,8 +49,6 @@ window["initCharPicker"] = function () {
   if (window['charpickerCategories']) {
     var customCategories = JSON.parse(window['charpickerCategories']);
     translateCategories(charPickerData, customCategories);
-  } else {
-    console.warn('Could not get translated categories for Character Picker plugin.');
   }
 
   var picker = new goog.ui.CharPicker(
