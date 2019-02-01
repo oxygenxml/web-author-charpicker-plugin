@@ -11,7 +11,13 @@
   <artifactId>web-author-charpicker-plugin</artifactId>
   <name>Web Author Charpicker Plugin</name>
   <description>A plugin for oXygen XML Web Author that adds support for inserting special UTF-8 characters</description>
-        
+
+  <licenses>
+    <license>
+      <url>http://www.oxygenxml.com/sdk_agreement.html</url>
+    </license>
+  </licenses>
+  
   <properties>
     <sonar.sources>src/main/java,web,resources</sonar.sources>
     <sonar.exclusions>resources/closure-library/**</sonar.exclusions>
