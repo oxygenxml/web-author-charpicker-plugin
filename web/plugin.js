@@ -160,6 +160,9 @@
       goog.require('goog.net.XhrIo');
       findCharByName = function() {
         var name = nameInput.value;
+        // clear placeholder if set, last search is no longer relevant.
+        var searchBox = dialogElement.querySelector('#searchName');
+        searchBox.removeAttribute('placeholder');
         // clear boxes to get ready for results
         goog.dom.removeChildren(foundByNameList);
         goog.dom.removeChildren(document.getElementById("previewCharacterDetails"));
