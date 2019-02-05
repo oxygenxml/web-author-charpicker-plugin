@@ -189,6 +189,8 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 				Matcher matcher = fullPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){
 					score += scoreFullMatch;
+					String group = matcher.group();
+					charDescription = charDescription.replaceAll(group, "");
 				}
 				matcher = partialPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){

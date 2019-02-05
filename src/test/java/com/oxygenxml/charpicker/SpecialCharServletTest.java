@@ -50,6 +50,20 @@ public class SpecialCharServletTest {
 	}
 	
 	@Test
+  public void testFindCharByNameScore () {
+    /* Make sure circled katakana ka has a bigger score than other circled katakana letters. */
+    String query = "circled katakana ka";
+    
+    SpecialCharServlet asd = new SpecialCharServlet();    
+    Map<String, String> charactersFound = new LinkedHashMap<String, String>();
+    
+    charactersFound = asd.findCharByName(query, getChars("en"));
+    assertEquals(50, charactersFound.size());
+    Entry<String, String> entry = charactersFound.entrySet().iterator().next();
+    assertEquals(query, entry.getValue().toLowerCase());
+  }
+	
+	@Test
 	public void testFindCharByNameInFirstChars () {
 		
 		String query = "e";
