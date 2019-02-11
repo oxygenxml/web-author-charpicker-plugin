@@ -11,34 +11,34 @@
     <key distribution="webauthor" value="Initial_categories">
         <comment>Text preceding a list of category names</comment>
         <val lang="en_US">Initial categories</val>
-        <val lang="de_DE">Initial categories</val>
-        <val lang="fr_FR">Initial categories</val>
-        <val lang="ja_JP">Initial categories</val>
-        <val lang="nl_NL">Initial categories</val>
+        <val lang="de_DE">Ursprüngliche Kategorien</val>
+        <val lang="fr_FR">Catégories initiales</val>
+        <val lang="ja_JP">初期カテゴリ</val>
+        <val lang="nl_NL">Aanvankelijke categorieën</val>
     </key>
     <key distribution="webauthor" value="Remove_categories">
         <comment>Label for input expecting a list of category names, separated by commas.</comment>
         <val lang="en_US">Remove categories (comma separated)</val>
-        <val lang="de_DE">Remove categories (comma separated)</val>
-        <val lang="fr_FR">Remove categories (comma separated)</val>
-        <val lang="ja_JP">Remove categories (comma separated)</val>
-        <val lang="nl_NL">Remove categories (comma separated)</val>
+        <val lang="de_DE">Kategorien entfernen (kommasepariert)</val>
+        <val lang="fr_FR">Supprimer des catégories (séparées par des virgules)</val>
+        <val lang="ja_JP">カテゴリを削除する（カンマ区切り）</val>
+        <val lang="nl_NL">Categorieën verwijderen (door komma&apos;s gescheiden)</val>
     </key>
     <key distribution="webauthor" value="Categories">
         <comment>Label for a set of category and subcategory dropdowns.</comment>
         <val lang="en_US">Categories</val>
-        <val lang="de_DE">Categories</val>
-        <val lang="fr_FR">Categories</val>
-        <val lang="ja_JP">Categories</val>
-        <val lang="nl_NL">Categories</val>
+        <val lang="de_DE">Kategorien</val>
+        <val lang="fr_FR">Catégories</val>
+        <val lang="ja_JP">カテゴリ</val>
+        <val lang="nl_NL">Categorieën</val>
     </key>
     <key distribution="webauthor" value="Hex_code">
         <comment>Label for input. Short form for hexadecimal code.</comment>
         <val lang="en_US">Hex code</val>
-        <val lang="de_DE">Hex code</val>
-        <val lang="fr_FR">Hex code</val>
-        <val lang="ja_JP">Hex code</val>
-        <val lang="nl_NL">Hex code</val>
+        <val lang="de_DE">Hex-Code</val>
+        <val lang="fr_FR">Code hexadécimal</val>
+        <val lang="ja_JP">16進数コード</val>
+        <val lang="nl_NL">Hexadecimale code</val>
     </key>
     <key distribution="webauthor" value="BY_NAME_">
         <comment>title of tab for 'Search for characters by name' action</comment>
