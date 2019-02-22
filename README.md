@@ -23,3 +23,9 @@ Clicking on the **More symbols...** button will open a dialog where you can sear
 - by partial or full name (ex: "left arrow")
 - by categories and subcategories
 - by their hex value.
+
+Copyright and License
+---------------------
+Copyright 2018 Syncro Soft SRL.
+
+This project is licensed under [Apache License 2.0](https://github.com/oxygenxml/web-author-charpicker-plugin/blob/master/LICENSE)
