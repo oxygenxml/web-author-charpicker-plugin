@@ -29,7 +29,8 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	private static int maxResults = 500;
 	
-	private static int scoreFullMatch = 3;
+	private static int scoreFullMatch = 300;
+	private static int scorePartialMatch = 150;
 	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
 	
@@ -162,7 +163,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
    * @return The relevance threshold score.
    */
   private int getRelevanceThreshold (int queryWordsLength) {
-    return queryWordsLength * scoreFullMatch/2;
+    return queryWordsLength * scoreFullMatch/2 - 50;
   }
 
   /**
@@ -177,7 +178,6 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
     ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
     ArrayList<Pattern> partialPatterns = getPartialPatterns(queryWords);
     
-    int scorePartialMatch = 1;
     int relevanceThreshold = getRelevanceThreshold(queryWords.length);
     
     for(Map.Entry<String, String> entry : charsFromProperties.entrySet()) {
@@ -198,6 +198,9 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 				}
 			}			
 			
+			// Same score results with shorter description should be shown before longer ones.
+			score -= entry.getValue().length();
+
 			// Score equivalent to partial matches for all or full matches for half of query parameters.
 			if(score >= relevanceThreshold) {				
 				charactersByScore

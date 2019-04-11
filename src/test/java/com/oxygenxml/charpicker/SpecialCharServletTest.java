@@ -49,7 +49,7 @@ public class SpecialCharServletTest {
 		SpecialCharServlet asd = new SpecialCharServlet();
 		
 		Map<String, String> result = asd.findCharByName("ywi", getChars("en"));
-		assertTrue(result.size() == 4);
+		assertEquals(4, result.size());
 	}
 	
 	@Test
@@ -151,7 +151,7 @@ public class SpecialCharServletTest {
 	
   /**
    * <p><b>Description:</b> Test score computation for different query strings.</p>
-   * <p><b>Bug ID:</b> WA-</p>
+   * <p><b>Bug ID:</b> WA-2911</p>
    *
    * @author cristi_talau
    *
@@ -160,28 +160,59 @@ public class SpecialCharServletTest {
   @Test
   public void testScores() throws Exception {
     SpecialCharServlet specialCharServlet = new SpecialCharServlet();
+    String description1 = "Latin Capital Letter A With Acute (000C1)";
+    String description2 = "Latin Small Letter S With Acute And Dot Above (01E65)";
     ImmutableMap<String, String> charsFromProperties = ImmutableMap.of(
-        "1", "Latin Capital Letter A With Acute (000C1)", 
-        "2", "Latin Small Letter S With Acute And Dot Above (01E65)");
-    
-    Map<Integer, Set<Entry<String, String>>> charactersByScore = 
+        "1", description1,
+        "2", description2);
+
+    Map<Integer, Set<Entry<String, String>>> charactersByScore =
         specialCharServlet.getCharactersByScore(new String[]{"a", "acute"}, charsFromProperties);
     Map<String, Integer> scoresForChars = getScoresForChars(charactersByScore);
     // The first char has score 6 - two full matches
-    assertEquals(6, scoresForChars.get("1").intValue());
-    
+    assertEquals(600 - description1.length(), scoresForChars.get("1").intValue());
+
     // The second char has score 4 - full match and partial match
-    assertEquals(4, scoresForChars.get("2").intValue());
-    
-    charsFromProperties = ImmutableMap.of(
-        "1", "Circled Katakana ro");
-    
-    charactersByScore = 
+    assertEquals(450 - description2.length(), scoresForChars.get("2").intValue());
+
+    description1 = "Circled Katakana ro";
+    charsFromProperties = ImmutableMap.of("1", description1);
+
+    charactersByScore =
         specialCharServlet.getCharactersByScore(new String[]{"circled", "Katakana", "ka"}, charsFromProperties);
     scoresForChars = getScoresForChars(charactersByScore);
 
     // The first char has score 6 - two full matches
-    assertEquals(6, scoresForChars.get("1").intValue());
+    assertEquals(600 - description1.length(), scoresForChars.get("1").intValue());
+  }
+  
+  /**
+   * <p><b>Description:</b> Test score computation for results with different description lengths.</p>
+   * <p><b>Bug ID:</b> WA-2911, WA-1742</p>
+   *
+   * @author andrei_popa
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testScoresWithLength() throws Exception {
+    SpecialCharServlet specialCharServlet = new SpecialCharServlet();
+    String description1 = "Latin Capital Letter A With Acute (000C1)";
+    String description2 = "Latin Capital Letter A With Acute But Longer (01E65)";
+    String description3 = "A Acute (01E67)";
+    ImmutableMap<String, String> charsFromProperties = ImmutableMap.of(
+        "1", description1,
+        "2", description2,
+        "3", description3
+    );
+
+    Map<Integer, Set<Entry<String, String>>> charactersByScore =
+        specialCharServlet.getCharactersByScore(new String[]{"a", "acute"}, charsFromProperties);
+    Map<String, Integer> scoresForChars = getScoresForChars(charactersByScore);
+    
+    // If query match scores are equal, sort depending on description length - shorter is better.
+    assertTrue(scoresForChars.get("3").intValue() > scoresForChars.get("1").intValue());
+    assertTrue(scoresForChars.get("1").intValue() > scoresForChars.get("2").intValue());
   }
 
 
