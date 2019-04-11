@@ -171,7 +171,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
    * @param charsFromProperties The list of available characters.
    * @return A subset of characters which pass a relevance threshold. 
    */
-  private Map<Integer, Set<Entry<String, String>>> getCharactersByScore(String[] queryWords, Map<String, String> charsFromProperties) {
+  Map<Integer, Set<Entry<String, String>>> getCharactersByScore(String[] queryWords, Map<String, String> charsFromProperties) {
     Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = new HashMap<>();
     
     ArrayList<Pattern> fullPatterns = getFullPatterns(queryWords);
@@ -182,19 +182,19 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
     
     for(Map.Entry<String, String> entry : charsFromProperties.entrySet()) {
 			String charDescription = entry.getValue();
-			
 			int score = 0;
 			
 			for(int i = 0; i< queryWords.length; i++){
 				Matcher matcher = fullPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){
 					score += scoreFullMatch;
-					String group = matcher.group();
-					charDescription = charDescription.replaceAll(group, "");
-				}
-				matcher = partialPatterns.get(i).matcher(charDescription);
-				if(matcher.find()){
-					score += scorePartialMatch;
+					// Remove full matches when searching for other query words.
+					charDescription = matcher.replaceAll("");
+				} else {
+				  matcher = partialPatterns.get(i).matcher(charDescription);
+				  if(matcher.find()){
+				    score += scorePartialMatch;
+				  }
 				}
 			}			
 			

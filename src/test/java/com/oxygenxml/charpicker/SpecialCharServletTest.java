@@ -1,23 +1,26 @@
 package com.oxygenxml.charpicker;
 
 import static org.junit.Assert.assertEquals;
-//import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
 
 public class SpecialCharServletTest {
   
@@ -143,5 +146,60 @@ public class SpecialCharServletTest {
     assertEquals(6, charactersFound.size());
     assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
     assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback).toString());
+  }
+	
+	
+  /**
+   * <p><b>Description:</b> Test score computation for different query strings.</p>
+   * <p><b>Bug ID:</b> WA-</p>
+   *
+   * @author cristi_talau
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testScores() throws Exception {
+    SpecialCharServlet specialCharServlet = new SpecialCharServlet();
+    ImmutableMap<String, String> charsFromProperties = ImmutableMap.of(
+        "1", "Latin Capital Letter A With Acute (000C1)", 
+        "2", "Latin Small Letter S With Acute And Dot Above (01E65)");
+    
+    Map<Integer, Set<Entry<String, String>>> charactersByScore = 
+        specialCharServlet.getCharactersByScore(new String[]{"a", "acute"}, charsFromProperties);
+    Map<String, Integer> scoresForChars = getScoresForChars(charactersByScore);
+    // The first char has score 6 - two full matches
+    assertEquals(6, scoresForChars.get("1").intValue());
+    
+    // The second char has score 4 - full match and partial match
+    assertEquals(4, scoresForChars.get("2").intValue());
+    
+    charsFromProperties = ImmutableMap.of(
+        "1", "Circled Katakana ro");
+    
+    charactersByScore = 
+        specialCharServlet.getCharactersByScore(new String[]{"circled", "Katakana", "ka"}, charsFromProperties);
+    scoresForChars = getScoresForChars(charactersByScore);
+
+    // The first char has score 6 - two full matches
+    assertEquals(6, scoresForChars.get("1").intValue());
+  }
+
+
+  /**
+   * Get the scores for the chars.
+   * 
+   * @param charactersByScore Characters by score.
+   * 
+   * @return Scores by char.
+   */
+  public Map<String, Integer> getScoresForChars(Map<Integer, Set<Entry<String, String>>> charactersByScore) {
+    Map<String, Integer> charScores = new HashMap<>();
+    for (Map.Entry<Integer, Set<Entry<String, String>>> entry: charactersByScore.entrySet()) {
+      Set<Entry<String, String>> chars = entry.getValue();
+      for (Entry<String, String> character : chars) {
+        charScores.put(character.getKey(), entry.getKey());
+      }
+    }
+    return charScores;
   }
 }
