@@ -1,6 +1,7 @@
 package com.oxygenxml.charpicker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;
@@ -11,6 +12,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 public class ConfigurationPage extends PluginConfigExtension {
 
   static final String REMOVE_CATEGORIES = "charp.remove_categories";
+  static final String DEFAULT_CHARACTERS = "charp.recently.used.characters";
   
   @Override
   public String getPath() {
@@ -27,14 +29,28 @@ public class ConfigurationPage extends PluginConfigExtension {
           + "<div>" + rb.getMessage(TranslationTags.INITIAL_CATEGORIES) 
             + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + ".</div>"        
           + "</div>"
-          + "<label>" + rb.getMessage(TranslationTags.REMOVE_CATEGORIES) + ":"
+          + "<label style=\"display: block;\">" 
+            + rb.getMessage(TranslationTags.REMOVE_CATEGORIES) + ":"
             + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
+          + "</label>"
+          + "<label style=\"display: block; margin-top:15px;\">" + rb.getMessage(TranslationTags.DEFAULT_CHARACTERS) + ":"
+            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=" + DEFAULT_CHARACTERS + " id=\"default_characters\" value=\"" + getOption(DEFAULT_CHARACTERS, "") + "\">"
           + "</label>"
         + "</div>";
   }
 
   @Override
   public String getOptionsJson() {
-    return "{\"" + REMOVE_CATEGORIES + "\": \"" + getOption(REMOVE_CATEGORIES, "") + "\"}";
+    
+    String defaultCharactersValue = getOption(DEFAULT_CHARACTERS, "");
+    char[] defaultCharacters = defaultCharactersValue.toCharArray();
+    List<Integer> defaultCharactersCodes = new ArrayList<>();
+    for (int i = 0; i < defaultCharacters.length; i++) {
+      defaultCharactersCodes.add((int) defaultCharacters[i]);
+    }
+    String jsonValue = Arrays.toString(defaultCharacters);
+    System.out.println("send this " + defaultCharactersCodes + " tostring " +jsonValue);
+    return "{\"" + REMOVE_CATEGORIES + "\": \"" + getOption(REMOVE_CATEGORIES, "") + "\", \"" 
+        + DEFAULT_CHARACTERS + "\": \"" + defaultCharactersCodes + "\"}";
   }
 }

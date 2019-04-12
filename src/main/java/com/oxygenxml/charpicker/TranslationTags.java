@@ -28,4 +28,11 @@ public class TranslationTags {
    * en: Initial categories
    */
   static final String INITIAL_CATEGORIES = "Initial_categories";
+
+  /**
+   * Label for input used to specify a list of characters shown as recently used characters.
+   * 
+   * en: Default recently used characters
+   */
+  static final String DEFAULT_CHARACTERS = "Default_characters";
 }

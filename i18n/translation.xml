@@ -8,6 +8,14 @@
         <language description="Dutch" lang="nl_NL"/>
     </languageList>
     <!-- server-side tags must have the 'destination' attribute set -->
+    <key distribution="webauthor" value="Default_characters">
+        <comment>Label for input used to specify a list of characters shown as recently used characters.</comment>
+        <val lang="en_US">Default recently used characters</val>
+        <val lang="de_DE">Default recently used characters</val>
+        <val lang="fr_FR">Default recently used characters</val>
+        <val lang="ja_JP">Default recently used characters</val>
+        <val lang="nl_NL">Default recently used characters</val>
+    </key>
     <key distribution="webauthor" value="Initial_categories">
         <comment>Text preceding a list of category names</comment>
         <val lang="en_US">Initial categories</val>
