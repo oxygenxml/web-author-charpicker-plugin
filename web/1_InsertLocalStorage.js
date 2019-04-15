@@ -1,63 +1,51 @@
 /**
- * Update the recently used characters list with the characters set by the user.
- * @param {Array<String>} defaultRecentCharacters The default character list.
- * @param {Array<String>} userSelectedDefaults The default character list set by the user.
+ * After new characters have been inserted, add them to the recent characters grid.
+ * Make sure recent characters are the expected length. Trim if longer.
+ * @param {Array<String>} newCharacters The characters which were inserted.
  */
-function updateRecentlyUsedCharacters(defaultRecentCharacters, userSelectedDefaults) {
-  var currentRecentChars = getRecentChars();
-  goog.array.equals(defaultRecentCharacters, currentRecentChars);
-  if (currentRecentChars.length === 0 || goog.array.equals(defaultRecentCharacters, currentRecentChars)) {
-    // Recent characters are in their default order, just push new defaults in front.
-    addNewRecentCharacters(userSelectedDefaults.concat(defaultRecentCharacters));
-  } else {
-    // Keep any characters that were used, add new defaults, keep some of the old defaults as padding if needed.
-    // The order will be: recently used > new defaults > old defaults.
-    var usedChars = [];
+function addNewRecentCharacters(newCharacters) {
+  var characters = newCharacters.concat(getUsedChars());
+  goog.array.removeDuplicates(characters);
+  characters = characters.slice(0, maxRecentChars);
+  setRecentChars(characters);
+}
+
+/**
+ * Migrate characters used by the user, since before the option to set default characters.
+ * @param {Array<String>} initialDefaultRecentChars The default character list.
+ * @param {Array<String>} currentRecentChars The current character list, found in the old storage item.
+ * @returns {Array<String>} List of actually used characters from the old list.
+ */
+function getUsedCharsMigration(initialDefaultRecentChars, currentRecentChars) {
+  var charsToSave = [];
+  if (currentRecentChars.length && !goog.array.equals(initialDefaultRecentChars, currentRecentChars)) {
     var i;
+    var indexInDefaults;
+    var indexesInDefaults = [];
+    // Make a list with indexes from default character list for each current character.
+    goog.array.forEach(currentRecentChars, function (c) {
+      indexesInDefaults.push(initialDefaultRecentChars.indexOf(c));
+    });
     for (i = 0; i < currentRecentChars.length; i++) {
-      var currentChar = currentRecentChars[i];
-      // If character was not in the default characters set, it is definitely used.
-      var currentCharIndexInDefaults = defaultRecentCharacters.indexOf(currentChar);
-      if (currentCharIndexInDefaults === -1) {
-        usedChars.push(currentChar);
-        // In case all used characters are new, all should be kept - do nothing.
+      indexInDefaults = indexesInDefaults.indexOf(i);
+      var c = currentRecentChars[i];
+      // If the character is new, save it. (was not in default list)
+      if (indexInDefaults === -1) {
+        charsToSave.push(c);
       } else {
-        var j = i + 1;
-        var nextChar = currentRecentChars[j];
-        if (nextChar) {
-          var possibleUsedCharacters = [currentChar];
-          var gotToEnd = false;
-          var defaultOrderKept;
-          var nextCharIndexInDefaults;
-          do {
-            nextCharIndexInDefaults = defaultRecentCharacters.indexOf(nextChar);
-            defaultOrderKept = currentCharIndexInDefaults + 1 === nextCharIndexInDefaults;
-            possibleUsedCharacters.push(nextChar);
-            j++;
-            if (j >= currentRecentChars.length) {
-              gotToEnd = true;
-              break;
-            }
-            currentChar = nextChar;
-            currentCharIndexInDefaults = defaultRecentCharacters.indexOf(currentChar);
-            nextChar = currentRecentChars[j];
-          } while (!gotToEnd && defaultOrderKept && nextCharIndexInDefaults !== -1);
-          // If the order was broken, then the chars were used.
-          if (!gotToEnd) {
-            usedChars = goog.array.concat(usedChars, possibleUsedCharacters);
-            defaultRecentCharacters = goog.array.filter(defaultRecentCharacters, function (c) { return possibleUsedCharacters.indexOf(c) === -1 })
-          } else {
-            // If the order was kept the same until the end, the final characters were all from defaults, they can be replaced.
-            // Order will be recently used > new defaults > old defaults.
-            defaultRecentCharacters = userSelectedDefaults.concat(defaultRecentCharacters);
-            defaultRecentCharacters = usedChars.concat(defaultRecentCharacters);
-            addNewRecentCharacters(defaultRecentCharacters);
-            break;
-          }
+        // If the character was in the default list, make sure it is not the start of the "padding".
+        var slice = indexesInDefaults.slice(i);
+        if (slice.indexOf(-1) !== -1 || !goog.array.isSorted(slice, null, true)) {
+          charsToSave.push(c);
+        } else {
+          // If there are no new characters in the slice and the list is sorted,
+          // then this is very likely the default padding part, can be replaced safely.
+          break;
         }
       }
     }
   }
+  return charsToSave;
 }
 
 /**
@@ -88,7 +76,7 @@ function getUserSelectedDefaults () {
 function setRecentChars(characters) {
   if (localStorageUsable) {
     try {
-      localStorage.setItem(recentCharsItemName, JSON.stringify(characters));
+      localStorage.setItem(usedCharsItemName, JSON.stringify(characters));
     } catch (e) {
       console.warn(e);
     }
@@ -96,20 +84,57 @@ function setRecentChars(characters) {
 }
 
 /**
- * Get recent characters from localStorage.
- * @returns {Array<String>} The list of recently used characters.
+ * Get the default recent characters which are used as padding to the actual recently used characters.
+ */
+function getDefaultRecentChars() {
+  return getUserSelectedDefaults().concat(defaultRecentCharacters);
+}
+
+/**
+ * Get the full recent characters list. Includes default characters padding.
+ * @returns {Array<String>} The full list of recently used characters.
  */
 function getRecentChars() {
   var recentChars = [];
-  if (localStorageUsable) {
-    try {
-      var itemFromStorage = localStorage.getItem(/*newR*/recentCharsItemName);
-      if (itemFromStorage) {
-        recentChars = JSON.parse(itemFromStorage);
-      }
-    } catch (e) {
-      console.warn(e);
+  try {
+    var usedChars = localStorage.getItem(usedCharsItemName);
+    if (usedChars) {
+      recentChars = JSON.parse(usedChars);
     }
+    // If no used characters are detected, migration may be needed.
+    if (recentChars.length === 0) {
+      var oldRecentChars = localStorage.getItem(recentCharsItemName);
+      if (oldRecentChars) {
+        oldRecentChars = JSON.parse(oldRecentChars);
+      }
+      recentChars = getUsedCharsMigration(defaultRecentCharacters, oldRecentChars);
+      // If migration yielded used characters, save them to the new storage item for next time.
+      if (recentChars.length) {
+        addNewRecentCharacters(recentChars);
+      }
+    }
+  } catch (e) {
+    console.warn(e);
   }
+
+  // Fill recent chars with default characters if needed.
+  if (recentChars.length < maxRecentChars) {
+    recentChars = recentChars.concat(getDefaultRecentChars());
+  }
+  recentChars = recentChars.slice(0, maxRecentChars);
   return recentChars;
+}
+
+/**
+ * Return the list with only used characters.
+ * @returns {Array<String>}
+ */
+function getUsedChars () {
+  var usedChars = [];
+  try {
+    usedChars = JSON.parse(localStorage.getItem(usedCharsItemName));
+  } catch (e) {
+    console.warn(e);
+  }
+  return usedChars;
 }

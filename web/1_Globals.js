@@ -2,13 +2,18 @@
  * Local storage usable status.
  * @type {boolean}
  */
-
 var localStorageUsable = typeof (Storage) !== 'undefined';
 /**
  * Quickly change urls that have the plugin name hardcoded.
  * @type {string}
  */
 var pluginResourcesFolder = 'char-picker';
+
+/**
+ * The action id.
+ * @type {string}
+ */
+var insertSpecialCharActionId = 'insertfrommenu';
 
 /**
  * Max recent characters shown in the quick insert grid.
@@ -27,7 +32,7 @@ var recentCharsItemName = 'recentlyUsedCharacters';
  * Name of localStorage item which only keeps characters which were used.
  * @type {string}
  */
-var newRecentCharsItemName = 'recentlyUsedCharacters2';
+var usedCharsItemName = 'usedCharacters';
 
 /**
  * Name of localStorage item for last character search.

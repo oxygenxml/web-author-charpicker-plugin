@@ -24,13 +24,65 @@ InsertFromMenuAction.prototype.actionPerformed = function () {
     csmenu.hide();
   } else {
     var characters = getRecentChars();
-    displayRecentCharacters(characters);
+    this.displayRecentCharacters_(characters);
     csmenu.showAtElement(
       this.charPickerToolbarButton_,
       goog.positioning.Corner.BOTTOM_START);
   }
 };
 
+InsertFromMenuAction.prototype.init = function () {
+  window.charsToBeInserted = [];
+
+  var csmenu = new goog.ui.PopupMenu();
+
+  //overwrite the handleBlur function to prevent the popup from closing after inserting a character
+  csmenu.handleBlur = function () {};
+
+  var moreSymbols = new goog.ui.MenuItem(tr(msgs.MORE_SYMBOLS_) + '...');
+  csmenu.addChild(moreSymbols, true);
+  moreSymbols.setId('moreSymbolsButton');
+
+  var gComponentEvent = goog.ui.Component.EventType;
+  goog.events.listen(moreSymbols, gComponentEvent.ACTION, goog.bind(this.displayDialog_, this));
+
+  // Add classes so charpicker button gets the same styles as other dropdowns from the toolbar.
+  var toolbarButton = this.charPickerToolbarButton_;
+  if (!toolbarButton) {
+    toolbarButton = document.querySelector('[name=' + insertSpecialCharActionId + ']');
+    this.charPickerToolbarButton_ = toolbarButton;
+  }
+  goog.events.listen(csmenu, gComponentEvent.HIDE, goog.bind(function () {
+    goog.dom.classlist.remove(toolbarButton, 'goog-toolbar-menu-button-open');
+  }, this));
+  goog.events.listen(csmenu, gComponentEvent.SHOW, goog.bind(function () {
+    goog.dom.classlist.add(toolbarButton, 'goog-toolbar-menu-button-open');
+  }, this));
+
+  csmenu.render();
+  var parentElement = csmenu.getElement();
+  goog.dom.setProperties(parentElement, {'id': 'pickermenu'});
+
+  // add the characters grid before the "more symbols..." button
+  var theFirstChild = parentElement.firstChild;
+  var newElement = goog.dom.createDom('div', {
+    className: 'goog-char-picker-grid recentCharactersGrid',
+    id: 'simplePickerGrid'
+  });
+  parentElement.insertBefore(newElement, theFirstChild);
+
+  csmenu.setToggleMode(true);
+  this.csmenu_ = csmenu; // save for later.
+
+  // QUICK INSERT GRID
+  goog.events.listen(document.querySelector('.goog-char-picker-grid'), goog.events.EventType.CLICK,
+    goog.bind(this.quickInsertCharFromGrid_, this));
+};
+
+/**
+ * Create the charpicker dialog.
+ * @private
+ */
 InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var cD = goog.dom.createDom;
   this.nameInput_ = getNameInput();
@@ -157,6 +209,10 @@ InsertFromMenuAction.prototype.displayDialog_ = function () {
   this.dialog_.show();
 };
 
+/**
+ * Refresh the dialog.
+ * @private
+ */
 InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
   var lastCharacterSearchItemName = 'lastCharacterSearch';
   // if dialog has been populated already just reset the textboxes
@@ -195,7 +251,7 @@ InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
 };
 
 /**
- *
+ * Callback when the search by name results come.
  * @param charSearchSpinner
  * @param absPosChild
  * @param e
@@ -243,6 +299,10 @@ InsertFromMenuAction.prototype.appendSymbols_ = function (obj, element) {
   }
 };
 
+/**
+ * Find character by name handling.
+ * @private
+ */
 goog.require('goog.net.XhrIo');
 InsertFromMenuAction.prototype.findCharByName_ = function () {
   var name = this.nameInput_.value;
@@ -304,11 +364,16 @@ InsertFromMenuAction.prototype.getLargeIcon = function () {
   return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
 };
 
-function quickInsertCharFromGrid (e) {
+/**
+ * Insert a special character from the quick insert grid.
+ * @param {goog.events.EventType.CLICK} e The click event.
+ * @private
+ */
+InsertFromMenuAction.prototype.quickInsertCharFromGrid_ = function (e) {
   var target = e.target;
   if (goog.dom.classlist.contains(target, 'goog-flat-button')) {
     var quickInsertChar = target.textContent;
-    editor.getActionsManager().invokeOperation(
+    this.editor_.getActionsManager().invokeOperation(
       'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
         text: quickInsertChar
       },
@@ -316,4 +381,27 @@ function quickInsertCharFromGrid (e) {
         addNewRecentCharacters([quickInsertChar]);
       })
   }
-}
+};
+
+/**
+ * Render the recent characters grid.
+ * @param {Array<String>} characters The characters to display in the grid.
+ * @private
+ */
+InsertFromMenuAction.prototype.displayRecentCharacters_ = function (characters) {
+  /* selector for targeting the recent characters container */
+  var container = document.querySelector('.recentCharactersGrid');
+  var i;
+
+  /* remove all recent characters to add the new ones again */
+  goog.dom.removeChildren(container);
+
+  /* Add the characters to the container */
+  for (i = 0; i < characters.length; i++) {
+    container.appendChild(
+      goog.dom.createDom(
+        'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0 },
+        characters[i])
+    );
+  }
+};
