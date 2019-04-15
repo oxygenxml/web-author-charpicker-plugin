@@ -95,26 +95,15 @@ function getDefaultRecentChars() {
  * @returns {Array<String>} The full list of recently used characters.
  */
 function getRecentChars() {
-  var recentChars = [];
-  try {
-    var usedChars = localStorage.getItem(usedCharsItemName);
-    if (usedChars) {
-      recentChars = JSON.parse(usedChars);
+  var recentChars = getCharListFromStorage(usedCharsItemName);
+  // If no used characters are detected, migration may be needed.
+  if (recentChars.length === 0) {
+    var oldRecentChars = getCharListFromStorage(recentCharsItemName);
+    recentChars = getUsedCharsMigration(defaultRecentCharacters, oldRecentChars);
+    // If migration yielded used characters, save them to the new storage item for next time.
+    if (recentChars.length) {
+      addNewRecentCharacters(recentChars);
     }
-    // If no used characters are detected, migration may be needed.
-    if (recentChars.length === 0) {
-      var oldRecentChars = localStorage.getItem(recentCharsItemName);
-      if (oldRecentChars) {
-        oldRecentChars = JSON.parse(oldRecentChars);
-      }
-      recentChars = getUsedCharsMigration(defaultRecentCharacters, oldRecentChars);
-      // If migration yielded used characters, save them to the new storage item for next time.
-      if (recentChars.length) {
-        addNewRecentCharacters(recentChars);
-      }
-    }
-  } catch (e) {
-    console.warn(e);
   }
 
   // Fill recent chars with default characters if needed.
@@ -130,11 +119,26 @@ function getRecentChars() {
  * @returns {Array<String>}
  */
 function getUsedChars () {
-  var usedChars = [];
+  return getCharListFromStorage(usedCharsItemName);
+}
+
+/**
+ * Get a list of characters from a localStorage item.
+ * @param {String} storageItem The name of the localStorage item to check.
+ * @returns {Array<String>} List of characters or empty list.
+ */
+function getCharListFromStorage (storageItem) {
+  var chars;
   try {
-    usedChars = JSON.parse(localStorage.getItem(usedCharsItemName));
+    chars = localStorage.getItem(storageItem);
+    if (chars) {
+      chars = JSON.parse(chars);
+    }
   } catch (e) {
     console.warn(e);
   }
-  return usedChars;
+  if (!chars) {
+    chars = [];
+  }
+  return chars;
 }
