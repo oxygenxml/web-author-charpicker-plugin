@@ -48,8 +48,6 @@ public class ConfigurationPage extends PluginConfigExtension {
     for (int i = 0; i < defaultCharacters.length; i++) {
       defaultCharactersCodes.add((int) defaultCharacters[i]);
     }
-    String jsonValue = Arrays.toString(defaultCharacters);
-    System.out.println("send this " + defaultCharactersCodes + " tostring " +jsonValue);
     return "{\"" + REMOVE_CATEGORIES + "\": \"" + getOption(REMOVE_CATEGORIES, "") + "\", \"" 
         + DEFAULT_CHARACTERS + "\": \"" + defaultCharactersCodes + "\"}";
   }

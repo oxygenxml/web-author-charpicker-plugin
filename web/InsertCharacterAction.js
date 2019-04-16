@@ -102,8 +102,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
         cD('label', { for: 'tabsContainer-0-0' }, tr(msgs.BY_NAME_)),
         cD('div', { id: 'charpicker-search-by-name' },
           cD('div', { style: 'line-height: 1.2em; height: 57px;' },
-            tr(msgs.NAME_OF_CHARACTER_),
-            cD('br'),
+            cD('label', { for: 'searchName' }, tr(msgs.NAME_OF_CHARACTER_)),
             this.nameInput_
           ),
           this.foundByNameList_,
@@ -272,7 +271,7 @@ InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, 
     goog.dom.removeChildren(this.foundByNameList_);
     this.appendSymbols_(obj, this.foundByNameList_);
     try {
-      localStorage.setItem(lastCharacterSearchItemName, name);
+      localStorage.setItem(lastCharacterSearchItemName, this.nameInput_.value);
     } catch (e) {
       console.warn(e);
     }

@@ -21,10 +21,9 @@ function getUsedCharsMigration(initialDefaultRecentChars, currentRecentChars) {
   if (currentRecentChars.length && !goog.array.equals(initialDefaultRecentChars, currentRecentChars)) {
     var i;
     var indexInDefaults;
-    var indexesInDefaults = [];
     // Make a list with indexes from default character list for each current character.
-    goog.array.forEach(currentRecentChars, function (c) {
-      indexesInDefaults.push(initialDefaultRecentChars.indexOf(c));
+    var indexesInDefaults = goog.array.map(currentRecentChars, function (c) {
+      return initialDefaultRecentChars.indexOf(c)
     });
     for (i = 0; i < currentRecentChars.length; i++) {
       indexInDefaults = indexesInDefaults.indexOf(i);
@@ -109,6 +108,7 @@ function getRecentChars() {
   // Fill recent chars with default characters if needed.
   if (recentChars.length < maxRecentChars) {
     recentChars = recentChars.concat(getDefaultRecentChars());
+    goog.array.removeDuplicates(recentChars);
   }
   recentChars = recentChars.slice(0, maxRecentChars);
   return recentChars;
