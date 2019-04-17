@@ -58,7 +58,7 @@ function getUserSelectedDefaults () {
     if (goog.isArray(userSelectedDefaults)) {
       var userSelectedDefaultsTemp = [];
       goog.array.forEach(userSelectedDefaults, function (e) {
-        userSelectedDefaultsTemp.push(String.fromCharCode(e));
+        userSelectedDefaultsTemp.push(String.fromCodePoint && String.fromCodePoint(e) || String.fromCharCode(e));
       });
       userSelectedDefaults = userSelectedDefaultsTemp;
     }

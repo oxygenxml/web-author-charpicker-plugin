@@ -43,8 +43,8 @@ public class ConfigurationPage extends PluginConfigExtension {
   public String getOptionsJson() {
     
     String defaultCharactersValue = getOption(DEFAULT_CHARACTERS, "");
-    char[] defaultCharacters = defaultCharactersValue.toCharArray();
-    List<Integer> defaultCharactersCodes = new ArrayList<>();
+    int[] defaultCharacters = defaultCharactersValue.codePoints().toArray();
+    List<Object> defaultCharactersCodes = new ArrayList<>();
     for (int i = 0; i < defaultCharacters.length; i++) {
       defaultCharactersCodes.add((int) defaultCharacters[i]);
     }
