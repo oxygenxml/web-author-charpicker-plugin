@@ -1,7 +1,7 @@
 # webapp-charpicker-plugin
 [![Build Status](https://api.travis-ci.org/oxygenxml/webapp-charpicker-plugin.svg)](https://travis-ci.org/oxygenxml/webapp-charpicker-plugin)
 
-A plugin for oXygen XML WebApp that adds support for inserting special UTF-8 characters
+A plugin for Oxygen XML WebAuthor that adds support for inserting special UTF-8 characters
 
 ## Build
 
