@@ -142,7 +142,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var readOnlyInput = getReadOnlyInput();
   var removeLastCharButton = getRemoveLastCharButton();
   var div = cD('div', { 'id': 'selectedCharsWrapper' },
-    cD('span', '', tr(msgs.SELECTED_CHARACTERS_)),
+    cD('label', { for: readOnlyInputId }, tr(msgs.SELECTED_CHARACTERS_)),
     readOnlyInput,
     removeLastCharButton
   );

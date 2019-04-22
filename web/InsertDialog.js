@@ -18,7 +18,7 @@ function capitalizeWords(text) {
  */
 function getReadOnlyInput() {
   var readOnlyInput = goog.dom.createDom('input', {
-    id: 'special_characters',
+    id: readOnlyInputId,
     className: 'charpicker-input',
     type: 'text',
     name: 'charsToBeInserted'
@@ -87,7 +87,7 @@ function updateCharPreview(e) {
     if (e.type === goog.events.EventType.CLICK) {
       var symbol = e.target.textContent;
       charsToBeInserted.push(symbol);
-      document.getElementById('special_characters').value += symbol;
+      document.getElementById(readOnlyInputId).value += symbol;
     }
   }
 }
