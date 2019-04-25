@@ -24,6 +24,11 @@ Clicking on the **More symbols...** button will open a dialog where you can sear
 - by categories and subcategories
 - by their hex value.
 
+## Configuration
+From the plugin configuration page you can:
+- remove one or more categories shown in the "By categories" tab
+- set the default characters shown in the recently used characters grid
+
 Copyright and License
 ---------------------
 Copyright 2018 Syncro Soft SRL.

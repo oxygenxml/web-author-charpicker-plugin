@@ -1,7 +1,6 @@
 package com.oxygenxml.charpicker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;

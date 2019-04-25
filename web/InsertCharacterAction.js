@@ -8,6 +8,7 @@ function InsertFromMenuAction (editor) {
   this.maxRecentChars_ = maxRecentChars;
   this.dialog_ = workspace.createDialog();
   this.dialog_.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+  this.dialog_.setPreferredSize(420, null);
 
   this.timeoutFunction_ = null;
 }
@@ -88,35 +89,25 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   this.nameInput_ = getNameInput();
   this.foundByNameList_ = cD('div', { id: 'foundByNameList'});
   var charPickerAdvanced = cD('div', { id: 'charpicker-advanced' });
+  var contentShownClass = 'charp-show';
 
-  var tabContainer = cD(
-    'div', 'tabsContainer',
-    cD('ul', '',
-      cD('li', '',
-        cD('input', {
-          id: 'tabsContainer-0-0',
-          type: 'radio',
-          name: 'tabsContainer-0',
-          checked: 'checked'
-        }),
-        cD('label', { for: 'tabsContainer-0-0' }, tr(msgs.BY_NAME_)),
-        cD('div', { id: 'charpicker-search-by-name' },
-          cD('div', { style: 'line-height: 1.2em; height: 57px;' },
-            cD('label', { for: 'searchName' }, tr(msgs.NAME_OF_CHARACTER_)),
-            this.nameInput_
-          ),
-          this.foundByNameList_,
-          cD('div', { id: 'previewCharacterDetails'})
-        )
-      ),
-      cD('li', '',
-        cD('input', { id: 'tabsContainer-0-1', type: 'radio', name: 'tabsContainer-0' }),
-        cD('label', { for: 'tabsContainer-0-1' },
-          cD('span', 'low-width-hide', tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)),
-          cD('span', 'big-width-hide', tr(msgs.BY_CATEGORIES_))
+  var tabContainer = cD('div', '',
+    cD('div', {id: 'charp-tabbar', className: 'goog-tab-bar goog-tab-bar-top' },
+      cD('div', {className: 'goog-tab goog-tab-selected', 'data-target-id': 'charpicker-search-by-name'},
+        tr(msgs.BY_NAME_)),
+      cD('div', { className: 'goog-tab', 'data-target-id': 'charpicker-advanced'},
+        cD('span', {title: tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)}, tr(msgs.BY_CATEGORIES_)))
+    ),
+    cD('div', {id: 'charp-tabbar-content'},
+      cD('div', { id: 'charpicker-search-by-name', className: contentShownClass },
+        cD('div', { style: 'line-height: 1.2em; height: 57px;' },
+          cD('label', { for: 'searchName' }, tr(msgs.NAME_OF_CHARACTER_)),
+          this.nameInput_
         ),
-        charPickerAdvanced
-      )
+        this.foundByNameList_,
+        cD('div', { id: 'previewCharacterDetails'})
+      ),
+      charPickerAdvanced
     )
   );
 
@@ -127,6 +118,23 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   this.dialogElement_ = this.dialog_.getElement();
   this.dialogElement_.id = 'charPicker';
   goog.dom.appendChild(this.dialogElement_, tabContainer);
+
+  var tabBar = new goog.ui.TabBar();
+  tabBar.decorate(document.querySelector('#charp-tabbar'));
+
+  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT,
+    function(e) {
+      var tabSelected = e.target.getElement();
+      var showContentId = goog.dom.dataset.get(tabSelected, 'targetId');
+      if (showContentId) {
+        var contentElement = goog.dom.getElement(showContentId);
+        var toHide = document.querySelectorAll('.' + contentShownClass);
+        for (var i = 0; i < toHide.length; i++) {
+          goog.dom.classlist.remove(toHide[i], contentShownClass);
+        }
+        goog.dom.classlist.add(contentElement, contentShownClass);
+      }
+  });
 
   this.dialogElement_.parentElement.classList.add("dialogContainer");
 
@@ -142,9 +150,10 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var readOnlyInput = getReadOnlyInput();
   var removeLastCharButton = getRemoveLastCharButton();
   var div = cD('div', { 'id': 'selectedCharsWrapper' },
-    cD('label', { for: readOnlyInputId }, tr(msgs.SELECTED_CHARACTERS_)),
-    readOnlyInput,
-    removeLastCharButton
+    cD('label', { style:'display: inline-block;', for: readOnlyInputId }, tr(msgs.SELECTED_CHARACTERS_)),
+    cD('span', {style: 'display: inline-flex; white-space: nowrap;'},
+      readOnlyInput,
+      removeLastCharButton)
   );
 
   goog.dom.appendChild(this.dialog_.getElement(), div);
