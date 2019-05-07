@@ -12,7 +12,7 @@ mvn package
 
 ## Deploy
 
-You can add the plugin to an oXygen XML Web Author server by uploading the .jar file from the **target** folder. The complete procedure can be found in the [User Guide](http://oxygenxml.com/doc/versions/17.1.1/ug-webauthor/#topics/webapp-configure-plugins.html).
+You can add the plugin to an Oxygen XML Web Author server by uploading the .jar file from the **target** folder. The complete procedure can be found in the [User Guide](https://www.oxygenxml.com/doc/ug-waCustom/topics/webapp-configure-plugins.html).
 
 ## Use
 You should find the ![charpicker button](/resources/InsertFromCharactersMap24.png) button in the framework toolbar. Clicking on it should present a grid with 21 recently used characters.

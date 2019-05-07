@@ -102,7 +102,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
     cD('div', {id: 'charp-tabbar-content'},
       cD('div', { id: 'charpicker-search-by-name', className: contentShownClass },
         cD('div', { style: 'line-height: 1.2em; height: 57px;' },
-          cD('label', { for: 'searchName' }, tr(msgs.NAME_OF_CHARACTER_)),
+          cD('label', { for: 'searchName', style: 'white-space: nowrap' }, tr(msgs.NAME_OF_CHARACTER_)),
           this.nameInput_
         ),
         this.foundByNameList_,

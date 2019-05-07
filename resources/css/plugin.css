@@ -43,7 +43,7 @@
 }
 
 #charPicker {
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
 #simplePickerGrid .recentCharactersGrid {
@@ -71,10 +71,6 @@
     width: 231px;
     margin: 0;
     position: relative;
-}
-
-.dialogContainer {
-    max-width: 436px;
 }
 
 #charpickeriframe {
@@ -324,6 +320,7 @@
 }
 
 #searchName {
+    display: block;
     width: 100%;
 }
 
@@ -334,12 +331,12 @@
 }
 
 #charpicker-search-by-name {
-    padding: 8px 0 8px 0;
+    padding: 8px 0 0 0;
     overflow: hidden;
 }
 
 #charpicker-advanced {
-    padding: 8px 0 8px 0;
+    padding: 8px 0 0 0;
     overflow: hidden;
     width: 100%;
     height: 100%;
