@@ -9,6 +9,7 @@ function InsertFromMenuAction (editor) {
   this.dialog_ = workspace.createDialog();
   this.dialog_.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
   this.dialog_.setPreferredSize(420, null);
+  this.dialog_.setResizable(true);
 
   this.timeoutFunction_ = null;
 }
