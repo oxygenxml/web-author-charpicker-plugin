@@ -80,7 +80,6 @@
 }
 
 #special_characters {
-    margin-left: 10px;
     width: 183px;
 }
 
@@ -297,6 +296,7 @@
 }
 
 #previewCharacterDetails {
+    display: flex;
     margin-top: 15px;
 }
 
@@ -309,6 +309,7 @@
     border:1px solid lightgrey;
     text-align: center;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 #previewSymbolName {
