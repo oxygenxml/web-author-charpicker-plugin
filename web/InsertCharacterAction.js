@@ -20,6 +20,10 @@ InsertFromMenuAction.prototype.isEnabled = function () {
     !this.editor_.getReadOnlyState().readOnly;
 };
 
+InsertFromMenuAction.prototype.getDescription = function () {
+  return tr(msgs.INSERT_SPECIAL_CHARACTERS_);
+};
+
 InsertFromMenuAction.prototype.actionPerformed = function () {
   var csmenu = this.csmenu_;
   if (csmenu.isOrWasRecentlyVisible()) {

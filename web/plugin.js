@@ -30,10 +30,6 @@
           });
           setTimeout(function () {
             insertFromMenu.init();
-            var insertSpecialCharButton = document.querySelector("[name='" + insertSpecialCharActionId + "']");
-            if (insertSpecialCharButton) {
-              insertSpecialCharButton.setAttribute("title", tr(msgs.INSERT_SPECIAL_CHARACTERS_));
-            }
           }, 0);
         }
       });
