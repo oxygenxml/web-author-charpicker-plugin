@@ -326,3 +326,12 @@ body {
   }
 }
 
+@media (max-height: 250px) {
+  #label-hexcode,
+  .goog-char-picker-uplus,
+  .goog-char-picker-input-box.label-input-label,
+  .goog-button.goog-button-disabled.goog-char-picker-okbutton {
+    display: none;
+  }
+}
+
