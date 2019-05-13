@@ -18,7 +18,12 @@
 #charpicker-search-by-name, #charpicker-advanced {
     display: none;
 }
-#charpicker-search-by-name.charp-show, #charpicker-advanced.charp-show {
+
+#charpicker-search-by-name.charp-show {
+    display: flex;
+}
+
+#charpicker-advanced.charp-show {
     display: block;
 }
 
@@ -39,11 +44,13 @@
 }
 
 #charp-tabbar-content {
-    height: 370px;
+    min-height: 0;
+    flex-grow: 1;
 }
 
 #charPicker {
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #simplePickerGrid .recentCharactersGrid {
@@ -261,10 +268,9 @@
 }
 
 #foundByNameList {
-    width: 100%;
-    width: calc(100% - 2px);
-    height: 200px;
+    min-height: 0;
     overflow-y: scroll;
+    flex-grow: 1;
     margin-top: 5px;
     border: 1px solid lightgrey;
 }
@@ -291,13 +297,15 @@
     user-select: none;
 }
 
-.characterListSymbol:hover {
+.characterListSymbol:hover, .characterListSymbol.charp-selected {
     background-color: #d6e9f8;
 }
 
 #previewCharacterDetails {
     display: flex;
     margin-top: 15px;
+    height: 62px; /* 60px image + 1px border */
+    flex-shrink: 0;
 }
 
 #previewSymbol {
@@ -333,7 +341,10 @@
 
 #charpicker-search-by-name {
     padding: 8px 0 0 0;
-    overflow: hidden;
+    box-sizing: border-box;
+    display: none;
+    flex-direction: column;
+    height: 100%;
 }
 
 #charpicker-advanced {

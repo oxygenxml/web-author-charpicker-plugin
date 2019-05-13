@@ -284,7 +284,7 @@
   border-left: 4px solid transparent;
 }
 body {
-  margin: 0px;
+  margin: 0;
   overflow: hidden;
   font-family: robotolight,Arial,Helvetica,sans-serif;
 }
@@ -296,12 +296,14 @@ body {
 
 #label-hexcode {
   padding-right: 5px;
+  display: inline-block;
 }
 #dropdown-wrapper {
   display: inline-block;
+  white-space: nowrap;
 }
 #categories {
-  margin-top: 0px;
+  margin-top: 0;
   margin-bottom: 5px;
 }
 /* media query for the iframe contents when the screen is less than 480px height */
@@ -318,17 +320,9 @@ body {
   }
 }
 
-@media (max-width: 370px) {
-  #label-hexcode {
-    display: none;
-  }
-  .goog-char-picker-uplus {
-    display: none;
-  }
-  .goog-char-picker-input-box.label-input-label {
-    display: none;
-  }
-  .goog-button.goog-button-disabled.goog-char-picker-okbutton {
-    display: none;
+@media (max-height: 400px) {
+  .goog-char-picker-grid-container {
+    margin-bottom: 10px;
   }
 }
+

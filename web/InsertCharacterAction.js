@@ -8,7 +8,7 @@ function InsertFromMenuAction (editor) {
   this.maxRecentChars_ = maxRecentChars;
   this.dialog_ = workspace.createDialog();
   this.dialog_.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
-  this.dialog_.setPreferredSize(420, null);
+  this.dialog_.setPreferredSize(420, 600);
   this.dialog_.setResizable(true);
 
   this.timeoutFunction_ = null;
@@ -92,11 +92,11 @@ InsertFromMenuAction.prototype.init = function () {
 InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var cD = goog.dom.createDom;
   this.nameInput_ = getNameInput();
-  this.foundByNameList_ = cD('div', { id: 'foundByNameList'});
+  this.foundByNameList_ = cD('div', { id: 'foundByNameList', tabIndex: 0, role: 'grid' });
   var charPickerAdvanced = cD('div', { id: 'charpicker-advanced' });
   var contentShownClass = 'charp-show';
 
-  var tabContainer = cD('div', '',
+  var tabContainer = cD('div', {style: 'display: flex; flex-direction: column; flex-grow: 1; min-height: 0;'},
     cD('div', {id: 'charp-tabbar', className: 'goog-tab-bar goog-tab-bar-top' },
       cD('div', {className: 'goog-tab goog-tab-selected', 'data-target-id': 'charpicker-search-by-name'},
         tr(msgs.BY_NAME_)),
@@ -105,7 +105,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
     ),
     cD('div', {id: 'charp-tabbar-content'},
       cD('div', { id: 'charpicker-search-by-name', className: contentShownClass },
-        cD('div', { style: 'line-height: 1.2em; height: 57px;' },
+        cD('div', { style: 'line-height: 1.2em; height: 57px; flex-shrink: 0;' },
           cD('label', { for: 'searchName', style: 'white-space: nowrap' }, tr(msgs.NAME_OF_CHARACTER_)),
           this.nameInput_
         ),

@@ -104,10 +104,28 @@ window["initCharPicker"] = function () {
 
   insertBefore(categoriesBar, document.getElementsByClassName("goog-char-picker")[0].firstChild);
 
+  // Make sure these inline elements will only wrap together.
+  var uplus = document.querySelector(".goog-char-picker-uplus");
+  var input = document.querySelector('.goog-char-picker-input-box');
+  var okButton = document.querySelector('.goog-char-picker-okbutton');
+
   insertBefore(
     cD('span', { id: 'label-hexcode' }, hexCodeLabel),
-    document.querySelector(".goog-char-picker-uplus")
+    uplus
   );
+
+  var noWrapContainer = cD('span', {style: 'white-space: nowrap;'});
+  insertBefore(
+    noWrapContainer,
+    uplus
+  );
+
+  goog.dom.append(noWrapContainer,
+    uplus,
+    input,
+    okButton
+  );
+
 
 
   // Get selected locale from the char picker.
