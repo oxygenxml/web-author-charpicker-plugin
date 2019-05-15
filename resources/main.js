@@ -114,7 +114,7 @@ window["initCharPicker"] = function () {
     uplus
   );
 
-  var noWrapContainer = cD('span', {style: 'white-space: nowrap;'});
+  var noWrapContainer = cD('span', { id: 'nowrap-inlines' });
   insertBefore(
     noWrapContainer,
     uplus

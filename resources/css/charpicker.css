@@ -306,6 +306,21 @@ body {
   margin-top: 0;
   margin-bottom: 5px;
 }
+
+#nowrap-inlines {
+  white-space: nowrap;
+}
+
+#nowrap-inlines input {
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+}
+
+#nowrap-inlines button {
+  height: 32px;
+  line-height: 19px;
+}
+
 /* media query for the iframe contents when the screen is less than 480px height */
 @media (max-height: 300px) {
   .goog-char-picker-grid-container {

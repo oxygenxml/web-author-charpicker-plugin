@@ -1,5 +1,7 @@
 #charp-tabbar {
     background-color: transparent;
+    padding-top: 0!important;
+    line-height: 1.7em;
 }
 #charp-tabbar .goog-tab {
     text-decoration: none;
@@ -33,7 +35,7 @@
 
 #charp-tabbar .goog-tab-selected {
     background-color: white;
-    border-bottom: 1px solid transparent!important;
+    border-bottom: 1px solid white!important;
 }
 
 /*
