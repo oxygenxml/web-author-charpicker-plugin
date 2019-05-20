@@ -351,6 +351,7 @@
 
 #charpicker-advanced {
     padding: 8px 0 0 0;
+    box-sizing: border-box;
     overflow: hidden;
     width: 100%;
     height: 100%;
