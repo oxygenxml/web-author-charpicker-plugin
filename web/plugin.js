@@ -34,6 +34,5 @@
         }
       });
     }
-    sync.util.loadCSSFile("../plugin-resources/" + pluginResourcesFolder + "/css/plugin.css");
   });
 })();

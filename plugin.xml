@@ -18,4 +18,6 @@
  <extension type="WebappServlet" class="com.oxygenxml.charpicker.SpecialCharServlet"/>
  <extension type="WebappServlet" class="com.oxygenxml.charpicker.CategoryNames"/>
  <extension type="WebappServlet" class="com.oxygenxml.charpicker.ConfigurationPage" role="config"/>
+ 
+ <extension type="AuthorStylesheet" href="resources/css/plugin.css"/>
 </plugin>
