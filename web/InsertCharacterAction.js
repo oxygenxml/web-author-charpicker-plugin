@@ -6,10 +6,6 @@ function InsertFromMenuAction (editor) {
   sync.actions.AbstractAction.call(this);
   this.editor_ = editor;
   this.maxRecentChars_ = maxRecentChars;
-  this.dialog_ = workspace.createDialog();
-  this.dialog_.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
-  this.dialog_.setPreferredSize(420, 600);
-  this.dialog_.setResizable(true);
 
   this.timeoutFunction_ = null;
 }
@@ -120,9 +116,11 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
     id: 'charpickeriframe',
     src:  this.getIframeUrl_()
   });
-  this.dialogElement_ = this.dialog_.getElement();
-  this.dialogElement_.id = 'charPicker';
-  goog.dom.appendChild(this.dialogElement_, tabContainer);
+
+  var dialog = this.getDialog();
+  var dialogElement_ = dialog.getElement();
+  dialogElement_.id = 'charPicker';
+  goog.dom.appendChild(dialogElement_, tabContainer);
 
   var tabBar = new goog.ui.TabBar();
   tabBar.decorate(document.querySelector('#charp-tabbar'));
@@ -141,7 +139,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
       }
   });
 
-  this.dialogElement_.parentElement.classList.add("dialogContainer");
+  dialogElement_.parentElement.classList.add("dialogContainer");
 
   var gEvents = goog.events.EventType;
   goog.events.listen(this.foundByNameList_, [ gEvents.MOUSEOVER, gEvents.CLICK ], updateCharPreview);
@@ -161,7 +159,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
       removeLastCharButton)
   );
 
-  goog.dom.appendChild(this.dialog_.getElement(), div);
+  goog.dom.appendChild(dialog.getElement(), div);
 
   readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
   goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
@@ -230,8 +228,8 @@ InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
   var lastCharacterSearchItemName = 'lastCharacterSearch';
   // if dialog has been populated already just reset the textboxes
   this.readOnlyInput_.value = '';
-  this.dialogElement_ = this.dialog_.getElement();
-  var searchbox = this.dialogElement_.querySelector('#searchName');
+  var dialogElement_ = this.dialog_.getElement();
+  var searchbox = dialogElement_.querySelector('#searchName');
   searchbox.value = '';
   var lastCharacterSearchItemNameLs;
   try {
@@ -247,7 +245,7 @@ InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
     }
   } else {
     // Warning was shown for the last search so remove it.
-    var warningElement = this.dialogElement_.querySelector('.smallSpin');
+    var warningElement = dialogElement_.querySelector('.smallSpin');
     if (warningElement) {
       this.foundByNameList_ && this.foundByNameList_.removeChild(warningElement);
     }
@@ -320,7 +318,7 @@ goog.require('goog.net.XhrIo');
 InsertFromMenuAction.prototype.findCharByName_ = function () {
   var name = this.nameInput_.value;
   // clear placeholder if set, last search is no longer relevant.
-  var searchBox = this.dialogElement_.querySelector('#searchName');
+  var searchBox = this.dialog_.getElement().querySelector('#searchName');
   searchBox.removeAttribute('placeholder');
   // clear boxes to get ready for results
   goog.dom.removeChildren(this.foundByNameList_);
@@ -338,6 +336,25 @@ InsertFromMenuAction.prototype.findCharByName_ = function () {
     var url = "../plugins-dispatcher/charpicker-plugin?q=" + encodeURIComponent(name);
     goog.net.XhrIo.send(url, goog.bind(this.afterSearchByName_, this, charSearchSpinner, absPosChild), "GET");
   }
+};
+
+/**
+ * Creates a the dialog if not already created and returns it.
+ */
+InsertFromMenuAction.prototype.getDialog = function() {
+  if(!this.dialog_) {
+    this.dialog_ = workspace.createDialog();
+    this.dialog_.setTitle(tr(msgs.INSERT_SPECIAL_CHARACTERS_));
+    this.dialog_.setPreferredSize(420, 600);
+    this.dialog_.setResizable(true);
+  }
+
+  return this.dialog_;
+};
+
+/** @override */
+InsertFromMenuAction.prototype.dispose = function() {
+  this.dialog_ && this.dialog_.dispose();
 };
 
 // Execute query immediately when user presses enter in the input, prevent dialog from closing.
