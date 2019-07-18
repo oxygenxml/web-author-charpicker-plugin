@@ -355,6 +355,7 @@ InsertFromMenuAction.prototype.getDialog = function() {
 /** @override */
 InsertFromMenuAction.prototype.dispose = function() {
   this.dialog_ && this.dialog_.dispose();
+  this.csmenu_ && this.csmenu_.dispose();
 };
 
 // Execute query immediately when user presses enter in the input, prevent dialog from closing.
