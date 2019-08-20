@@ -96,7 +96,7 @@
     height: 34px;
     width: 40px;
     margin-left: 2px;
-    background-image: url('../BackwardDelete.svg');
+    background-image: url('../../../plugin-resources/char-picker/BackwardDelete.svg');
     background-size: 60% 90%;
     background-repeat: no-repeat;
     background-position: center;
