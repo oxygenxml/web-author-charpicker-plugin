@@ -42,15 +42,14 @@ gulp.task('uglifyplugin', ['minify-js'], function() {
 
 gulp.task('minify-css', function(){
     return gulp.src([ resourceLocation + '/css/common.css', resourceLocation + '/css/charpicker.css'])
-        .pipe(concat('concat.css'))
-        .pipe(rename('styles.min.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(concat('styles.min.css'))
+        .pipe(cleanCSS())
         .pipe(gulp.dest(targetLocation + '/css'));
 });
 
 gulp.task('minify-plugin-css', function(){
     return gulp.src(resourceLocation + '/css/plugin.css')
-        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(cleanCSS())
         .pipe(gulp.dest(targetLocation + '/css'));
 });
 
