@@ -17,7 +17,7 @@
     <val lang="fr_FR">Caractères par défaut utilisés récemment</val>
     <val lang="ja_JP">デフォルトの最近使用した文字</val>
     <val lang="nl_NL">Standaard voor recent gebruikte tekens</val>
-    <val lang="zh_CN">Default recently used characters</val>
+    <val lang="zh_CN">默认最近使用的字符</val>
   </key>
   <key distribution="webauthor" value="Initial_categories">
     <comment>Text preceding a list of category names</comment>
@@ -26,7 +26,7 @@
     <val lang="fr_FR">Catégories initiales</val>
     <val lang="ja_JP">初期カテゴリ</val>
     <val lang="nl_NL">Aanvankelijke categorieën</val>
-    <val lang="zh_CN">Initial categories</val>
+    <val lang="zh_CN">初始类别</val>
   </key>
   <key distribution="webauthor" value="Remove_categories">
     <comment>Label for input expecting a list of category names, separated by commas.</comment>
@@ -35,7 +35,7 @@
     <val lang="fr_FR">Supprimer des catégories (séparées par des virgules)</val>
     <val lang="ja_JP">カテゴリを削除する（カンマ区切り）</val>
     <val lang="nl_NL">Categorieën verwijderen (door komma's gescheiden)</val>
-    <val lang="zh_CN">Remove categories (comma separated)</val>
+    <val lang="zh_CN">删除类别（逗号分隔）</val>
   </key>
   <key distribution="webauthor" value="Categories">
     <comment>Label for a set of category and subcategory dropdowns.</comment>
@@ -44,7 +44,7 @@
     <val lang="fr_FR">Catégories</val>
     <val lang="ja_JP">カテゴリ</val>
     <val lang="nl_NL">Categorieën</val>
-    <val lang="zh_CN">Categories</val>
+    <val lang="zh_CN">类别</val>
   </key>
   <key distribution="webauthor" value="Hex_code">
     <comment>Label for input. Short form for hexadecimal code.</comment>
@@ -53,7 +53,7 @@
     <val lang="fr_FR">Code hexadécimal</val>
     <val lang="ja_JP">16進数コード</val>
     <val lang="nl_NL">Hexadecimale code</val>
-    <val lang="zh_CN">Hex code</val>
+    <val lang="zh_CN">十六进制代码</val>
   </key>
   <key distribution="webauthor" value="BY_NAME_">
     <comment>title of tab for 'Search for characters by name' action</comment>
@@ -62,7 +62,7 @@
     <val lang="fr_FR">Par nom</val>
     <val lang="ja_JP">名前による</val>
     <val lang="nl_NL">Op naam</val>
-    <val lang="zh_CN">By name</val>
+    <val lang="zh_CN">按姓名</val>
   </key>
   <key distribution="webauthor" value="BY_CATEGORIES_">
     <comment>title of tab for 'Search for characters by categories' action. Should be fairly short
@@ -72,7 +72,7 @@
     <val lang="fr_FR">Par catégories</val>
     <val lang="ja_JP">カテゴリによる</val>
     <val lang="nl_NL">Op categorie</val>
-    <val lang="zh_CN">By categories</val>
+    <val lang="zh_CN">按类别</val>
   </key>
   <key distribution="webauthor" value="BY_CATEGORIES_OR_HEX_CODE_">
     <comment>title of tab for 'Search for characters by categories or by hexadecimal code'
@@ -82,7 +82,7 @@
     <val lang="fr_FR">Par catégories ou code hexadécimal</val>
     <val lang="ja_JP">分類項目または16進数コードによる</val>
     <val lang="nl_NL">Op categorie of hexadecimale code</val>
-    <val lang="zh_CN">By categories or hex code</val>
+    <val lang="zh_CN">按类别或十六进制代码</val>
   </key>
   <key distribution="webauthor" value="NAME_OF_CHARACTER_">
     <comment>Label of input for searching through characters by name</comment>
@@ -91,7 +91,7 @@
     <val lang="fr_FR">Nom du caractère à rechercher:</val>
     <val lang="ja_JP">検索するための文字の名前：</val>
     <val lang="nl_NL">Naam van teken waarnaar u wilt zoeken:</val>
-    <val lang="zh_CN">Name of character to search for:</val>
+    <val lang="zh_CN">搜索的字符名：</val>
   </key>
   <key distribution="webauthor" value="MORE_SYMBOLS_">
     <comment>Caption of button</comment>
@@ -100,7 +100,7 @@
     <val lang="fr_FR">Plus de symboles</val>
     <val lang="ja_JP">さらに多くのシンボル</val>
     <val lang="nl_NL">Meer symbolen</val>
-    <val lang="zh_CN">More symbols</val>
+    <val lang="zh_CN">更多符号</val>
   </key>
   <key distribution="webauthor" value="INSERT_SPECIAL_CHARACTERS_">
     <comment>Title of dialog for inserting special characters</comment>
@@ -109,7 +109,7 @@
     <val lang="fr_FR">Insérer des caractère spéciaux</val>
     <val lang="ja_JP">特殊文字を挿入する</val>
     <val lang="nl_NL">Speciale tekens invoegen</val>
-    <val lang="zh_CN">Insert special characters</val>
+    <val lang="zh_CN">插入特殊字符</val>
   </key>
   <key distribution="webauthor" value="SELECTED_CHARACTERS_">
     <comment>Label for area previewing the special characters selected so far to be
@@ -119,7 +119,7 @@
     <val lang="fr_FR">Caractères sélectionnés:</val>
     <val lang="ja_JP">選択された文字：</val>
     <val lang="nl_NL">Geselecteerde tekens:</val>
-    <val lang="zh_CN">Selected characters:</val>
+    <val lang="zh_CN">选定字符：</val>
   </key>
   <key distribution="webauthor" value="REMOVE_LAST_CHARACTER_">
     <comment>Tooltip shown on button for removing the last character selected for
@@ -129,7 +129,7 @@
     <val lang="fr_FR">Supprimer le dernier caractère</val>
     <val lang="ja_JP">最後の文字を削除する</val>
     <val lang="nl_NL">Laatste teken verwijderen</val>
-    <val lang="zh_CN">Remove last character</val>
+    <val lang="zh_CN">删除最后一个字符</val>
   </key>
   <key value="NO_RESULTS_FOUND_">
     <comment>Info message</comment>
@@ -138,6 +138,6 @@
     <val lang="fr_FR">Aucun résultat n'a été trouvé</val>
     <val lang="ja_JP">ひとつも見つかりません</val>
     <val lang="nl_NL">Geen resultaten gevonden</val>
-    <val lang="zh_CN">No results found</val>
+    <val lang="zh_CN">未找到结果</val>
   </key>
 </translation>
