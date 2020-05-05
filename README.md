@@ -3,16 +3,8 @@
 
 A plugin for Oxygen XML WebAuthor that adds support for inserting special UTF-8 characters
 
-## Build
-
-You should have a java JDK (6 or later) and maven. Then run the following command:
-```
-mvn package
-```
-
-## Deploy
-
-You can add the plugin to an Oxygen XML Web Author server by uploading the .jar file from the **target** folder. The complete procedure can be found in the [User Guide](https://www.oxygenxml.com/doc/ug-waCustom/topics/webapp-configure-plugins.html).
+## Installation
+To install this plugin, download one of the releases ([link](https://github.com/oxygenxml/web-author-charpicker-plugin/releases)) and [upload it in your Web Author deployment](https://www.oxygenxml.com/doc/ug-webauthor/topics/webapp-configure-plugins.html).
 
 ## Use
 You should find the ![charpicker button](/resources/InsertFromCharactersMap24.png) button in the framework toolbar. Clicking on it should present a grid with 21 recently used characters.
