@@ -16,8 +16,19 @@ var resourceLocation = 'resources';
 
 var webLocation = 'web';
 
+
+// Default Task
+
+
+
+gulp.task('make-translations', function (done) {
+  Synci18n().generateTranslations();
+  done();
+});
+
+
  // Concatenate JS Files, use closure compiler
-gulp.task('minify-js', ['make-translations'], function() {
+gulp.task('minify-js', gulp.series('make-translations', function() {
     return gulp.src(['node_modules/google-closure-library/closure/goog/**/*.js', resourceLocation + '/deps.js', resourceLocation + '/main.js'])
         .pipe(closureCompiler({
           compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
@@ -31,14 +42,15 @@ gulp.task('minify-js', ['make-translations'], function() {
         }))
       .pipe(rename('script.min.js'))
       .pipe(gulp.dest(targetLocation + '/js'));
-});
+}));
 // uglify plugin.js
-gulp.task('uglifyplugin', ['minify-js'], function() {
+
+gulp.task('uglifyplugin', gulp.series('minify-js', function() {
     return gulp.src(webLocation + '/*.js')
         .pipe(concat('plugin.js'))
         .pipe(uglify())
         .pipe(gulp.dest(targetLocation));
-});
+}));
 
 gulp.task('minify-css', function(){
     return gulp.src([ resourceLocation + '/css/common.css', resourceLocation + '/css/charpicker.css'])
@@ -68,12 +80,11 @@ gulp.task('goog_base_js', function(){
         .pipe(gulp.dest(resourceLocation + '/closure-library'));
 });
 
-gulp.task('make-translations', function () {
-  Synci18n().generateTranslations();
-});
-
-gulp.task('minify-all', ['uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml']);
+gulp.task('minify-all', gulp.series('uglifyplugin', 'minify-css', 'minify-plugin-css', 'replacehtml'));
 // Default Task
-gulp.task('prepare-package', ['minify-all', 'goog_base_js']);
-gulp.task('default', ['prepare-package']);
-
+gulp.task('prepare-package', gulp.series('minify-all', 'goog_base_js'));
+gulp.task('default', gulp.series('prepare-package'));
+gulp.task('prepare-package', function(done) {
+  console.log("signal async completion");
+  done();
+});
