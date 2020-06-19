@@ -65,13 +65,14 @@ gulp.task('minify-plugin-css', function(){
         .pipe(gulp.dest(targetLocation + '/css'));
 });
 
-gulp.task('replacehtml', function() {
+gulp.task('replacehtml', function(done) {
     gulp.src(resourceLocation + '/charpicker.html')
         .pipe(htmlreplace({
             'css': 'css/styles.min.css',
             'dev': 'js/script.min.js'
         }))
         .pipe(gulp.dest(targetLocation));
+		done();
 });
 
 // dev: make a copy of the google closure library in resources
@@ -84,7 +85,3 @@ gulp.task('minify-all', gulp.series('uglifyplugin', 'minify-css', 'minify-plugin
 // Default Task
 gulp.task('prepare-package', gulp.series('minify-all', 'goog_base_js'));
 gulp.task('default', gulp.series('prepare-package'));
-gulp.task('prepare-package', function(done) {
-  console.log("signal async completion");
-  done();
-});
