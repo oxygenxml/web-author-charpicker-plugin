@@ -49,7 +49,7 @@
         <version>1.9.1</version>
         <configuration>
           <nodeVersion>v12.16.0</nodeVersion>
-          <npmVersion>6.13.4</npmVersion>
+          <npmVersion>v6.13.4</npmVersion>
           <nodeDownloadRoot>http://nas.sync.ro/MyWeb/test/jenkins-tools/nodejs/</nodeDownloadRoot>
           <npmDownloadRoot>http://nas.sync.ro/MyWeb/test/jenkins-tools/npm/</npmDownloadRoot>
           <installDirectory>target</installDirectory>
