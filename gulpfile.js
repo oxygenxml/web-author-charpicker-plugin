@@ -16,16 +16,10 @@ var resourceLocation = 'resources';
 
 var webLocation = 'web';
 
-
-// Default Task
-
-
-
 gulp.task('make-translations', function (done) {
   Synci18n().generateTranslations();
   done();
 });
-
 
  // Concatenate JS Files, use closure compiler
 gulp.task('minify-js', gulp.series('make-translations', function() {
