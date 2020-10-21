@@ -18,6 +18,16 @@
     </license>
   </licenses>
   
+  <developers>
+    <developer>
+      <name>Andrei Popa</name>
+      <email>andrei_popa@sync.ro</email>
+      <roles>
+        <role>manager</role>
+      </roles>
+    </developer>
+  </developers>
+
   <properties>
     <sonar.sources>src/main/java,web,resources</sonar.sources>
     <sonar.exclusions>resources/closure-library/**</sonar.exclusions>
