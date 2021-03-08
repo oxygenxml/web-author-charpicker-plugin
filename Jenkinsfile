@@ -2,7 +2,7 @@
 pipeline {
     agent any
     tools {
-        maven '$MAVEN_3_6_1_HOME'
+        maven 'MAVEN_3_6_1_HOME'
     }
     stages {
         stage('Checkout Stage') {
@@ -14,7 +14,7 @@ pipeline {
         stage('Build stage') {
           steps {
             sh 'npm install'
-            sh 'echo "do the build with maven $MAVEN_3_6_1_HOME"'
+            sh 'echo "do the build with maven"'
             sh 'mvn --version'
             sh 'mvn -U clean install'
           }
