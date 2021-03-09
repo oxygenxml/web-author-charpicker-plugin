@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 pipeline {
-    agent any
+    agent {
+      label 'docker'
+    }
     tools {
         maven 'Automatic'
     }
