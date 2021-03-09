@@ -24,7 +24,7 @@ pipeline {
                 }" > resources/.npmrc'''
                 sh 'npm install'
             }
-            configFileProvider([configFile(fileId: 'SyncDefaultMavenSettingsWithProxy', variable: 'MAVEN_SETTINGS_XML')]) {
+            configFileProvider([configFile(fileId: 'SyncGlobalMavenSettingsWithProxy', variable: 'MAVEN_SETTINGS_XML')]) {
                 sh 'echo "do the build with maven"'
                 sh 'mvn --version'
                 sh 'mvn -U -s $MAVEN_SETTINGS_XML clean install'
