@@ -3,6 +3,9 @@ pipeline {
     agent {
       label 'docker'
     }
+    options {
+      timestamps()
+    }
     tools {
         maven 'Automatic'
     }
