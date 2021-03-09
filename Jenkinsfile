@@ -17,10 +17,10 @@ pipeline {
                 sh 'npm config ls'
                 sh 'cat resources/.npmrc'
             }
-            sh 'echo "{
+            sh '''echo "{
                   \\"proxy\\": \\"http://10.0.0.18:3128\\",
                   \\"https-proxy\\": \\"http://10.0.0.18:3128\\"
-              }" > resources/.npmrc'
+              }" > resources/.npmrc'''
             sh 'npm install'
             sh 'echo "do the build with maven"'
             sh 'mvn --version'
