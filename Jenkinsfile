@@ -17,8 +17,8 @@ pipeline {
           steps {
             nodejs(nodeJSInstallationName: 'node-8.5.0') {
                 sh 'npm config ls'
-                sh 'cat resources/.npmrc'
             }
+            sh 'npm --version'
             sh '''echo "{
                   \\"proxy\\": \\"http://10.0.0.18:3128\\",
                   \\"https-proxy\\": \\"http://10.0.0.18:3128\\"
