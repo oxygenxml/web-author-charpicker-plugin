@@ -12,13 +12,15 @@ pipeline {
     }
     stages {
         stage('Stage npm setup') {
-            nodejs(nodeJSInstallationName: 'node-8.5.0') {
-                sh 'npm config ls'
-                sh 'npm --version'
-                sh '''echo "{
-                    \\"proxy\\": \\"http://10.0.0.18:3128\\",
-                    \\"https-proxy\\": \\"http://10.0.0.18:3128\\"
-                }" > resources/.npmrc'''
+            steps {
+              nodejs(nodeJSInstallationName: 'node-8.5.0') {
+                  sh 'npm config ls'
+                  sh 'npm --version'
+                  sh '''echo "{
+                      \\"proxy\\": \\"http://10.0.0.18:3128\\",
+                      \\"https-proxy\\": \\"http://10.0.0.18:3128\\"
+                  }" > resources/.npmrc'''
+              }
             }
         }
         stage('Build stage') {
