@@ -11,16 +11,7 @@ pipeline {
         jdk 'JDK_for_trunk'
     }
     stages {
-        stage('Checkout Stage') {
-            steps {
-                sh 'echo "do the checkout"'
-                sh 'ls -lat'
-            }
-        }
-        stage('Build stage') {
-          steps {
-            sh 'java -version'
-            sh 'javac -version'
+        stage('Stage npm setup') {
             nodejs(nodeJSInstallationName: 'node-8.5.0') {
                 sh 'npm config ls'
                 sh 'npm --version'
@@ -28,8 +19,12 @@ pipeline {
                     \\"proxy\\": \\"http://10.0.0.18:3128\\",
                     \\"https-proxy\\": \\"http://10.0.0.18:3128\\"
                 }" > resources/.npmrc'''
-                sh 'npm install'
             }
+        }
+        stage('Build stage') {
+          steps {
+            sh 'java -version'
+            sh 'javac -version'
             configFileProvider([configFile(fileId: '72047525-2c3c-4aac-aa21-2a813a9e9cf7', variable: 'MAVEN_SETTINGS_XML')]) {
                 sh 'echo "do the build with maven"'
                 sh 'mvn --version'
