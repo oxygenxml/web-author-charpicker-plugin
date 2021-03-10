@@ -8,6 +8,7 @@ pipeline {
     }
     tools {
         maven 'Automatic'
+        jdk 'JDK_for_trunk'
     }
     stages {
         stage('Checkout Stage') {
@@ -18,6 +19,8 @@ pipeline {
         }
         stage('Build stage') {
           steps {
+            sh 'java -version'
+            sh 'javac -version'
             nodejs(nodeJSInstallationName: 'node-8.5.0') {
                 sh 'npm config ls'
                 sh 'npm --version'
