@@ -33,7 +33,7 @@ pipeline {
             configFileProvider([configFile(fileId: '72047525-2c3c-4aac-aa21-2a813a9e9cf7', variable: 'MAVEN_SETTINGS_XML')]) {
                 sh 'echo "do the build with maven"'
                 sh 'mvn --version'
-                sh 'mvn -U -s $MAVEN_SETTINGS_XML clean install'
+                sh 'mvn -U -s $MAVEN_SETTINGS_XML clean install -Ddependency-check.skip'
             }
           }
         }
