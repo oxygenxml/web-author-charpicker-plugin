@@ -3,24 +3,23 @@
  * @constructor
  */
 function InsertFromMenuAction (editor) {
-  sync.actions.AbstractAction.call(this);
+  sync.actions.Action.call(this, {
+    description: tr(msgs.INSERT_SPECIAL_CHARACTERS_),
+    displayName: 'insert from menu'
+  });
   this.editor_ = editor;
   this.maxRecentChars_ = maxRecentChars;
 
   this.timeoutFunction_ = null;
 }
-goog.inherits(InsertFromMenuAction, sync.actions.AbstractAction);
+goog.inherits(InsertFromMenuAction, sync.actions.Action);
 
 InsertFromMenuAction.prototype.isEnabled = function () {
   return !sync.util.isInReadOnlyContent.apply(this.editor_.getSelectionManager().getSelection()) &&
     !this.editor_.getReadOnlyState().readOnly;
 };
 
-InsertFromMenuAction.prototype.getDescription = function () {
-  return tr(msgs.INSERT_SPECIAL_CHARACTERS_);
-};
-
-InsertFromMenuAction.prototype.actionPerformed = function () {
+InsertFromMenuAction.prototype.actionPerformed = function (callback) {
   var csmenu = this.csmenu_;
   if (csmenu.isOrWasRecentlyVisible()) {
     csmenu.hide();
@@ -31,6 +30,7 @@ InsertFromMenuAction.prototype.actionPerformed = function () {
       this.charPickerToolbarButton_,
       goog.positioning.Corner.BOTTOM_START);
   }
+  callback && callback();
 };
 
 InsertFromMenuAction.prototype.init = function () {
@@ -192,14 +192,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
           recentInsertChars.push(character);
         }
       }
-
-      this.editor_.getActionsManager().invokeOperation(
-        'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
-          text: stringifiedText
-        },
-        function () {
-          addNewRecentCharacters(recentInsertChars);
-        });
+      this.insertSpecialCharacterText_(stringifiedText);
     }
   }
 };
@@ -255,8 +248,7 @@ InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
   if (iframeContent.document) {
     iframeContent = iframeContent.document;
     iframeContent.querySelector('.goog-char-picker-input-box').value = '';
-  }
-  else {
+  } else {
     console.warn('Failed to get iframe contents.');
   }
 };
@@ -386,13 +378,24 @@ InsertFromMenuAction.prototype.getIframeUrl_ = function () {
   return iframeUrl;
 };
 
-InsertFromMenuAction.prototype.getDisplayName = function () {
-  return 'insert from menu';
-};
-
 InsertFromMenuAction.prototype.getLargeIcon = function () {
   var pluginResourcesFolder = 'char-picker';
   return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
+};
+
+/**
+ * Insert one or more special characters.
+ * @param {string} quickInsertChar The character or string of special characters to be inserted.
+ * @private
+ */
+InsertFromMenuAction.prototype.insertSpecialCharacterText_ = function (quickInsertChar) {
+  this.editor_.getActionsManager().invokeOperation(
+    'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation',
+    { text: quickInsertChar },
+    function () {
+      addNewRecentCharacters([quickInsertChar]);
+    }
+  );
 };
 
 /**
@@ -403,14 +406,7 @@ InsertFromMenuAction.prototype.getLargeIcon = function () {
 InsertFromMenuAction.prototype.quickInsertCharFromGrid_ = function (e) {
   var target = e.target;
   if (goog.dom.classlist.contains(target, 'goog-flat-button')) {
-    var quickInsertChar = target.textContent;
-    this.editor_.getActionsManager().invokeOperation(
-      'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation', {
-        text: quickInsertChar
-      },
-      function () {
-        addNewRecentCharacters([quickInsertChar]);
-      })
+    this.insertSpecialCharacterText_(target.textContent);
   }
 };
 
