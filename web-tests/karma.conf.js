@@ -6,7 +6,7 @@ module.exports = function(config) {
      '../target/war/app/*-lib/*.js',
      '../target/war/app/*.js',
      'init.js',
-      '../target/plugin.js',	
+      '../web/*.js',	
       'tests/test_*.js',
     ],
 
