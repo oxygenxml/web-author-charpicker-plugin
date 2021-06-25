@@ -89,51 +89,6 @@
               <arguments>prepare-package</arguments>
             </configuration>
           </execution>
-          <execution>
-            <id>tests</id>
-            <goals>
-              <goal>karma</goal>
-            </goals>
-            <configuration>
-              <karmaConfPath>web-tests/karma.conf.js</karmaConfPath>
-            </configuration>
-          </execution> 
-        </executions>
-      </plugin>
-       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <includeScope>runtime</includeScope>
-            </configuration>
-          </execution>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <id>wa-war-js</id>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.oxygenxml</groupId>
-                  <artifactId>oxygen-webapp</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-                  <outputDirectory>${project.build.directory}/war/</outputDirectory>
-                  <includes>app/**/*.js</includes>
-                  <excludes>app/text-page-*.js,app/admin-custom-*.js</excludes><!-- TODO -->
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       <plugin>

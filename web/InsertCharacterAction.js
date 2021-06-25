@@ -79,8 +79,6 @@ InsertFromMenuAction.prototype.init = function () {
   // QUICK INSERT GRID
   goog.events.listen(document.querySelector('.goog-char-picker-grid'), goog.events.EventType.CLICK,
     goog.bind(this.quickInsertCharFromGrid_, this));
-  
-  this.actionsExecutor_ = this.editor_.getEditingSupport().actionsExecutor;
 };
 
 /**
@@ -403,10 +401,6 @@ InsertFromMenuAction.prototype.getLargeIcon = function () {
  * @private
  */
 InsertFromMenuAction.prototype.quickInsertCharFromGrid_ = function (e) {
-	  console.log("quickInsertCharFromGrid_>>", e)
-	  this.actionsExecutor_.executeAction(new sync.actions.Action({
-	    execute: () => {
-	      return new Promise((resolve) => {
 	        var target = e.target;
 	        if (goog.dom.classlist.contains(target, 'goog-flat-button')) {
 	          var quickInsertChar = target.textContent;
@@ -416,13 +410,8 @@ InsertFromMenuAction.prototype.quickInsertCharFromGrid_ = function (e) {
 	            },
 	            function () {
 	              addNewRecentCharacters([quickInsertChar]);
-	              resolve(quickInsertChar)
-	            });
-
-	        }
 	      })
 	    }
-	  }));
 	};
 
 /**
