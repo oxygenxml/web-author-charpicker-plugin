@@ -7,7 +7,7 @@ describe('CharPicker test', function() {
     var action = new InsertFromMenuAction(editor);
     action.init();
 
-    action.insertSpecialCharacterText_("a");
+    action.insertCharacters_("a");
     sinon.assert.calledOnce(actionsExecutor.executeAction);
   });
 
