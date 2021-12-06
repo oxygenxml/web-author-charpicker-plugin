@@ -7,7 +7,7 @@
  name="UTF-8 Char Picker"
  description="A plugin for oXygen XML WebApp that adds support for inserting special UTF-8 characters"
  version="${project.nosnapshot.version}"
- vendor="Syncro Soft SRL"
+ vendor="Syncro Soft"
  class="ro.sync.exml.plugin.Plugin">
  <runtime>
   <librariesFolder name="lib"/>
