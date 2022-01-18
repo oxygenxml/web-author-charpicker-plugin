@@ -51,6 +51,7 @@
 		<file>
 			<source>LICENSE</source>
 			<outputDirectory>/</outputDirectory>
+			<filtered>true</filtered>
 		</file>
 		<file>
 			<source>third-party-components.xml</source>
