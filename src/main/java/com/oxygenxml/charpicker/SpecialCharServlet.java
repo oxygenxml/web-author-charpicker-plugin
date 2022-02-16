@@ -20,12 +20,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 
+@Slf4j
 public class SpecialCharServlet extends WebappServletPluginExtension {
 	
 	private static int maxResults = 500;
@@ -34,8 +34,6 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	private static int scorePartialMatch = 150;
 	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
-	
-	private static final Logger logger = Logger.getLogger(SpecialCharServlet.class.getName());
 	
 	private static final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
 	
@@ -50,7 +48,7 @@ public class SpecialCharServlet extends WebappServletPluginExtension {
 	      try {
 	        newProps.load(charsInputStream);
 	      } catch (IOException e) {
-	        logger.error("could not load the special character file");
+	        log.error("could not load the special character file");
 	      }
 	      
 	      charsMap.put(lang, newProps);
