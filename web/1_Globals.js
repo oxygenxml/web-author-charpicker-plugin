@@ -3,11 +3,6 @@
  * @type {boolean}
  */
 var localStorageUsable = typeof (Storage) !== 'undefined';
-/**
- * Quickly change urls that have the plugin name hardcoded.
- * @type {string}
- */
-var pluginResourcesFolder = 'char-picker';
 
 /**
  * The action id.

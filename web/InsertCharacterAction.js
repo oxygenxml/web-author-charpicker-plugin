@@ -11,6 +11,8 @@ function InsertFromMenuAction (editor) {
   this.maxRecentChars_ = maxRecentChars;
 
   this.timeoutFunction_ = null;
+
+  this.pluginResourcesFolder_ = 'char-picker';
 }
 goog.inherits(InsertFromMenuAction, sync.actions.Action);
 
@@ -342,7 +344,7 @@ InsertFromMenuAction.prototype.findCharAfterInput_ = function () {
  * @returns {string} The charpicker iframe URL.
  */
 InsertFromMenuAction.prototype.getIframeUrl_ = function () {
-  var iframeUrl = '../plugin-resources/' + pluginResourcesFolder + '/charpicker.html';
+  var iframeUrl = '../plugin-resources/' + this.pluginResourcesFolder_ + '/charpicker.html';
   var removeCategories = sync.options.PluginsOptions.getClientOption('charp.remove_categories');
   if (removeCategories) {
     iframeUrl += '?remove-categories=' + encodeURIComponent(removeCategories);
@@ -351,6 +353,5 @@ InsertFromMenuAction.prototype.getIframeUrl_ = function () {
 };
 
 InsertFromMenuAction.prototype.getLargeIcon = function () {
-  var pluginResourcesFolder = 'char-picker';
-  return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
+  return sync.util.computeHdpiIcon('../plugin-resources/' + this.pluginResourcesFolder_ + '/InsertFromCharactersMap24.png');
 };
