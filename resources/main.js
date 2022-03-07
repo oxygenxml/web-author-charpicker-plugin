@@ -16,7 +16,7 @@ var removeCategory = function (charPickerData, categoryName) {
 
 var addCategory = function (charPickerData, categoryName, subcategories, charList, index) {
   if (!categoryName || !subcategories || !charList || charList.length === 0) {
-    console.warn('Invalid character picker data.')
+    console.warn('Invalid character picker data.');
   }
   if (index || index === 0) {
     charPickerData.categories.splice(index, 0, categoryName);
@@ -152,10 +152,9 @@ function translateCategories(charPickerData, customCategories) {
       charPickerData.categories[categoryFoundIndex] = translatedName;
 
       // Translate the subcategories.
-      for (var subcategoryIndex = 0; subcategoryIndex < customCategories[category].length; subcategoryIndex++) {
-        var subcategoryString = customCategories[category][subcategoryIndex];
-        originalName = subcategoryString.split('|')[0];
-        translatedName = subcategoryString.split('|')[1];
+      for (var customSubCategory of customCategories[category]) {
+        originalName = customSubCategory.split('|')[0];
+        translatedName = customSubCategory.split('|')[1];
 
         var decodedSubcat = decodeTagName(originalName);
         // Remove category name from it.
@@ -173,8 +172,8 @@ function translateCategories(charPickerData, customCategories) {
 function getURLParameter(name) {
   var urlParams = window.location.search.substring(1).split('&');
   var paramValue = null;
-  for(var i = 0; i < urlParams.length; i++) {
-    var fullParam = urlParams[i].split('=');
+  for(var urlParam of urlParams) {
+    var fullParam = urlParam.split('=');
     var param = {
       name: fullParam[0],
       value: fullParam[1]

@@ -28,7 +28,7 @@ RecentCharactersGrid.prototype.actLikeDropdown_ = function () {
     this.charPickerToolbarButton_ = toolbarButton;
   }
   var gComponentEvent = goog.ui.Component.EventType;
-  goog.events.listen(this, [gComponentEvent.SHOW, gComponentEvent.HIDE], (e) => {
+  goog.events.listen(this, [gComponentEvent.SHOW, gComponentEvent.HIDE], e => {
     var className = 'goog-toolbar-menu-button-open';
     if (e.type === gComponentEvent.SHOW) {
       toolbarButton.classList.add(className);
@@ -72,18 +72,15 @@ RecentCharactersGrid.prototype.showRecentGrid = function () {
  * @private
  */
 RecentCharactersGrid.prototype.displayRecentCharacters_ = function (characters) {
-  var container = this.recentCharactersGrid_;
-  var i;
-
   /* remove all recent characters to add the new ones again */
-  goog.dom.removeChildren(container);
+  goog.dom.removeChildren(this.recentCharactersGrid_);
 
   /* Add the characters to the container */
-  for (i = 0; i < characters.length; i++) {
-    container.appendChild(
+  for (var character of characters) {
+    this.recentCharactersGrid_.appendChild(
       goog.dom.createDom(
         'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0 },
-        characters[i])
+        character)
     );
   }
 };

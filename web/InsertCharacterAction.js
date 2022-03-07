@@ -354,26 +354,3 @@ InsertFromMenuAction.prototype.getLargeIcon = function () {
   var pluginResourcesFolder = 'char-picker';
   return sync.util.computeHdpiIcon('../plugin-resources/' + pluginResourcesFolder + '/InsertFromCharactersMap24.png');
 };
-
-/**
- * Render the recent characters grid.
- * @param {Array<String>} characters The characters to display in the grid.
- * @private
- */
-InsertFromMenuAction.prototype.displayRecentCharacters_ = function (characters) {
-  /* selector for targeting the recent characters container */
-  var container = document.querySelector('.recentCharactersGrid');
-  var i;
-
-  /* remove all recent characters to add the new ones again */
-  goog.dom.removeChildren(container);
-
-  /* Add the characters to the container */
-  for (i = 0; i < characters.length; i++) {
-    container.appendChild(
-      goog.dom.createDom(
-        'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0 },
-        characters[i])
-    );
-  }
-};
