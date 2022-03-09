@@ -13,6 +13,8 @@ function InsertFromMenuAction (editor) {
   this.timeoutFunction_ = null;
 
   this.pluginResourcesFolder_ = 'char-picker';
+
+  this.tabSelectedClass_ = 'charp-show';
 }
 goog.inherits(InsertFromMenuAction, sync.actions.Action);
 
@@ -65,7 +67,6 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   this.nameInput_ = getNameInput();
   this.foundByNameList_ = cD('div', { id: 'foundByNameList', tabIndex: 0, role: 'grid' });
   var charPickerAdvanced = cD('div', { id: 'charpicker-advanced' });
-  var contentShownClass = 'charp-show';
 
   var tabContainer = cD('div', {style: 'display: flex; flex-direction: column; flex-grow: 1; min-height: 0;'},
     cD('div', {id: 'charp-tabbar', className: 'goog-tab-bar goog-tab-bar-top' },
@@ -75,7 +76,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
         cD('span', {title: tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)}, tr(msgs.BY_CATEGORIES_)))
     ),
     cD('div', {id: 'charp-tabbar-content'},
-      cD('div', { id: 'charpicker-search-by-name', className: contentShownClass },
+      cD('div', { id: 'charpicker-search-by-name', className: this.tabSelectedClass_ },
         cD('div', { style: 'line-height: 1.2em; height: 57px; flex-shrink: 0;' },
           cD('label', { for: 'searchName', style: 'white-space: nowrap' }, tr(msgs.NAME_OF_CHARACTER_)),
           this.nameInput_
@@ -100,19 +101,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var tabBar = new goog.ui.TabBar();
   tabBar.decorate(document.querySelector('#charp-tabbar'));
 
-  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT,
-    function(e) {
-      var tabSelected = e.target.getElement();
-      var showContentId = goog.dom.dataset.get(tabSelected, 'targetId');
-      if (showContentId) {
-        var contentElement = goog.dom.getElement(showContentId);
-        var toHide = document.querySelectorAll('.' + contentShownClass);
-        for (var i = 0; i < toHide.length; i++) {
-          goog.dom.classlist.remove(toHide[i], contentShownClass);
-        }
-        goog.dom.classlist.add(contentElement, contentShownClass);
-      }
-  });
+  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT, goog.bind(this.toggleSelectedTab_, this));
 
   dialogElement_.parentElement.classList.add("dialogContainer");
 
@@ -140,11 +129,28 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
     readOnlyInput.value = '';
     charsToBeInserted.pop();
-    for(var i = 0; i < charsToBeInserted.length; i++){
-      readOnlyInput.value += charsToBeInserted[i];
+    for(var char of charsToBeInserted){
+      readOnlyInput.value += char;
     }
   });
   this.readOnlyInput_ = readOnlyInput;
+};
+
+/**
+ * @param {goog.events.Event} e
+ * @private
+ */
+InsertFromMenuAction.prototype.toggleSelectedTab_ = function(e) {
+  var tabSelected = e.target.getElement();
+  var showContentId = goog.dom.dataset.get(tabSelected, 'targetId');
+  if (showContentId) {
+    var contentElement = goog.dom.getElement(showContentId);
+    var previouslySelectedTabs = document.querySelectorAll('.' + this.tabSelectedClass_);
+    for (var tab of previouslySelectedTabs) {
+      goog.dom.classlist.remove(tab, this.tabSelectedClass_);
+    }
+    goog.dom.classlist.add(contentElement, this.tabSelectedClass_);
+  }
 };
 
 /**
