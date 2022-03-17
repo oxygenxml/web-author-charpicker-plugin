@@ -30,12 +30,6 @@ var recentCharsItemName = 'recentlyUsedCharacters';
 var usedCharsItemName = 'usedCharacters';
 
 /**
- * Name of localStorage item for last character search.
- * @type {string}
- */
-var lastCharacterSearchItemName = 'lastCharacterSearch';
-
-/**
  * Default recently used characters.
  * @type {string[]}
  */

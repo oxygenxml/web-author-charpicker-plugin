@@ -129,16 +129,26 @@ function getUsedChars () {
  */
 function getCharListFromStorage (storageItem) {
   var chars;
-  try {
-    chars = localStorage.getItem(storageItem);
-    if (chars) {
+  chars = getFromLocalStorage(storageItem);
+  if (chars) {
+    try {
       chars = JSON.parse(chars);
+    } catch (e) {
+      console.warn(e);
     }
-  } catch (e) {
-    console.warn(e);
   }
   if (!chars) {
     chars = [];
   }
   return chars;
+}
+
+function getFromLocalStorage (item) {
+  var value = null;
+  try {
+    value = localStorage.getItem(item);
+  } catch (e) {
+    console.warn(e);
+  }
+  return value;
 }

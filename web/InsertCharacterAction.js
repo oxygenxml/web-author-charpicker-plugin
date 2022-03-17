@@ -15,6 +15,8 @@ function InsertFromMenuAction (editor) {
   this.pluginResourcesFolder_ = 'char-picker';
 
   this.tabSelectedClass_ = 'charp-show';
+
+  this.lastCharacterSearchItemName_ = 'lastCharacterSearch';
 }
 goog.inherits(InsertFromMenuAction, sync.actions.Action);
 
@@ -192,32 +194,42 @@ InsertFromMenuAction.prototype.displayDialog_ = function () {
  * @private
  */
 InsertFromMenuAction.prototype.refreshCharPickerDialog_ = function () {
-  var lastCharacterSearchItemName = 'lastCharacterSearch';
   // if dialog has been populated already just reset the textboxes
   this.readOnlyInput_.value = '';
-  var dialogElement_ = this.dialog_.getElement();
-  var searchbox = dialogElement_.querySelector('#searchName');
-  searchbox.value = '';
-  var lastCharacterSearchItemNameLs;
-  try {
-    lastCharacterSearchItemNameLs = localStorage.getItem(lastCharacterSearchItemName)
-  } catch (e) {
-    console.warn(e);
-  }
-  if(lastCharacterSearchItemNameLs !== null){
-    try {
-      searchbox.setAttribute("placeholder", localStorage.getItem(lastCharacterSearchItemName) );
-    } catch (e) {
-      console.warn(e);
-    }
-  } else {
-    // Warning was shown for the last search so remove it.
-    var warningElement = dialogElement_.querySelector('.smallSpin');
-    if (warningElement) {
-      this.foundByNameList_ && this.foundByNameList_.removeChild(warningElement);
-    }
-  }
+  this.setLastSearchAsPlaceholder_();
+  this.removeWarningFromLastSearch_();
+  this.resetHexInput_();
+};
 
+/**
+ * @private
+ */
+InsertFromMenuAction.prototype.setLastSearchAsPlaceholder_ = function () {
+  var dialogElement = this.dialog_.getElement();
+  var searchbox = dialogElement.querySelector('#searchName');
+  searchbox.value = '';
+  var lastCharacterSearch = getFromLocalStorage(this.lastCharacterSearchItemName_);
+  if(lastCharacterSearch !== null){
+    searchbox.setAttribute("placeholder", lastCharacterSearch);
+  }
+};
+
+/**
+ * @private
+ */
+InsertFromMenuAction.prototype.removeWarningFromLastSearch_ = function () {
+  // Warning was shown for the last search so remove it.
+  var warningElement = this.dialog_.getElement().querySelector('.smallSpin');
+  if (warningElement) {
+    goog.dom.removeNode(warningElement);
+  }
+};
+
+/**
+ * Reset value in the hex input box (in "by categories" view)
+ * @private
+ */
+InsertFromMenuAction.prototype.resetHexInput_ = function () {
   var iframeContent = (this.charPickerIframe_.contentWindow || this.charPickerIframe_.contentDocument);
   if (iframeContent.document) {
     iframeContent = iframeContent.document;
@@ -241,15 +253,14 @@ InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, 
   if (emptyObject) {
     absPosChild.textContent = tr(msgs.NO_RESULTS_FOUND_);
     try {
-      localStorage.removeItem(lastCharacterSearchItemName);
+      localStorage.removeItem(this.lastCharacterSearchItemName_);
     } catch (e) {
       console.warn(e);
     }
   } else {
-    goog.dom.removeChildren(this.foundByNameList_);
-    this.appendSymbols_(obj, this.foundByNameList_);
+    this.refreshSymbols_(obj);
     try {
-      localStorage.setItem(lastCharacterSearchItemName, this.nameInput_.value);
+      localStorage.setItem(this.lastCharacterSearchItemName_, this.nameInput_.value);
     } catch (e) {
       console.warn(e);
     }
@@ -258,22 +269,31 @@ InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, 
 
 /**
  * Add symbol elements to the "find by name" results container.
- * @param obj The object containing symbol results for the find by name query.
- * @param {Element} element The results container element.
+ * @param {object} obj The object containing symbol results for the find by name query.
  */
-InsertFromMenuAction.prototype.appendSymbols_ = function (obj, element) {
+InsertFromMenuAction.prototype.refreshSymbols_ = function (obj) {
+  goog.dom.removeChildren(this.foundByNameList_);
   for (var code in obj) {
-    var foundByNameItem = goog.dom.createDom(
-      'div',
-      {
-        className: 'characterListSymbol',
-        'data-symbol-name': capitalizeWords(obj[code]),
-        'data-symbol-hexcode': code
-      });
-    var decimalCode = parseInt(code, 16);
-    foundByNameItem.textContent = String.fromCharCode(decimalCode);
-    element.appendChild(foundByNameItem);
+    if (obj.hasOwnProperty(code)) {
+      this.foundByNameList_.appendChild(this.renderSymbolCard_(code, obj[code]));
+    }
   }
+};
+
+/**
+ * @param {string} code
+ * @param {string} charName
+ * @return {Element}
+ * @private
+ */
+InsertFromMenuAction.prototype.renderSymbolCard_ = function (code, charName) {
+  return goog.dom.createDom('div', {
+      className: 'characterListSymbol',
+      'data-symbol-name': capitalizeWords(charName),
+      'data-symbol-hexcode': code
+    },
+    String.fromCharCode(parseInt(code, 16))
+  );
 };
 
 /**
