@@ -95,6 +95,6 @@ RecentCharactersGrid.prototype.displayRecentCharacters_ = function (characters) 
  */
 RecentCharactersGrid.prototype.quickInsertCharFromGrid_ = function (e) {
   if (goog.dom.classlist.contains(e.target, 'goog-flat-button')) {
-    this.insertCharacters_(e.target.textContent);
+    this.insertCharacters_([e.target.textContent]);
   }
 };

@@ -29,6 +29,10 @@ InsertFromMenuAction.prototype.actionPerformed = function (callback) {
   callback && callback();
 };
 
+/**
+ * @param {Array.<string>} characters
+ * @private
+ */
 InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
   var actionsExecutor = this.editor_.getEditingSupport().actionsExecutor;
   var actionsManager = this.editor_.getActionsManager();
@@ -38,9 +42,9 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
       return new Promise(resolve => {
         actionsManager.invokeOperation(
           'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation',
-          {text: characters},
+          {text: characters.join('')},
           function () {
-            addNewRecentCharacters([characters]);
+            addNewRecentCharacters(characters.splice(0).reverse());
             resolve(characters);
           }
         );
@@ -155,17 +159,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
   if (key === 'ok') {
     var dialogInsertChars = window.charsToBeInserted;
     if (dialogInsertChars) {
-      var stringifiedText = '';
-      var recentInsertChars = [];
-      // Go in reverse order to also extract recently used characters.
-      for(var i = dialogInsertChars.length - 1; i >= 0; i--){
-        var character = dialogInsertChars[i];
-        stringifiedText = character + stringifiedText;
-        if (recentInsertChars.length < this.maxRecentChars_ && recentInsertChars.indexOf(character) === -1) {
-          recentInsertChars.push(character);
-        }
-      }
-      this.insertCharacters_(stringifiedText);
+      this.insertCharacters_(dialogInsertChars);
     }
   }
 };
