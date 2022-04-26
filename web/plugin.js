@@ -12,26 +12,19 @@
       return toolbar.children.find(element => element.id === insertSpecialCharActionId);
     }
 
-    function getDestinationToolbar (actionsConfigToolbars) {
-      var destinationToolbar = null;
-      if (actionsConfigToolbars) {
-        var firstSuitableToolbar = actionsConfigToolbars.find(toolbar => toolbar.name !== "Review" && toolbar.name !== "Builtin");
-        if (firstSuitableToolbar){
-          if(toolbarContainsCharpicker(firstSuitableToolbar)) {
-            // Action may already be added when changing editors without reload (if there's a custom toolbar)
-            addActionOnce++;
-          } else {
-            destinationToolbar = firstSuitableToolbar;
-          }
-        }
-      }
-      return destinationToolbar;
+    function isFrameworkActionsLoaded(e) {
+      var toolbars = e.actionsConfiguration.toolbars;
+      return toolbars && !toolbars.find(toolbar => toolbar.name === "Review" || toolbar.name === "Builtin");
     }
 
     function addToFrameworkToolbar(editor) {
       goog.events.listen(editor, sync.api.Editor.EventTypes.ACTIONS_LOADED, function (e) {
-        if (editor.getEditorType() === sync.api.Editor.EditorTypes.AUTHOR) {
-          var frameworkToolbar = getDestinationToolbar(e.actionsConfiguration.toolbars);
+        if (editor.getEditorType() === sync.api.Editor.EditorTypes.AUTHOR && isFrameworkActionsLoaded(e)) {
+          var frameworkToolbar = e.actionsConfiguration.toolbars[0];
+          if(toolbarContainsCharpicker(frameworkToolbar)) {
+            // Action may already be added when changing editors without reload (if there's a custom toolbar)
+            addActionOnce++;
+          }
           // adds the action only once, on the first toolbar that is not Review or Builtin
           if (frameworkToolbar && addActionOnce === 0) {
             addActionOnce++;
