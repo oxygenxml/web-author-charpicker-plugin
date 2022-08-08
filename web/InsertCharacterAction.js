@@ -107,7 +107,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var tabBar = new goog.ui.TabBar();
   tabBar.decorate(document.querySelector('#charp-tabbar'));
 
-  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT, goog.bind(this.toggleSelectedTab_, this));
+  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT, goog.bind(this.selectTab_, this));
 
   dialogElement_.parentElement.classList.add("dialogContainer");
 
@@ -143,10 +143,10 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
 };
 
 /**
- * @param {goog.events.Event} e
+ * @param {goog.events.Event} e The tab select event.
  * @private
  */
-InsertFromMenuAction.prototype.toggleSelectedTab_ = function(e) {
+InsertFromMenuAction.prototype.selectTab_ = function(e) {
   var tabSelected = e.target.getElement();
   var showContentId = goog.dom.dataset.get(tabSelected, 'targetId');
   if (showContentId) {
@@ -275,25 +275,40 @@ InsertFromMenuAction.prototype.refreshSymbols_ = function (obj) {
   goog.dom.removeChildren(this.foundByNameList_);
   for (var code in obj) {
     if (obj.hasOwnProperty(code)) {
-      this.foundByNameList_.appendChild(this.renderSymbolCard_(code, obj[code]));
+      this.renderSymbolCard_(this.foundByNameList_, code, obj[code]);
     }
   }
 };
 
 /**
+ * @param {HTMLElement} container
  * @param {string} code
  * @param {string} charName
  * @return {Element}
  * @private
  */
-InsertFromMenuAction.prototype.renderSymbolCard_ = function (code, charName) {
-  return goog.dom.createDom('div', {
+InsertFromMenuAction.prototype.renderSymbolCard_ = function (container, code, charName) {
+  container.appendChild(goog.dom.createDom('div', {
       className: 'characterListSymbol',
-      'data-symbol-name': capitalizeWords(charName),
+      'data-symbol-name': this.capitalizeWords_(charName),
       'data-symbol-hexcode': code
     },
     String.fromCharCode(parseInt(code, 16))
-  );
+  ));
+};
+
+/**
+ * Capitalize the words in the character description.
+ * @param {string} text The original character description.
+ * @returns {string} Character description with capitalized words.
+ */
+InsertFromMenuAction.prototype.capitalizeWords_ = function (text) {
+  var splitText = text.toLowerCase().split(' ');
+  var splitTextCapitalized = [];
+  for(var part of splitText) {
+    splitTextCapitalized.push(part.substr(0, 1).toUpperCase() + part.substring(1));
+  }
+  return splitTextCapitalized.join(' ');
 };
 
 /**

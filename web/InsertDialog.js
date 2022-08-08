@@ -1,18 +1,4 @@
 /**
- * Capitalize the words in the character description.
- * @param text The original character description.
- * @returns {string} Character description with capitalized words.
- */
-function capitalizeWords(text) {
-  var splitText = text.toLowerCase().split(' ');
-  for(var i = 0; i < splitText.length; i++) {
-    splitText[i] = splitText[i].substr(0, 1).toUpperCase() + splitText[i].substring(1);
-  }
-  return splitText.join(' ');
-}
-
-
-/**
  * Get the read-only input used to preview characters to be inserted.
  * @returns {Element} The characters preview input element.
  */
