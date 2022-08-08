@@ -22,19 +22,12 @@ RecentCharactersGrid.prototype.addMoreSymbolsButton_ = function (displayDialog) 
 
 RecentCharactersGrid.prototype.actLikeDropdown_ = function () {
   // Add classes so charpicker button gets the same styles as other dropdowns from the toolbar.
-  var toolbarButton = this.charPickerToolbarButton_;
-  if (!toolbarButton) {
-    toolbarButton = document.querySelector('[name=' + insertSpecialCharActionId + ']');
-    this.charPickerToolbarButton_ = toolbarButton;
+  if (!this.charPickerToolbarButton_) {
+    this.charPickerToolbarButton_ = document.querySelector('[name=' + insertSpecialCharActionId + ']');
   }
   var gComponentEvent = goog.ui.Component.EventType;
   goog.events.listen(this, [gComponentEvent.SHOW, gComponentEvent.HIDE], e => {
-    var className = 'goog-toolbar-menu-button-open';
-    if (e.type === gComponentEvent.SHOW) {
-      toolbarButton.classList.add(className);
-    } else {
-      toolbarButton.classList.remove(className);
-    }
+    this.charPickerToolbarButton_.classList.toggle('goog-toolbar-menu-button-open', e.type === gComponentEvent.SHOW);
   });
 
   this.setToggleMode(true);
