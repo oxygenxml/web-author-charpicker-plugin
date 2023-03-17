@@ -431,3 +431,7 @@
         display: none;
     }
 }
+
+#charp-tabbar.no-categories {
+    display: none;
+}

@@ -64,82 +64,108 @@ InsertFromMenuAction.prototype.init = function () {
   this.csmenu_ = new RecentCharactersGrid(this.displayDialog_.bind(this), this.insertCharacters_.bind(this));
 };
 
+InsertFromMenuAction.prototype.getCategoriesToRemove = function () {
+  return sync.options.PluginsOptions.getClientOption('charp.remove_categories');
+};
+
+InsertFromMenuAction.prototype.isCategoriesTabEnabled = function () {
+  var removeCategories = this.getCategoriesToRemove();
+  return removeCategories && removeCategories.indexOf('*') === -1;
+};
+
+InsertFromMenuAction.prototype.renderByCategoriesTab = function () {
+  return this.isCategoriesTabEnabled() ?
+    goog.dom.createDom('div', { className: 'goog-tab', 'data-target-id': 'charpicker-advanced'},
+      goog.dom.createDom('span', {title: tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)}, tr(msgs.BY_CATEGORIES_))) :
+    null;
+};
+
+InsertFromMenuAction.prototype.renderByCategoriesTabContent = function () {
+  var charPickerAdvanced;
+  if (this.isCategoriesTabEnabled()) {
+    charPickerAdvanced = goog.dom.createDom('div', { id: 'charpicker-advanced' });
+    this.charPickerIframe_ = goog.dom.createDom('iframe', {
+      id: 'charpickeriframe',
+      src:  this.getIframeUrl_()
+    });
+    charPickerAdvanced.appendChild(this.charPickerIframe_);
+  }
+  return charPickerAdvanced;
+};
+
 /**
  * Create the charpicker dialog.
  * @private
  */
 InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
   var cD = goog.dom.createDom;
-  this.nameInput_ = getNameInput();
-  this.foundByNameList_ = cD('div', { id: 'foundByNameList', tabIndex: 0, role: 'grid' });
-  var charPickerAdvanced = cD('div', { id: 'charpicker-advanced' });
+  if (!this.foundByNameList_) {
+    this.nameInput_ = getNameInput();
+    this.foundByNameList_ = cD('div', { id: 'foundByNameList', tabIndex: 0, role: 'grid' });
 
-  var tabContainer = cD('div', {style: 'display: flex; flex-direction: column; flex-grow: 1; min-height: 0;'},
-    cD('div', {id: 'charp-tabbar', className: 'goog-tab-bar goog-tab-bar-top' },
-      cD('div', {className: 'goog-tab goog-tab-selected', 'data-target-id': 'charpicker-search-by-name'},
-        tr(msgs.BY_NAME_)),
-      cD('div', { className: 'goog-tab', 'data-target-id': 'charpicker-advanced'},
-        cD('span', {title: tr(msgs.BY_CATEGORIES_OR_HEX_CODE_)}, tr(msgs.BY_CATEGORIES_)))
-    ),
-    cD('div', {id: 'charp-tabbar-content'},
-      cD('div', { id: 'charpicker-search-by-name', className: this.tabSelectedClass_ },
-        cD('div', { style: 'line-height: 1.2em; height: 57px; flex-shrink: 0;' },
-          cD('label', { for: 'searchName', style: 'white-space: nowrap' }, tr(msgs.NAME_OF_CHARACTER_)),
-          this.nameInput_
-        ),
-        this.foundByNameList_,
-        cD('div', { id: 'previewCharacterDetails'})
-      ),
-      charPickerAdvanced
-    )
-  );
-
-  this.charPickerIframe_ = cD('iframe', {
-    id: 'charpickeriframe',
-    src:  this.getIframeUrl_()
-  });
-
-  var dialog = this.getDialog();
-  var dialogElement_ = dialog.getElement();
-  dialogElement_.id = 'charPicker';
-  goog.dom.appendChild(dialogElement_, tabContainer);
-
-  var tabBar = new goog.ui.TabBar();
-  tabBar.decorate(document.querySelector('#charp-tabbar'));
-
-  goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT, goog.bind(this.selectTab_, this));
-
-  dialogElement_.parentElement.classList.add("dialogContainer");
-
-  var gEvents = goog.events.EventType;
-  goog.events.listen(this.foundByNameList_, [ gEvents.MOUSEOVER, gEvents.CLICK ], updateCharPreview);
-  goog.events.listen(this.nameInput_, gEvents.KEYDOWN, goog.bind(this.findCharOnEnter_, this));
-  goog.events.listen(this.nameInput_, gEvents.INPUT, goog.bind(this.findCharAfterInput_, this));
-
-  charPickerAdvanced.appendChild(this.charPickerIframe_);
-
-
-
-  var readOnlyInput = getReadOnlyInput();
-  var removeLastCharButton = getRemoveLastCharButton();
-  var div = cD('div', { 'id': 'selectedCharsWrapper' },
-    cD('label', { style:'display: inline-block; margin-right:10px;', for: readOnlyInputId }, tr(msgs.SELECTED_CHARACTERS_)),
-    cD('span', {style: 'display: inline-flex; white-space: nowrap;'},
-      readOnlyInput,
-      removeLastCharButton)
-  );
-
-  goog.dom.appendChild(dialog.getElement(), div);
-
-  readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
-  goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
-    readOnlyInput.value = '';
-    charsToBeInserted.pop();
-    for(var char of charsToBeInserted){
-      readOnlyInput.value += char;
+    var tabBarClasses = 'goog-tab-bar goog-tab-bar-top';
+    if (! this.isCategoriesTabEnabled()) {
+      tabBarClasses += ' no-categories';
     }
-  });
-  this.readOnlyInput_ = readOnlyInput;
+    var tabContainer = cD('div', {style: 'display: flex; flex-direction: column; flex-grow: 1; min-height: 0;'},
+      cD('div', {id: 'charp-tabbar', className: tabBarClasses },
+        cD('div', {className: 'goog-tab goog-tab-selected', 'data-target-id': 'charpicker-search-by-name'},
+          tr(msgs.BY_NAME_)),
+        this.renderByCategoriesTab()
+      ),
+      cD('div', {id: 'charp-tabbar-content'},
+        cD('div', { id: 'charpicker-search-by-name', className: this.tabSelectedClass_ },
+          cD('div', { style: 'line-height: 1.2em; height: 57px; flex-shrink: 0;' },
+            cD('label', { for: 'searchName', style: 'white-space: nowrap' }, tr(msgs.NAME_OF_CHARACTER_)),
+            this.nameInput_
+          ),
+          this.foundByNameList_,
+          cD('div', { id: 'previewCharacterDetails'})
+        ),
+        this.renderByCategoriesTabContent()
+      )
+    );
+
+
+    var dialog = this.getDialog();
+    var dialogElement = dialog.getElement();
+    dialogElement.id = 'charPicker';
+    goog.dom.appendChild(dialogElement, tabContainer);
+
+    if (this.isCategoriesTabEnabled()) {
+      var tabBar = new goog.ui.TabBar();
+      tabBar.decorate(document.querySelector('#charp-tabbar'));
+      goog.events.listen(tabBar, goog.ui.Component.EventType.SELECT, goog.bind(this.selectTab_, this));
+    }
+
+    dialogElement.parentElement.classList.add("dialogContainer");
+
+    var gEvents = goog.events.EventType;
+    goog.events.listen(this.foundByNameList_, [ gEvents.MOUSEOVER, gEvents.CLICK ], updateCharPreview);
+    goog.events.listen(this.nameInput_, gEvents.KEYDOWN, goog.bind(this.findCharOnEnter_, this));
+    goog.events.listen(this.nameInput_, gEvents.INPUT, goog.bind(this.findCharAfterInput_, this));
+
+    var readOnlyInput = getReadOnlyInput();
+    var removeLastCharButton = getRemoveLastCharButton();
+    var div = cD('div', { 'id': 'selectedCharsWrapper' },
+      cD('label', { style:'display: inline-block; margin-right:10px;', for: readOnlyInputId }, tr(msgs.SELECTED_CHARACTERS_)),
+      cD('span', {style: 'display: inline-flex; white-space: nowrap;'},
+        readOnlyInput,
+        removeLastCharButton)
+    );
+
+    goog.dom.appendChild(dialog.getElement(), div);
+
+    readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
+    goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
+      readOnlyInput.value = '';
+      charsToBeInserted.pop();
+      for(var char of charsToBeInserted){
+        readOnlyInput.value += char;
+      }
+    });
+    this.readOnlyInput_ = readOnlyInput;
+  }
 };
 
 /**
@@ -180,7 +206,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
 InsertFromMenuAction.prototype.displayDialog_ = function () {
   window.charsToBeInserted = [];
   // if dialog has not been opened yet, load it
-  if(document.getElementById('charpickeriframe') === null) {
+  if(!this.foundByNameList_) {
     this.createCharPickerDialog_();
   } else {
     this.refreshCharPickerDialog_();
@@ -230,12 +256,15 @@ InsertFromMenuAction.prototype.removeWarningFromLastSearch_ = function () {
  * @private
  */
 InsertFromMenuAction.prototype.resetHexInput_ = function () {
-  var iframeContent = (this.charPickerIframe_.contentWindow || this.charPickerIframe_.contentDocument);
-  if (iframeContent.document) {
-    iframeContent = iframeContent.document;
-    iframeContent.querySelector('.goog-char-picker-input-box').value = '';
-  } else {
-    console.warn('Failed to get iframe contents.');
+  if (this.charPickerIframe_) {
+    var iframeContent = this.charPickerIframe_.contentWindow || this.charPickerIframe_.contentDocument;
+    if (iframeContent.document) {
+      iframeContent = iframeContent.document;
+      var hexInput = iframeContent.querySelector('.goog-char-picker-input-box');
+      hexInput.value = '';
+    } else {
+      console.warn('Failed to get iframe contents.');
+    }
   }
 };
 
@@ -380,7 +409,7 @@ InsertFromMenuAction.prototype.findCharAfterInput_ = function () {
  */
 InsertFromMenuAction.prototype.getIframeUrl_ = function () {
   var iframeUrl = '../plugin-resources/' + this.pluginResourcesFolder_ + '/charpicker.html';
-  var removeCategories = sync.options.PluginsOptions.getClientOption('charp.remove_categories');
+  var removeCategories = this.getCategoriesToRemove();
   if (removeCategories) {
     iframeUrl += '?remove-categories=' + encodeURIComponent(removeCategories);
   }
