@@ -70,7 +70,7 @@ InsertFromMenuAction.prototype.getCategoriesToRemove = function () {
 
 InsertFromMenuAction.prototype.isCategoriesTabEnabled = function () {
   var removeCategories = this.getCategoriesToRemove();
-  return removeCategories && removeCategories.indexOf('*') === -1;
+  return !removeCategories || (removeCategories && removeCategories.indexOf('*') === -1);
 };
 
 InsertFromMenuAction.prototype.renderByCategoriesTab = function () {
