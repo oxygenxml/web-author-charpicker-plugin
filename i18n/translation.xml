@@ -8,7 +8,15 @@
     <language description="Dutch" lang="nl_NL"/>
     <language description="Chinese" lang="zh_CN"/>
   </languageList>
-  <!-- server-side tags must have the 'destination' attribute set -->
+  <key distribution="webauthor" value="Remove_all_categories">
+    <comment>Tip shown near input used to remove categories</comment>
+    <val lang="en_US">Set * to remove the "By category" view completely</val>
+    <val lang="de_DE">Set * to remove the "By category" view completely</val>
+    <val lang="fr_FR">Set * to remove the "By category" view completely</val>
+    <val lang="ja_JP">Set * to remove the "By category" view completely</val>
+    <val lang="nl_NL">Set * to remove the "By category" view completely</val>
+    <val lang="zh_CN">Set * to remove the "By category" view completely</val>
+  </key>
   <key distribution="webauthor" value="Default_characters">
     <comment>Label for input used to specify a list of characters shown as recently used
       characters.</comment>

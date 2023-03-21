@@ -20,17 +20,18 @@ public class ConfigurationPage extends PluginConfigExtension {
 
   @Override
   public String getOptionsForm() {
-    List<String> defaultCategories = new ArrayList<String>();
+    List<String> defaultCategories = new ArrayList<>();
     PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
     
     CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
     return "<div style=\"font-family: robotolight, Arial, Helvetica, sans-serif;\">"
           + "<div>" + rb.getMessage(TranslationTags.INITIAL_CATEGORIES) 
-            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + ".</div>"        
+            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + "</div>"        
           + "</div>"
           + "<label style=\"display: block;\">" 
             + rb.getMessage(TranslationTags.REMOVE_CATEGORIES) + ":"
             + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=" + REMOVE_CATEGORIES + " id=\"remove_categories\" value=\"" + getOption(REMOVE_CATEGORIES, "") + "\">"
+            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + rb.getMessage(TranslationTags.REMOVE_ALL_CATEGORIES) + "</div>"
           + "</label>"
           + "<label style=\"display: block; margin-top:15px;\">" + rb.getMessage(TranslationTags.DEFAULT_CHARACTERS) + ":"
             + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=" + DEFAULT_CHARACTERS + " id=\"default_characters\" value=\"" + getOption(DEFAULT_CHARACTERS, "") + "\">"
@@ -45,7 +46,7 @@ public class ConfigurationPage extends PluginConfigExtension {
     int[] defaultCharacters = defaultCharactersValue.codePoints().toArray();
     List<Object> defaultCharactersCodes = new ArrayList<>();
     for (int i = 0; i < defaultCharacters.length; i++) {
-      defaultCharactersCodes.add((int) defaultCharacters[i]);
+      defaultCharactersCodes.add(defaultCharacters[i]);
     }
     return "{\"" + REMOVE_CATEGORIES + "\": \"" + getOption(REMOVE_CATEGORIES, "") + "\", \"" 
         + DEFAULT_CHARACTERS + "\": \"" + defaultCharactersCodes + "\"}";

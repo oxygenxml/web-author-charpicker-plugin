@@ -21,6 +21,13 @@ public class TranslationTags {
    * en: Remove categories
    */
   static final String REMOVE_CATEGORIES = "Remove_categories";
+  
+  /**
+   * Tip shown near input expecting a list of category names, separated by commas.
+   * 
+   * en: Set * to remove the "By category" view completely.
+   */
+  static final String REMOVE_ALL_CATEGORIES = "Remove_all_categories";
 
   /**
    * Text preceding a list of category names.
