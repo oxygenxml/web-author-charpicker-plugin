@@ -25,8 +25,9 @@ public class ConfigurationPage extends PluginConfigExtension {
     
     CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
     return "<div style=\"font-family: robotolight, Arial, Helvetica, sans-serif;\">"
-          + "<div>" + rb.getMessage(TranslationTags.INITIAL_CATEGORIES) 
-            + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + String.join(", ", defaultCategories) + "</div>"        
+          + "<div>" + rb.getMessage(TranslationTags.INITIAL_CATEGORIES) + ":"
+            + "<div style=\"padding: 5px 10px; color: #969696; margin-bottom: 15px; border: 1px solid lightgray; border-radius: 4px; max-height: 150px; overflow-y: auto;\">" 
+          + String.join(",<br/>", defaultCategories) + "</div>"        
           + "</div>"
           + "<label style=\"display: block;\">" 
             + rb.getMessage(TranslationTags.REMOVE_CATEGORIES) + ":"
