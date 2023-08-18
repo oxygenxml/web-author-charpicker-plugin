@@ -15,18 +15,17 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
+import ro.sync.ecss.extensions.api.webapp.plugin.ServletPluginExtension;
+import ro.sync.ecss.extensions.api.webapp.plugin.servlet.ServletException;
+import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.Cookie;
+import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletRequest;
+import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletResponse;
 
 @Slf4j
-public class SpecialCharServlet extends WebappServletPluginExtension {
+public class SpecialCharServlet extends ServletPluginExtension {
 	
 	private static int maxResults = 500;
 	
