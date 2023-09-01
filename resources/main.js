@@ -86,6 +86,7 @@ window["initCharPicker"] = function () {
   var selectionAction = function () {
     var selectedChar = picker.getSelectedChar();
     output.value += selectedChar;
+    output.focus();
     parent["charsToBeInserted"].push(selectedChar);
   };
 

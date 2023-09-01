@@ -138,6 +138,7 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
     for(var char of charsToBeInserted){
       readOnlyInput.value += char;
     }
+    readOnlyInput.focus();
   });
   this.readOnlyInput_ = readOnlyInput;
 };
