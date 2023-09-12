@@ -59,6 +59,26 @@ RecentCharactersGrid.prototype.showRecentGrid = function () {
     goog.positioning.Corner.BOTTOM_START);
 };
 
+
+/**
+ * Get the current character tooltip.
+ * @param {String} character The character to display the tooltip for.
+ * @private
+ */
+RecentCharactersGrid.prototype.getToolTip_ = function(character) {
+  var hexText = 'U+' + character.codePointAt(0).toString(16).toUpperCase();
+  var tooltipText = hexText;
+  var usedCharactersTitles = localStorage.getItem("usedCharactersTitles");
+  if (usedCharactersTitles) {
+    var titlesObj = JSON.parse(usedCharactersTitles);
+    var title = titlesObj['\'' + character + '\''];
+    if (title) {
+      tooltipText = title + " (" + hexText + ")";
+    }
+  } 
+  return tooltipText;
+}
+
 /**
  * Render the recent characters grid.
  * @param {Array<String>} characters The characters to display in the grid.
@@ -70,10 +90,11 @@ RecentCharactersGrid.prototype.displayRecentCharacters_ = function (characters) 
 
   /* Add the characters to the container */
   for (var character of characters) {
+    var tooltip = this.getToolTip_(character);
     this.recentCharactersGrid_.appendChild(
       goog.dom.createDom(
         'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0,
-        'title' : 'U+' + character.codePointAt(0).toString(16).toUpperCase()
+        'title' : tooltip
       },
         character)
     );

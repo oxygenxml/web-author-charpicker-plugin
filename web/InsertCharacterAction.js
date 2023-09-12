@@ -39,7 +39,7 @@ InsertFromMenuAction.prototype.actionPerformed = function (callback) {
  * @param {Array.<string>} characters
  * @private
  */
-InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
+InsertFromMenuAction.prototype.insertCharacters_ = function (characters, charactersTitles) {
   var actionsExecutor = this.editor_.getEditingSupport().actionsExecutor;
   var actionsManager = this.editor_.getActionsManager();
 
@@ -50,7 +50,7 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
           'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation',
           {text: characters.join('')},
           function () {
-            addNewRecentCharacters(characters.splice(0).reverse());
+            addNewRecentCharacters(characters.splice(0).reverse(), charactersTitles);
             resolve(characters);
           }
         );
@@ -61,6 +61,7 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
 
 InsertFromMenuAction.prototype.init = function () {
   window.charsToBeInserted = [];
+  window.charsToBeInsertedTitles = [];
   this.csmenu_ = new RecentCharactersGrid(this.displayDialog_.bind(this), this.insertCharacters_.bind(this));
 };
 
@@ -169,8 +170,9 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
   // DIALOG INSERT GRID
   if (key === 'ok') {
     var dialogInsertChars = window.charsToBeInserted;
+    var dialogInsertCharsTitles = window.charsToBeInsertedTitles;
     if (dialogInsertChars) {
-      this.insertCharacters_(dialogInsertChars);
+      this.insertCharacters_(dialogInsertChars, dialogInsertCharsTitles);
     }
   }
 };
@@ -180,6 +182,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
  */
 InsertFromMenuAction.prototype.displayDialog_ = function () {
   window.charsToBeInserted = [];
+  window.charsToBeInsertedTitles = [];
   // if dialog has not been opened yet, load it
   if(document.getElementById('charpickeriframe') === null) {
     this.createCharPickerDialog_();

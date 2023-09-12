@@ -51,9 +51,8 @@ window["initCharPicker"] = function () {
     translateCategories(charPickerData, customCategories);
   }
 
-  var picker = new goog.ui.CharPicker(
-    charPickerData,
-    new goog.i18n.uChar.LocalNameFetcher());
+  var localNameFetcher = new goog.i18n.uChar.LocalNameFetcher();
+  var picker = new goog.ui.CharPicker(charPickerData, localNameFetcher);
 
   // Make it easier to add custom character categories.
   var decompressor = null;
@@ -80,6 +79,7 @@ window["initCharPicker"] = function () {
 
   var parent = window.parent;
   parent["charsToBeInserted"] = [];
+  parent["charsToBeInsertedTitles"] = {};
   var output = parent.document.getElementById('special_characters');
 
   // Action on selection
@@ -88,6 +88,15 @@ window["initCharPicker"] = function () {
     output.value += selectedChar;
     output.focus();
     parent["charsToBeInserted"].push(selectedChar);
+    localNameFetcher.getName(selectedChar, function (charTitle) {
+      if (charTitle) {
+        var titleKey = '\'' + selectedChar + '\'';
+        var currentTitle = parent["charsToBeInsertedTitles"][titleKey];
+        if (!currentTitle) {
+          parent["charsToBeInsertedTitles"][titleKey] = charTitle;
+        }
+      }
+    });
   };
 
   // Get the UI messages ready.

@@ -2,12 +2,14 @@
  * After new characters have been inserted, add them to the recent characters grid.
  * Make sure recent characters are the expected length. Trim if longer.
  * @param {Array<String>} newCharacters The characters which were inserted.
+ * @param {Array<String>} newCharactersTitles The characters titles which were inserted.
  */
-function addNewRecentCharacters(newCharacters) {
-  var characters = newCharacters.concat(getUsedChars());
+function addNewRecentCharacters(newCharacters, newCharactersTitles) {
+  var characters = newCharacters.concat(getCharListFromStorage(usedCharsItemName));
+  var charactersTitles = Object.assign(newCharactersTitles ? newCharactersTitles : {}, getUsedCharsTitles());
   goog.array.removeDuplicates(characters);
   characters = characters.slice(0, maxRecentChars);
-  setRecentChars(characters);
+  setRecentChars(characters, charactersTitles);
 }
 
 /**
@@ -72,10 +74,13 @@ function getUserSelectedDefaults () {
  * Add the new characters to the list of recent characters.
  * @param {Array<String>} characters The characters to set as recent characters.
  */
-function setRecentChars(characters) {
+function setRecentChars(characters, charactersTitles) {
   if (localStorageUsable) {
     try {
       localStorage.setItem(usedCharsItemName, JSON.stringify(characters));
+      if (charactersTitles) {
+        localStorage.setItem(usedCharsItemTitles, JSON.stringify(charactersTitles));
+      }
     } catch (e) {
       console.warn(e);
     }
@@ -101,7 +106,7 @@ function getRecentChars() {
     recentChars = getUsedCharsMigration(defaultRecentCharacters, oldRecentChars);
     // If migration yielded used characters, save them to the new storage item for next time.
     if (recentChars.length) {
-      addNewRecentCharacters(recentChars);
+      addNewRecentCharacters(recentChars, {});
     }
   }
 
@@ -116,18 +121,29 @@ function getRecentChars() {
 
 /**
  * Return the list with only used characters.
+ * @param {String} charsLocalStorageItemName Local storage item name
  * @returns {Array<String>}
  */
-function getUsedChars () {
-  return getCharListFromStorage(usedCharsItemName);
+function getCharListFromStorage (charsLocalStorageItemName) {
+  var obj = getObjectFromLocalStorage(charsLocalStorageItemName);
+  return obj ? obj : [];
 }
 
 /**
- * Get a list of characters from a localStorage item.
- * @param {String} storageItem The name of the localStorage item to check.
- * @returns {Array<String>} List of characters or empty list.
+ * Return the titles list with only used characters.
+ * @returns {Object}
  */
-function getCharListFromStorage (storageItem) {
+function getUsedCharsTitles() {
+  var obj = getObjectFromLocalStorage(usedCharsItemTitles);
+  return obj ? obj : {};
+}
+
+/**
+ * Get an object from a localStorage item.
+ * @param {String} storageItem The name of the localStorage item to check.
+ * @returns {Object} The object.
+ */
+function getObjectFromLocalStorage (storageItem) {
   var chars;
   chars = getFromLocalStorage(storageItem);
   if (chars) {
@@ -137,9 +153,7 @@ function getCharListFromStorage (storageItem) {
       console.warn(e);
     }
   }
-  if (!chars) {
-    chars = [];
-  }
+ 
   return chars;
 }
 
