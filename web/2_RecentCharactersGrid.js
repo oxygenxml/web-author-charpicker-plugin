@@ -72,7 +72,9 @@ RecentCharactersGrid.prototype.displayRecentCharacters_ = function (characters) 
   for (var character of characters) {
     this.recentCharactersGrid_.appendChild(
       goog.dom.createDom(
-        'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0 },
+        'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0,
+        'title' : 'U+' + character.codePointAt(0).toString(16).toUpperCase()
+      },
         character)
     );
   }
