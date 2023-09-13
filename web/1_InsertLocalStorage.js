@@ -2,11 +2,11 @@
  * After new characters have been inserted, add them to the recent characters grid.
  * Make sure recent characters are the expected length. Trim if longer.
  * @param {Array<String>} newCharacters The characters which were inserted.
- * @param {Array<String>} newCharactersTitles The characters titles which were inserted.
  */
-function addNewRecentCharacters(newCharacters, newCharactersTitles) {
+function addNewRecentCharacters(newCharacters) {
+  var newCharactersTitles = window.charsToBeInsertedTitles ? window.charsToBeInsertedTitles : {};
   var characters = newCharacters.concat(getCharListFromStorage(usedCharsItemName));
-  var charactersTitles = Object.assign(newCharactersTitles ? newCharactersTitles : {}, getUsedCharsTitles());
+  var charactersTitles = Object.assign(newCharactersTitles, getUsedCharsTitles());
   goog.array.removeDuplicates(characters);
   characters = characters.slice(0, maxRecentChars);
   setRecentChars(characters, charactersTitles);

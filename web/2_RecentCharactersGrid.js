@@ -77,7 +77,7 @@ RecentCharactersGrid.prototype.getToolTip_ = function(character) {
     }
   } 
   return tooltipText;
-}
+};
 
 /**
  * Render the recent characters grid.

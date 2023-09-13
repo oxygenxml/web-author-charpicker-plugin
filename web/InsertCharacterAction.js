@@ -39,7 +39,7 @@ InsertFromMenuAction.prototype.actionPerformed = function (callback) {
  * @param {Array.<string>} characters
  * @private
  */
-InsertFromMenuAction.prototype.insertCharacters_ = function (characters, charactersTitles) {
+InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
   var actionsExecutor = this.editor_.getEditingSupport().actionsExecutor;
   var actionsManager = this.editor_.getActionsManager();
 
@@ -50,7 +50,7 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters, charact
           'ro.sync.ecss.extensions.commons.operations.InsertOrReplaceTextOperation',
           {text: characters.join('')},
           function () {
-            addNewRecentCharacters(characters.splice(0).reverse(), charactersTitles);
+            addNewRecentCharacters(characters.splice(0).reverse());
             resolve(characters);
           }
         );
@@ -170,9 +170,8 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
   // DIALOG INSERT GRID
   if (key === 'ok') {
     var dialogInsertChars = window.charsToBeInserted;
-    var dialogInsertCharsTitles = window.charsToBeInsertedTitles;
     if (dialogInsertChars) {
-      this.insertCharacters_(dialogInsertChars, dialogInsertCharsTitles);
+      this.insertCharacters_(dialogInsertChars);
     }
   }
 };
