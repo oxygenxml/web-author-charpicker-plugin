@@ -84,19 +84,21 @@ window["initCharPicker"] = function () {
 
   // Action on selection
   var selectionAction = function () {
-    var selectedChar = picker.getSelectedChar();
-    output.value += selectedChar;
-    output.focus();
-    parent["charsToBeInserted"].push(selectedChar);
-    localNameFetcher.getName(selectedChar, function (charTitle) {
-      if (charTitle) {
-        var titleKey = '\'' + selectedChar + '\'';
-        var currentTitle = parent["charsToBeInsertedTitles"][titleKey];
-        if (!currentTitle) {
-          parent["charsToBeInsertedTitles"][titleKey] = charTitle;
+    var selectedChar = picker.getSelectedChar() || '';
+    if (selectedChar) {
+      output.value += selectedChar;
+      output.focus();
+      parent["charsToBeInserted"].push(selectedChar);
+      localNameFetcher.getName(selectedChar, function (charTitle) {
+        if (charTitle) {
+          var titleKey = '\'' + selectedChar + '\'';
+          var currentTitle = parent["charsToBeInsertedTitles"][titleKey];
+          if (!currentTitle) {
+            parent["charsToBeInsertedTitles"][titleKey] = charTitle;
+          }
         }
-      }
-    });
+      });
+    }
   };
 
   // Get the UI messages ready.
