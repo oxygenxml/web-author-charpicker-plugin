@@ -61,7 +61,7 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters, charact
 
 InsertFromMenuAction.prototype.init = function () {
   window.charsToBeInserted = [];
-  window.charsToBeInsertedTitles = [];
+  window.charsToBeInsertedTitles = {};
   this.csmenu_ = new RecentCharactersGrid(this.displayDialog_.bind(this), this.insertCharacters_.bind(this));
 };
 
@@ -182,7 +182,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
  */
 InsertFromMenuAction.prototype.displayDialog_ = function () {
   window.charsToBeInserted = [];
-  window.charsToBeInsertedTitles = [];
+  window.charsToBeInsertedTitles = {};
   // if dialog has not been opened yet, load it
   if(document.getElementById('charpickeriframe') === null) {
     this.createCharPickerDialog_();
