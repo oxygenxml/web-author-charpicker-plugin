@@ -73,7 +73,13 @@ function updateCharPreview(e) {
     if (e.type === goog.events.EventType.CLICK) {
       var symbol = e.target.textContent;
       charsToBeInserted.push(symbol);
-      document.getElementById(readOnlyInputId).value += symbol;
+      var title = e.target.getAttribute('data-symbol-name');
+      if(title) {
+        charsToBeInsertedTitles['\'' + symbol + '\''] = title;
+      }
+      var insertedCharactersInput = document.getElementById(readOnlyInputId);
+      insertedCharactersInput.value += symbol;
+      insertedCharactersInput.focus();    
     }
   }
 }

@@ -30,6 +30,12 @@ var recentCharsItemName = 'recentlyUsedCharacters';
 var usedCharsItemName = 'usedCharacters';
 
 /**
+ * Name of localStorage item which only keeps characters titles which were used.
+ * @type {string}
+ */
+var usedCharsItemTitles = 'usedCharactersTitles';
+
+/**
  * Default recently used characters.
  * @type {string[]}
  */

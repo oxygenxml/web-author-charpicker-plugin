@@ -61,6 +61,7 @@ InsertFromMenuAction.prototype.insertCharacters_ = function (characters) {
 
 InsertFromMenuAction.prototype.init = function () {
   window.charsToBeInserted = [];
+  window.charsToBeInsertedTitles = {};
   this.csmenu_ = new RecentCharactersGrid(this.displayDialog_.bind(this), this.insertCharacters_.bind(this));
 };
 
@@ -156,16 +157,16 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
 
     goog.dom.appendChild(dialog.getElement(), div);
 
-    readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
-    goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
-      readOnlyInput.value = '';
-      charsToBeInserted.pop();
-      for(var char of charsToBeInserted){
-        readOnlyInput.value += char;
-      }
-    });
-    this.readOnlyInput_ = readOnlyInput;
-  }
+  readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
+  goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
+    readOnlyInput.value = '';
+    charsToBeInserted.pop();
+    for(var char of charsToBeInserted){
+      readOnlyInput.value += char;
+    }
+    readOnlyInput.focus();
+  });
+  this.readOnlyInput_ = readOnlyInput;
 };
 
 /**
@@ -205,6 +206,7 @@ InsertFromMenuAction.prototype.charPickerDialogOnSelect_ = function (key) {
  */
 InsertFromMenuAction.prototype.displayDialog_ = function () {
   window.charsToBeInserted = [];
+  window.charsToBeInsertedTitles = {};
   // if dialog has not been opened yet, load it
   if(!this.foundByNameList_) {
     this.createCharPickerDialog_();
