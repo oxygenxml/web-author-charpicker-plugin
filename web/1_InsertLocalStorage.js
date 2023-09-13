@@ -6,10 +6,10 @@
 function addNewRecentCharacters(newCharacters) {
   var newCharactersTitles = window.charsToBeInsertedTitles ? window.charsToBeInsertedTitles : {};
   var characters = newCharacters.concat(getCharListFromStorage(usedCharsItemName));
-  var charactersTitles = Object.assign(newCharactersTitles, getUsedCharsTitles());
+  var charactersWithTitles = Object.assign(newCharactersTitles, getUsedCharsTitles());
   goog.array.removeDuplicates(characters);
   characters = characters.slice(0, maxRecentChars);
-  setRecentChars(characters, charactersTitles);
+  setRecentChars(characters, charactersWithTitles);
 }
 
 /**
@@ -73,13 +73,14 @@ function getUserSelectedDefaults () {
 /**
  * Add the new characters to the list of recent characters.
  * @param {Array<String>} characters The characters to set as recent characters.
+ * @param {Object.<string, string>} charactersWithTitles Mapping of characters to character titles.
  */
-function setRecentChars(characters, charactersTitles) {
+function setRecentChars(characters, charactersWithTitles) {
   if (localStorageUsable) {
     try {
       localStorage.setItem(usedCharsItemName, JSON.stringify(characters));
-      if (charactersTitles) {
-        localStorage.setItem(usedCharsItemTitles, JSON.stringify(charactersTitles));
+      if (charactersWithTitles) {
+        localStorage.setItem(usedCharsItemTitles, JSON.stringify(charactersWithTitles));
       }
     } catch (e) {
       console.warn(e);

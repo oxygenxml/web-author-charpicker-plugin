@@ -136,8 +136,6 @@ window["initCharPicker"] = function () {
     okButton
   );
 
-
-
   // Get selected locale from the char picker.
   goog.events.listen(picker, 'action', selectionAction);
 };
