@@ -8,7 +8,6 @@ function InsertFromMenuAction (editor) {
     displayName: 'insert from menu'
   });
   this.editor_ = editor;
-  this.maxRecentChars_ = maxRecentChars;
 
   this.timeoutFunction_ = null;
 
@@ -157,16 +156,17 @@ InsertFromMenuAction.prototype.createCharPickerDialog_ = function () {
 
     goog.dom.appendChild(dialog.getElement(), div);
 
-  readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
-  goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
-    readOnlyInput.value = '';
-    charsToBeInserted.pop();
-    for(var char of charsToBeInserted){
-      readOnlyInput.value += char;
-    }
-    readOnlyInput.focus();
-  });
-  this.readOnlyInput_ = readOnlyInput;
+    readOnlyInput.scrollTop = readOnlyInput.scrollHeight;
+    goog.events.listen(removeLastCharButton, gEvents.CLICK, function(){
+      readOnlyInput.value = '';
+      charsToBeInserted.pop();
+      for(var char of charsToBeInserted){
+        readOnlyInput.value += char;
+      }
+      readOnlyInput.focus();
+    });
+    this.readOnlyInput_ = readOnlyInput;
+  }
 };
 
 /**
