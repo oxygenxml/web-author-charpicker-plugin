@@ -9,13 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;
-import ro.sync.ecss.extensions.api.webapp.plugin.ServletPluginExtension;
-import ro.sync.ecss.extensions.api.webapp.plugin.servlet.ServletException;
-import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletRequest;
-import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletResponse;
+import ro.sync.ecss.extensions.api.webapp.plugin.WebappServletPluginExtension;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -25,7 +26,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
  * 
  * @author andrei_popa
  */
-public class CategoryNames extends ServletPluginExtension {
+public class CategoryNames extends WebappServletPluginExtension {
 
   @Override
   public String getPath() {
