@@ -11,11 +11,11 @@
   <key distribution="webauthor" value="Remove_all_categories">
     <comment>Tip shown near input used to remove categories</comment>
     <val lang="en_US">Use * to remove the "By category" view completely</val>
-    <val lang="de_DE">Use * to remove the "By category" view completely</val>
+    <val lang="de_DE">Verwenden Sie * um die Ansicht "Nach Kategorie" vollständig zu entfernen</val>
     <val lang="fr_FR">Utilisez * pour supprimer complètement la vue "Par catégorie".</val>
-    <val lang="ja_JP">Use * to remove the "By category" view completely</val>
-    <val lang="nl_NL">Use * to remove the "By category" view completely</val>
-    <val lang="zh_CN">Use * to remove the "By category" view completely</val>
+    <val lang="ja_JP">*を使用して「カテゴリ別」ビューを完全に削除します</val>
+    <val lang="nl_NL">Gebruik * om het "Op categorie" zicht volledig te verwijderen</val>
+    <val lang="zh_CN">使用*完全删除“按类别”视图</val>
   </key>
   <key distribution="webauthor" value="Default_characters">
     <comment>Label for input used to specify a list of characters shown as recently used
