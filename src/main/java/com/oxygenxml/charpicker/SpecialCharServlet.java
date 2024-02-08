@@ -57,7 +57,9 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	  resp.setContentType(getPath());
 		String query = req.getParameter("q");
+    resp.setContentType("application/json");
 		Map<String, String> charResult = new LinkedHashMap<>();
 		if(query.length() == 0) {
 			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);

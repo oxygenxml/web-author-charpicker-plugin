@@ -36,6 +36,7 @@ public class CategoryNames extends ServletPluginExtension {
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     String cookieLanguage = SpecialCharServlet.getCookieLanguage(req.getCookies());
     if (cookieLanguage != null && !cookieLanguage.contains("en")) {
+      resp.setContentType("text/javascript");
       resp.getOutputStream().write((getTranslatedCategories() + getUITranslation()).getBytes(StandardCharsets.UTF_8));
     }
   }
