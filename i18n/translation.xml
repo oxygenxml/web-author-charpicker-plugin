@@ -96,7 +96,7 @@
     <comment>Label of input for searching through characters by name</comment>
     <val lang="en_US">Name of character to search for:</val>
     <val lang="de_DE">Name des Zeichens, nach dem gesucht werden soll:</val>
-    <val lang="fr_FR">Nom du caractère à rechercher:</val>
+    <val lang="fr_FR">Nom du caractère à rechercher :</val>
     <val lang="ja_JP">検索するための文字の名前：</val>
     <val lang="nl_NL">Naam van teken waarnaar u wilt zoeken:</val>
     <val lang="zh_CN">搜索的字符名：</val>
@@ -124,7 +124,7 @@
       inserted.</comment>
     <val lang="en_US">Selected characters:</val>
     <val lang="de_DE">Ausgewählte Zeichen:</val>
-    <val lang="fr_FR">Caractères sélectionnés:</val>
+    <val lang="fr_FR">Caractères sélectionnés :</val>
     <val lang="ja_JP">選択された文字：</val>
     <val lang="nl_NL">Geselecteerde tekens:</val>
     <val lang="zh_CN">选定字符：</val>
