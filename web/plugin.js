@@ -9,7 +9,7 @@
     addToFrameworkToolbar(editor);
 
     function toolbarContainsCharpicker (toolbar) {
-      return toolbar.children.find(element => element.id === insertSpecialCharActionId);
+      return toolbar && toolbar.children.find(element => element.id === insertSpecialCharActionId);
     }
 
     function isFrameworkActionsLoaded(e) {
