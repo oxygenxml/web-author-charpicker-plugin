@@ -10,7 +10,9 @@ function getReadOnlyInput() {
     name: 'charsToBeInserted'
   });
   readOnlyInput.setAttribute('readonly', 'true');
-  readOnlyInput.setAttribute('onFocus', 'this.setSelectionRange(0, this.value.length)');
+  readOnlyInput.addEventListener('focus', goog.bind(function () {
+	this.setSelectionRange(0, this.value.length);
+  }, this));
   return readOnlyInput;
 }
 
