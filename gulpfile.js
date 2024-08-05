@@ -65,7 +65,7 @@ gulp.task('replacehtml', function(done) {
             'css': 'css/styles.min.css',
             'dev': {
               src: 'js/script.min.js',
-              tpl: '<script src="%s" type="application/x-javascript"></script>'
+              tpl: '<script src="%s" type="text/javascript"></script>'
             }
         }))
         .pipe(gulp.dest(targetLocation));
