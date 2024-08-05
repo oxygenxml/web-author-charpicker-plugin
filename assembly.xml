@@ -38,6 +38,13 @@
 		</fileSet>
 		<fileSet>
 			<directory>resources/</directory>
+			<outputDirectory>/resources/js</outputDirectory>
+			<includes>
+				<include>initcharpicker.js</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>resources/</directory>
 			<outputDirectory>/resources</outputDirectory>
 			<includes>
 				<include>BackwardDelete.svg</include>

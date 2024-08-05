@@ -63,7 +63,10 @@ gulp.task('replacehtml', function(done) {
     gulp.src(resourceLocation + '/charpicker.html')
         .pipe(htmlreplace({
             'css': 'css/styles.min.css',
-            'dev': 'js/script.min.js'
+            'dev': {
+              src: 'js/script.min.js',
+              tpl: '<script src="%s" type="application/x-javascript"></script>'
+            }
         }))
         .pipe(gulp.dest(targetLocation));
 		done();
