@@ -27,6 +27,7 @@ gulp.task('minify-js', gulp.series('make-translations', function() {
         .pipe(closureCompiler({
           compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
           fileName: 'build.js',
+          continueWithWarnings: true,
           compilerFlags: {
             closure_entry_point: 'charpicker.Main',
             compilation_level: 'ADVANCED_OPTIMIZATIONS',
