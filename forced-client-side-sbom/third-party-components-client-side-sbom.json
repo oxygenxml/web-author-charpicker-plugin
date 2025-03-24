@@ -1,0 +1,161 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "serialNumber": "urn:uuid:46437608-dfa9-4364-9b82-e1efc9fadfb5",
+  "metadata": {
+    "timestamp": "2025-03-24T11:04:01.195Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "npm",
+          "version": "8.1.3"
+        },
+        {
+          "type": "application",
+          "name": "cyclonedx-npm",
+          "group": "@cyclonedx",
+          "version": "2.1.0",
+          "author": "Jan Kowalleck",
+          "description": "Create CycloneDX Software Bill of Materials (SBOM) from NPM projects.",
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "externalReferences": [
+            {
+              "url": "git+https://github.com/CycloneDX/cyclonedx-node-npm.git",
+              "type": "vcs",
+              "comment": "as detected from PackageJson property \"repository.url\""
+            },
+            {
+              "url": "https://github.com/CycloneDX/cyclonedx-node-npm#readme",
+              "type": "website",
+              "comment": "as detected from PackageJson property \"homepage\""
+            },
+            {
+              "url": "https://github.com/CycloneDX/cyclonedx-node-npm/issues",
+              "type": "issue-tracker",
+              "comment": "as detected from PackageJson property \"bugs.url\""
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "name": "cyclonedx-library",
+          "group": "@cyclonedx",
+          "version": "7.1.0",
+          "author": "Jan Kowalleck",
+          "description": "Core functionality of CycloneDX for JavaScript (Node.js or WebBrowser).",
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "externalReferences": [
+            {
+              "url": "git+https://github.com/CycloneDX/cyclonedx-javascript-library.git",
+              "type": "vcs",
+              "comment": "as detected from PackageJson property \"repository.url\""
+            },
+            {
+              "url": "https://github.com/CycloneDX/cyclonedx-javascript-library#readme",
+              "type": "website",
+              "comment": "as detected from PackageJson property \"homepage\""
+            },
+            {
+              "url": "https://github.com/CycloneDX/cyclonedx-javascript-library/issues",
+              "type": "issue-tracker",
+              "comment": "as detected from PackageJson property \"bugs.url\""
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "name": "webapp-charpicker-plugin",
+      "version": "18.0.0",
+      "bom-ref": "webapp-charpicker-plugin@18.0.0",
+      "description": "A plugin for oXygen XML Web Author that adds support for inserting special UTF-8 characters",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "acknowledgement": "declared"
+          }
+        }
+      ],
+      "purl": "pkg:npm/webapp-charpicker-plugin@18.0.0?vcs_url=git%2Bhttps%3A%2F%2Fgithub.com%2Foxygenxml%2Fwebapp-charpicker-plugin.git",
+      "externalReferences": [
+        {
+          "url": "git+https://github.com/oxygenxml/webapp-charpicker-plugin.git",
+          "type": "vcs",
+          "comment": "as detected from PackageJson property \"repository.url\""
+        },
+        {
+          "url": "https://github.com/oxygenxml/webapp-charpicker-plugin#readme",
+          "type": "website",
+          "comment": "as detected from PackageJson property \"homepage\""
+        },
+        {
+          "url": "https://github.com/oxygenxml/webapp-charpicker-plugin/issues",
+          "type": "issue-tracker",
+          "comment": "as detected from PackageJson property \"bugs.url\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": ""
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "google-closure-library",
+      "version": "20160315.0.0",
+      "bom-ref": "google-closure-library@20160315.0.0",
+      "purl": "pkg:npm/google-closure-library@20160315.0.0",
+      "externalReferences": [
+        {
+          "url": "https://registry.npmjs.org/google-closure-library/-/google-closure-library-20160315.0.0.tgz",
+          "type": "distribution",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "5de6f2bc24e4e1029c5023d04d8f175a96735250d8c8cd891e1833785a5a0d85303f806ef6fc948ab87d384cf00ba55a712a9a40454017c3e39ef89ea651769e"
+            }
+          ],
+          "comment": "as detected from npm-ls property \"resolved\" and property \"integrity\""
+        }
+      ],
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/google-closure-library"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "webapp-charpicker-plugin@18.0.0",
+      "dependsOn": [
+        "google-closure-library@20160315.0.0"
+      ]
+    },
+    {
+      "ref": "google-closure-library@20160315.0.0"
+    }
+  ]
+}
