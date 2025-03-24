@@ -168,6 +168,17 @@
           <nodePackageSkipDevDependencies>true</nodePackageSkipDevDependencies>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>ro.sync.compliance</groupId>
+        <artifactId>compliance-mvn-dependency-check-to-sbom</artifactId>
+        <configuration>
+          <scanSet>
+            <fileSet>
+              <directory>${project.basedir}/forced-sbom</directory>
+            </fileSet>
+          </scanSet>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
