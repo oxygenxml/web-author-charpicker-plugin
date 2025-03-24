@@ -174,7 +174,7 @@
         <configuration>
           <scanSet>
             <fileSet>
-              <directory>${project.basedir}/forced-sbom</directory>
+              <directory>${project.basedir}/forced-client-side-sbom</directory>
             </fileSet>
           </scanSet>
         </configuration>
