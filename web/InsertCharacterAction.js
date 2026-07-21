@@ -1,5 +1,6 @@
 /**
- * JGit implementation for SyncGitApiBase.
+ * Action that inserts special characters, from the quick-pick grid or the full dialog.
+ * @param editor The editor.
  * @constructor
  */
 function InsertFromMenuAction (editor) {
@@ -324,7 +325,7 @@ InsertFromMenuAction.prototype.renderSymbolCard_ = function (container, code, ch
       'data-symbol-name': this.capitalizeWords_(charName),
       'data-symbol-hexcode': code
     },
-    String.fromCharCode(parseInt(code, 16))
+    String.fromCodePoint(parseInt(code, 16))
   ));
 };
 

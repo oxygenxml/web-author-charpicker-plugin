@@ -27,10 +27,10 @@ import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletRespons
 @Slf4j
 public class SpecialCharServlet extends ServletPluginExtension {
 	
-	private static int maxResults = 500;
-	
-	private static int scoreFullMatch = 300;
-	private static int scorePartialMatch = 150;
+	private static final int maxResults = 500;
+
+	private static final int scoreFullMatch = 300;
+	private static final int scorePartialMatch = 150;
 	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
 	

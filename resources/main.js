@@ -36,7 +36,8 @@ window["initCharPicker"] = function () {
   var insertBefore = goog.dom.insertSiblingBefore;
 
   var removeCategoriesOption = getURLParameter('remove-categories');
-  var categoriesToRemove = decodeURIComponent(removeCategoriesOption).split(',');
+  var categoriesToRemove = removeCategoriesOption ?
+    decodeURIComponent(removeCategoriesOption).split(',') : [];
 
   var charPickerData = new goog.i18n.CharPickerData();
 
