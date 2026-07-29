@@ -26,20 +26,14 @@ public class SpecialCharServletTest {
   
 	public Properties getChars(String prefix) {
 		Properties chars = new Properties();
-		InputStream charsInputStream = null;
-		try{
-			charsInputStream = new FileInputStream("test/" + prefix + "_unicodechars.properties");
+		// The English file is identical to the main resource, so load it from the classpath
+		// instead of keeping a duplicate under test/.
+		try (InputStream charsInputStream = "en".equals(prefix)
+				? getClass().getClassLoader().getResourceAsStream(prefix + "_unicodechars.properties")
+				: new FileInputStream("test/" + prefix + "_unicodechars.properties")) {
 			chars.load(charsInputStream);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-		} finally {
-			if(charsInputStream != null) {
-				try {
-					charsInputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}				
-			}
 		}
 		return chars;
 	}
