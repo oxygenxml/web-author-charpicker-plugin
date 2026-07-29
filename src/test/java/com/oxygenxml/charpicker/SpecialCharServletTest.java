@@ -38,6 +38,15 @@ public class SpecialCharServletTest {
 	}
 
 	@Test
+	public void testFindCharByNameWithRegexMetacharacters() {
+		SpecialCharServlet servlet = new SpecialCharServlet();
+		// Queries with regex metacharacters should be treated literally instead of throwing
+		// or matching everything.
+		servlet.findCharByName("\\m", getChars("en"));
+		assertEquals(0, servlet.findCharByName("a|zzzz", getChars("en")).size());
+	}
+
+	@Test
 	public void testGetChars() throws FileNotFoundException, ServletException {
 		SpecialCharServlet asd = new SpecialCharServlet();
 		

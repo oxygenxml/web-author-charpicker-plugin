@@ -223,7 +223,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		ArrayList<Pattern> fullPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
-			Pattern pattern = Pattern.compile("\\b" + queryWords[i] + "\\b", Pattern.CASE_INSENSITIVE);
+			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "\\b", Pattern.CASE_INSENSITIVE);
 			fullPatterns.add(pattern);
 		}
 		
@@ -234,7 +234,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		ArrayList<Pattern> partialPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
-			Pattern pattern = Pattern.compile("\\b" + queryWords[i] + "[a-zA-Z]+\\b", Pattern.CASE_INSENSITIVE);
+			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "[a-zA-Z]+\\b", Pattern.CASE_INSENSITIVE);
 			partialPatterns.add(pattern);
 		}
 		
