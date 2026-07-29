@@ -27,10 +27,10 @@ import ro.sync.ecss.extensions.api.webapp.plugin.servlet.http.HttpServletRespons
 @Slf4j
 public class SpecialCharServlet extends ServletPluginExtension {
 	
-	private static final int maxResults = 500;
+	private static final int MAX_RESULTS = 500;
 
-	private static final int scoreFullMatch = 300;
-	private static final int scorePartialMatch = 150;
+	private static final int SCORE_FULL_MATCH = 300;
+	private static final int SCORE_PARTIAL_MATCH = 150;
 	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
 	
@@ -134,7 +134,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		query = query.replaceAll("[+.^:,*{}\\(\\)\\[\\]]", "");
 		
 		String[] queryWords = query.split("\\s+");
-		int maxScore = queryWords.length * scoreFullMatch;
+		int maxScore = queryWords.length * SCORE_FULL_MATCH;
 		
 		int relevanceThreshold = getRelevanceThreshold(queryWords.length);
 		Map<String, String> charsFromProperties = propsAsMap(chars);
@@ -147,7 +147,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 				for(Entry<String, String> entry : charactersByScore.get(score)) {				
 					matches.put(entry.getKey(), entry.getValue());
 					results++;
-					if(results >= maxResults){
+					if(results >= MAX_RESULTS){
 		    			break;
 	    		}
 				}
@@ -162,7 +162,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
    * @return The relevance threshold score.
    */
   private int getRelevanceThreshold (int queryWordsLength) {
-    return queryWordsLength * scoreFullMatch/2 - 50;
+    return queryWordsLength * SCORE_FULL_MATCH/2 - 50;
   }
 
   /**
@@ -186,13 +186,13 @@ public class SpecialCharServlet extends ServletPluginExtension {
 			for(int i = 0; i< queryWords.length; i++){
 				Matcher matcher = fullPatterns.get(i).matcher(charDescription);
 				if(matcher.find()){
-					score += scoreFullMatch;
+					score += SCORE_FULL_MATCH;
 					// Remove full matches when searching for other query words.
 					charDescription = matcher.replaceAll("");
 				} else {
 				  matcher = partialPatterns.get(i).matcher(charDescription);
 				  if(matcher.find()){
-				    score += scorePartialMatch;
+				    score += SCORE_PARTIAL_MATCH;
 				  }
 				}
 			}			

@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -52,9 +51,7 @@ public class SpecialCharServletTest {
     String query = "circled katakana ka";
     
     SpecialCharServlet asd = new SpecialCharServlet();    
-    Map<String, String> charactersFound = new LinkedHashMap<String, String>();
-    
-    charactersFound = asd.findCharByName(query, getChars("en"));
+    Map<String, String> charactersFound = asd.findCharByName(query, getChars("en"));
     assertEquals(50, charactersFound.size());
     Entry<String, String> entry = charactersFound.entrySet().iterator().next();
     assertEquals(query, entry.getValue().toLowerCase());
@@ -67,9 +64,7 @@ public class SpecialCharServletTest {
 		int limit = 10;
 		
 		SpecialCharServlet asd = new SpecialCharServlet();		
-		Map<String, String> charactersFound = new LinkedHashMap<String, String>();
-		
-		charactersFound = asd.findCharByName(query, getChars("en"));
+		Map<String, String> charactersFound = asd.findCharByName(query, getChars("en"));
 		Pattern pattern = Pattern.compile("\\b" + query + "\\b", Pattern.CASE_INSENSITIVE);
     	
 		int iterations = 0;
@@ -100,46 +95,44 @@ public class SpecialCharServletTest {
     asd.setChars("fr", getChars("fr"));
     asd.setChars("de", getChars("de"));
     
-    Map<String, String> charactersFound = new LinkedHashMap<String, String>();
-    
     // Check English.
-    charactersFound = asd.findCharByNameWithCookieLang(query, "en");
+    Map<String, String> charactersFound = asd.findCharByNameWithCookieLang(query, "en");
     assertEquals(1, charactersFound.size());
     assertEquals(expectedCode, charactersFound.keySet().toString());
-    assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode).toString());
+    assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode));
     
     // Check German.
     charactersFound = asd.findCharByNameWithCookieLang(query, "de");
     assertEquals(1, charactersFound.size());
     assertEquals(expectedCode, charactersFound.keySet().toString());
-    assertEquals("German description for ew", charactersFound.get(ewCode).toString());
+    assertEquals("German description for ew", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "de");
     assertEquals(6, charactersFound.size());
     assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
-    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback).toString());
+    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
     
     // Check French.
     charactersFound = asd.findCharByNameWithCookieLang(query, "fr");
     assertEquals(1, charactersFound.size());
     assertEquals(expectedCode, charactersFound.keySet().toString());
-    assertEquals("French description for ew", charactersFound.get(ewCode).toString());
+    assertEquals("French description for ew", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "fr");
     assertEquals(6, charactersFound.size());
     assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
-    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback).toString());
+    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
     
     // Check Japanese, there is no file for Japanese, you won't believe what happens next!
     charactersFound = asd.findCharByNameWithCookieLang(query, "ja");
     assertEquals(1, charactersFound.size());
     assertEquals(expectedCode, charactersFound.keySet().toString());
-    assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode).toString());
+    assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "ja");
     assertEquals(6, charactersFound.size());
     assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
-    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback).toString());
+    assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
   }
 	
 	
