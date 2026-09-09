@@ -31,6 +31,8 @@ public class SpecialCharServlet extends ServletPluginExtension {
 
 	private static final int SCORE_FULL_MATCH = 300;
 	private static final int SCORE_PARTIAL_MATCH = 150;
+
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
 	private Map<String, Properties> charsMap = new HashMap<>(); 
 	
@@ -41,18 +43,16 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	@Override
 	public void init() throws ServletException {
 	  for (String lang : supportedLanguages) {
-	    InputStream charsInputStream = this.getClass().getClassLoader().getResourceAsStream(lang + "_unicodechars.properties");
-	    if (charsInputStream != null) {
-	      Properties newProps = new Properties();
-	      try {
+	    try (InputStream charsInputStream = this.getClass().getClassLoader().getResourceAsStream(lang + "_unicodechars.properties")) {
+	      if (charsInputStream != null) {
+	        Properties newProps = new Properties();
 	        newProps.load(charsInputStream);
-	      } catch (IOException e) {
-	        log.error("could not load the special character file");
+	        charsMap.put(lang, newProps);
 	      }
-	      
-	      charsMap.put(lang, newProps);
+	    } catch (IOException e) {
+	      log.error("Could not load the special character file for language {}", lang, e);
 	    }
-	  }		
+	  }
 	}
 	
 	@Override
@@ -60,13 +60,10 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		String query = req.getParameter("q");
 		resp.setContentType("application/json");
 		Map<String, String> charResult = new LinkedHashMap<>();
-		if(query.length() == 0) {
-			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
+		if(!query.isEmpty()) {
+			charResult = findCharByNameWithCookieLang(query, getCookieLanguage(req.getCookies()));
 		}
-		else {
-		  charResult = findCharByNameWithCookieLang(query, getCookieLanguage(req.getCookies()));
-			new ObjectMapper().writeValue(resp.getOutputStream(), charResult);
-		}
+		objectMapper.writeValue(resp.getOutputStream(), charResult);
 	}
 
 
@@ -108,12 +105,13 @@ public class SpecialCharServlet extends ServletPluginExtension {
       for (Cookie cookie : cookies) {
         if ("oxy_lang".equals(cookie.getName())) {
           String cookieLanguage = cookie.getValue();
-          String cookieLanguagePrefix = cookieLanguage.substring(0, 2);
-
-          if (supportedLanguages.indexOf(cookieLanguage) != -1) {
+          if (supportedLanguages.contains(cookieLanguage)) {
             prefix = cookieLanguage;
-          } else if (supportedLanguages.indexOf(cookieLanguagePrefix) != -1) {
-            prefix = cookieLanguagePrefix;
+          } else if (cookieLanguage != null && cookieLanguage.length() >= 2) {
+            String cookieLanguagePrefix = cookieLanguage.substring(0, 2);
+            if (supportedLanguages.contains(cookieLanguagePrefix)) {
+              prefix = cookieLanguagePrefix;
+            }
           }
         }
       }
@@ -141,18 +139,16 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		Map<String, String> matches = new LinkedHashMap<>();
 		
 		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = getCharactersByScore(queryWords, charsFromProperties);
-		int results = 0;
 		for(int score = maxScore; score >= relevanceThreshold; score--){
 			if(charactersByScore.get(score) != null) {
-				for(Entry<String, String> entry : charactersByScore.get(score)) {				
+				for(Entry<String, String> entry : charactersByScore.get(score)) {
 					matches.put(entry.getKey(), entry.getValue());
-					results++;
-					if(results >= MAX_RESULTS){
-		    			break;
-	    		}
+					if(matches.size() >= MAX_RESULTS){
+						return matches;
+					}
 				}
 			}
-		}		
+		}
 		return matches;
 	}
   
