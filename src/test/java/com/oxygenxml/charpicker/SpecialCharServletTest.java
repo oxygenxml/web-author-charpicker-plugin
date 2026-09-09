@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,8 +13,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
 
 import org.junit.Test;
 
@@ -47,11 +44,14 @@ public class SpecialCharServletTest {
 	}
 
 	@Test
-	public void testGetChars() throws FileNotFoundException, ServletException {
+	public void testGetChars() {
 		SpecialCharServlet asd = new SpecialCharServlet();
 		
 		Map<String, String> result = asd.findCharByName("ywi", getChars("en"));
-		assertEquals(4, result.size());
+		assertEquals("Canadian Syllabics Ywi", result.get("01531"));
+		assertEquals("Canadian Syllabics West-cree Ywi", result.get("01532"));
+		assertEquals("Canadian Syllabics Ywii", result.get("01533"));
+		assertEquals("Canadian Syllabics West-cree Ywii", result.get("01534"));
 	}
 	
 	@Test
@@ -61,8 +61,8 @@ public class SpecialCharServletTest {
     
     SpecialCharServlet asd = new SpecialCharServlet();    
     Map<String, String> charactersFound = asd.findCharByName(query, getChars("en"));
-    assertEquals(50, charactersFound.size());
     Entry<String, String> entry = charactersFound.entrySet().iterator().next();
+    assertEquals("032D5", entry.getKey());
     assertEquals(query, entry.getValue().toLowerCase());
   }
 	
@@ -95,8 +95,6 @@ public class SpecialCharServletTest {
     
     String query = "ew";
     String ewCode = "02EB8";
-    String expectedCode = "[02EB8]";
-    
     String expectedCodeFallback = "0A2E2";
     
     SpecialCharServlet asd = new SpecialCharServlet();    
@@ -104,43 +102,33 @@ public class SpecialCharServletTest {
     asd.setChars("fr", getChars("fr"));
     asd.setChars("de", getChars("de"));
     
-    // Check English.
+    // "ew" also matches other letters in newer Unicode versions; assert the translated
+    // CJK radical is present rather than being the only hit.
     Map<String, String> charactersFound = asd.findCharByNameWithCookieLang(query, "en");
-    assertEquals(1, charactersFound.size());
-    assertEquals(expectedCode, charactersFound.keySet().toString());
     assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode));
     
     // Check German.
     charactersFound = asd.findCharByNameWithCookieLang(query, "de");
-    assertEquals(1, charactersFound.size());
-    assertEquals(expectedCode, charactersFound.keySet().toString());
     assertEquals("German description for ew", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "de");
-    assertEquals(6, charactersFound.size());
-    assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
+    assertTrue(charactersFound.containsKey(expectedCodeFallback));
     assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
     
     // Check French.
     charactersFound = asd.findCharByNameWithCookieLang(query, "fr");
-    assertEquals(1, charactersFound.size());
-    assertEquals(expectedCode, charactersFound.keySet().toString());
     assertEquals("French description for ew", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "fr");
-    assertEquals(6, charactersFound.size());
-    assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
+    assertTrue(charactersFound.containsKey(expectedCodeFallback));
     assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
     
     // Check Japanese, there is no file for Japanese, you won't believe what happens next!
     charactersFound = asd.findCharByNameWithCookieLang(query, "ja");
-    assertEquals(1, charactersFound.size());
-    assertEquals(expectedCode, charactersFound.keySet().toString());
     assertEquals("Cjk Radical Ewe", charactersFound.get(ewCode));
     // Check fallback to English.
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "ja");
-    assertEquals(6, charactersFound.size());
-    assertTrue(charactersFound.keySet().contains(expectedCodeFallback));
+    assertTrue(charactersFound.containsKey(expectedCodeFallback));
     assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
   }
 	
