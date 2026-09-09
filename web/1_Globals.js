@@ -1,8 +1,3 @@
-/**
- * Local storage usable status.
- * @type {boolean}
- */
-var localStorageUsable = typeof (Storage) !== 'undefined';
 
 /**
  * The action id.

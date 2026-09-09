@@ -76,7 +76,7 @@ function getUserSelectedDefaults () {
  * @param {Object.<string, string>} charactersWithTitles Mapping of characters to character titles.
  */
 function setRecentChars(characters, charactersWithTitles) {
-  if (localStorageUsable) {
+  if (typeof (Storage) !== 'undefined') {
     try {
       localStorage.setItem(usedCharsItemName, JSON.stringify(characters));
       if (charactersWithTitles) {
@@ -107,7 +107,7 @@ function getRecentChars() {
     recentChars = getUsedCharsMigration(defaultRecentCharacters, oldRecentChars);
     // If migration yielded used characters, save them to the new storage item for next time.
     if (recentChars.length) {
-      addNewRecentCharacters(recentChars, {});
+      addNewRecentCharacters(recentChars);
     }
   }
 
