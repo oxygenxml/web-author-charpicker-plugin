@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -34,7 +35,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
-	private Map<String, Properties> charsMap = new HashMap<>(); 
+	private Map<String, Map<String, String>> charsMap = new HashMap<>(); 
 	
 	private static final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
 	
@@ -47,7 +48,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	      if (charsInputStream != null) {
 	        Properties newProps = new Properties();
 	        newProps.load(charsInputStream);
-	        charsMap.put(lang, newProps);
+	        charsMap.put(lang, propsAsMap(newProps));
 	      }
 	    } catch (IOException e) {
 	      log.error("Could not load the special character file for language {}", lang, e);
@@ -83,7 +84,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 
     // Translated props files might be incomplete so fill up with results from English.
     // Removing the English character list is a way to force translated results only.
-    Properties englishChars = charsMap.get("en");
+    Map<String, String> englishChars = charsMap.get("en");
     if (englishChars != null) {
       Map<String, String> englishResults = findCharByName(query, englishChars);
       // Overwrite the general English results with more specific translated results if available.
@@ -125,7 +126,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	 * @param chars The list of characters to search in.
 	 * @return The list of characters that match the query.
 	 */
-  public Map<String, String> findCharByName(String query, Properties chars) {
+  public Map<String, String> findCharByName(String query, Map<String, String> chars) {
 		// Remove extra spaces.
 		query = query.replaceAll("\\s+", " ");
 		// Remove special characters.
@@ -135,10 +136,9 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		int maxScore = queryWords.length * SCORE_FULL_MATCH;
 		
 		int relevanceThreshold = getRelevanceThreshold(queryWords.length);
-		Map<String, String> charsFromProperties = propsAsMap(chars);
 		Map<String, String> matches = new LinkedHashMap<>();
 		
-		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = getCharactersByScore(queryWords, charsFromProperties);
+		Map<Integer, Set<Map.Entry<String, String>>> charactersByScore = getCharactersByScore(queryWords, chars);
 		for(int score = maxScore; score >= relevanceThreshold; score--){
 			if(charactersByScore.get(score) != null) {
 				for(Entry<String, String> entry : charactersByScore.get(score)) {
@@ -206,13 +206,12 @@ public class SpecialCharServlet extends ServletPluginExtension {
     return charactersByScore;
   }
 	
-	private Map<String, String> propsAsMap(Properties props) {
-		Map<String, String> map = new LinkedHashMap<>();
+	static Map<String, String> propsAsMap(Properties props) {
+		Map<String, String> map = new HashMap<>();
 		for (Map.Entry<Object, Object> entry: props.entrySet()) {
 			map.put((String)entry.getKey(), (String)entry.getValue());
 		}
-		
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 	
 	private ArrayList<Pattern> getFullPatterns(String[] queryWords) {
@@ -242,11 +241,11 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		return "charpicker-plugin";
 	}
 	
-	public Properties getChars(String lang) {
+	public Map<String, String> getChars(String lang) {
 		return charsMap.get(lang);
 	}
 	
-	public void setChars(String lang, Properties chars) {
+	public void setChars(String lang, Map<String, String> chars) {
 		charsMap.put(lang, chars);
 	}
 }

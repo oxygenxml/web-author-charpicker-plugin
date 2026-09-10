@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class SpecialCharServletTest {
   
-	public Properties getChars(String prefix) {
+	public Map<String, String> getChars(String prefix) {
 		Properties chars = new Properties();
 		// The English file is identical to the main resource, so load it from the classpath
 		// instead of keeping a duplicate under test/.
@@ -31,7 +31,7 @@ public class SpecialCharServletTest {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		return chars;
+		return SpecialCharServlet.propsAsMap(chars);
 	}
 
 	@Test
