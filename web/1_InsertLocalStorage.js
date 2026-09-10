@@ -132,11 +132,11 @@ function getCharListFromStorage (charsLocalStorageItemName) {
 
 /**
  * Return the titles list with only used characters.
- * @returns {Object}
+ * @returns {Object.<string, string>}
  */
 function getUsedCharsTitles() {
   var obj = getObjectFromLocalStorage(usedCharsItemTitles);
-  return obj ? obj : {};
+  return obj && typeof obj === 'object' && !goog.isArray(obj) ? obj : {};
 }
 
 /**

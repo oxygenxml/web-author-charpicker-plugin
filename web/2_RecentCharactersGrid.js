@@ -63,20 +63,14 @@ RecentCharactersGrid.prototype.showRecentGrid = function () {
 /**
  * Get the current character tooltip.
  * @param {String} character The character to display the tooltip for.
+ * @param {Object.<string, string>} usedCharactersTitles Mapping of used characters to their titles.
  * @private
  */
-RecentCharactersGrid.prototype.getToolTip_ = function(character) {
+RecentCharactersGrid.prototype.getToolTip_ = function(character, usedCharactersTitles) {
   var hexText = 'U+' + character.codePointAt(0).toString(16).toUpperCase();
-  var tooltipText = hexText;
-  var usedCharactersTitles = localStorage.getItem("usedCharactersTitles");
-  if (usedCharactersTitles) {
-    var titlesObj = JSON.parse(usedCharactersTitles);
-    var title = titlesObj['\'' + character + '\''];
-    if (title) {
-      tooltipText = title + " (" + hexText + ")";
-    }
-  } 
-  return tooltipText;
+  var title = defaultRecentCharacterNames[character];
+  title = usedCharactersTitles['\'' + character + '\''] || title;
+  return title ? title + " (" + hexText + ")" : hexText;
 };
 
 /**
@@ -89,8 +83,9 @@ RecentCharactersGrid.prototype.displayRecentCharacters_ = function (characters) 
   goog.dom.removeChildren(this.recentCharactersGrid_);
 
   /* Add the characters to the container */
+  var usedCharactersTitles = getUsedCharsTitles();
   for (var character of characters) {
-    var tooltip = this.getToolTip_(character);
+    var tooltip = this.getToolTip_(character, usedCharactersTitles);
     this.recentCharactersGrid_.appendChild(
       goog.dom.createDom(
         'div', { className: 'goog-inline-block goog-flat-button char-select-button', tabIndex: 0,
