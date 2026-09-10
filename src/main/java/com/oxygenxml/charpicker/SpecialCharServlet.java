@@ -83,13 +83,16 @@ public class SpecialCharServlet extends ServletPluginExtension {
     }
 
     // Translated props files might be incomplete so fill up with results from English.
+    // Skip when the cookie language is already English to avoid scoring the same list twice.
     // Removing the English character list is a way to force translated results only.
-    Map<String, String> englishChars = charsMap.get("en");
-    if (englishChars != null) {
-      Map<String, String> englishResults = findCharByName(query, englishChars);
-      // Overwrite the general English results with more specific translated results if available.
-      englishResults.putAll(charResult);
-      charResult = englishResults;
+    if (!"en".equals(cookieLanguage)) {
+      Map<String, String> englishChars = charsMap.get("en");
+      if (englishChars != null) {
+        Map<String, String> englishResults = findCharByName(query, englishChars);
+        // Overwrite the general English results with more specific translated results if available.
+        englishResults.putAll(charResult);
+        charResult = englishResults;
+      }
     }  
     
     return charResult;
