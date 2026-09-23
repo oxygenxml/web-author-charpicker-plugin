@@ -2,6 +2,8 @@ package com.oxygenxml.charpicker;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +35,9 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	private static final int SCORE_FULL_MATCH = 300;
 	private static final int SCORE_PARTIAL_MATCH = 150;
 
+	// Translated names contain non-ASCII letters, so word boundaries and case folding must be Unicode-aware.
+	private static final int PATTERN_FLAGS = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
+
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	
 	private Map<String, Map<String, String>> charsMap = new HashMap<>(); 
@@ -46,14 +51,18 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	  for (String lang : supportedLanguages) {
 	    try (InputStream charsInputStream = this.getClass().getClassLoader().getResourceAsStream(lang + "_unicodechars.properties")) {
 	      if (charsInputStream != null) {
-	        Properties newProps = new Properties();
-	        newProps.load(charsInputStream);
-	        charsMap.put(lang, propsAsMap(newProps));
+	        charsMap.put(lang, loadChars(charsInputStream));
 	      }
 	    } catch (IOException e) {
 	      log.error("Could not load the special character file for language {}", lang, e);
 	    }
 	  }
+	}
+
+	static Map<String, String> loadChars(InputStream charsInputStream) throws IOException {
+	  Properties props = new Properties();
+	  props.load(new InputStreamReader(charsInputStream, StandardCharsets.UTF_8));
+	  return propsAsMap(props);
 	}
 	
 	@Override
@@ -221,7 +230,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		ArrayList<Pattern> fullPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
-			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "\\b", Pattern.CASE_INSENSITIVE);
+			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "\\b", PATTERN_FLAGS);
 			fullPatterns.add(pattern);
 		}
 		
@@ -232,7 +241,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		ArrayList<Pattern> partialPatterns = new ArrayList<>();
 		
 		for(int i = 0; i < queryWords.length; i++) {
-			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "[a-zA-Z]+\\b", Pattern.CASE_INSENSITIVE);
+			Pattern pattern = Pattern.compile("\\b" + Pattern.quote(queryWords[i]) + "\\p{L}+\\b", PATTERN_FLAGS);
 			partialPatterns.add(pattern);
 		}
 		

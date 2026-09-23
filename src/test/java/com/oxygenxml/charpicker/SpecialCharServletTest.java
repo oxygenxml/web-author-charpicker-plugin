@@ -3,9 +3,12 @@ package com.oxygenxml.charpicker;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +30,7 @@ public class SpecialCharServletTest {
 		try (InputStream charsInputStream = "en".equals(prefix)
 				? getClass().getClassLoader().getResourceAsStream(prefix + "_unicodechars.properties")
 				: new FileInputStream("test/" + prefix + "_unicodechars.properties")) {
-			chars.load(charsInputStream);
+			chars.load(new InputStreamReader(charsInputStream, StandardCharsets.UTF_8));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -199,6 +202,30 @@ public class SpecialCharServletTest {
     assertTrue(scoresForChars.get("1").intValue() > scoresForChars.get("2").intValue());
   }
 
+
+  @Test
+  public void testScoresWithNonAsciiLetters() {
+    SpecialCharServlet specialCharServlet = new SpecialCharServlet();
+    String description = "Lateinischer Großbuchstabe A mit Trema über Linie";
+    ImmutableMap<String, String> charsFromProperties = ImmutableMap.of("1", description);
+
+    // A full match that only succeeds with Unicode case folding, plus a partial match on a word with "ß".
+    Map<String, Integer> scoresForChars = getScoresForChars(
+        specialCharServlet.getCharactersByScore(new String[]{"ÜBER", "groß"}, charsFromProperties));
+
+    assertEquals(450 - description.length(), scoresForChars.get("1").intValue());
+  }
+
+  @Test
+  public void testCharsAreLoadedAsUtf8() throws Exception {
+    String properties = "00041=Lateinischer Großbuchstabe A\n030A2=カタカナ ア";
+
+    Map<String, String> chars = SpecialCharServlet.loadChars(
+        new ByteArrayInputStream(properties.getBytes(StandardCharsets.UTF_8)));
+
+    assertEquals("Lateinischer Großbuchstabe A", chars.get("00041"));
+    assertEquals("カタカナ ア", chars.get("030A2"));
+  }
 
   /**
    * Get the scores for the chars.
