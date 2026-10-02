@@ -322,11 +322,22 @@ InsertFromMenuAction.prototype.refreshSymbols_ = function (obj) {
 InsertFromMenuAction.prototype.renderSymbolCard_ = function (container, code, charName) {
   container.appendChild(goog.dom.createDom('div', {
       className: 'characterListSymbol',
-      'data-symbol-name': this.capitalizeWords_(charName),
+      'data-symbol-name': this.formatCharName_(charName),
       'data-symbol-hexcode': code
     },
     String.fromCodePoint(parseInt(code, 16))
   ));
+};
+
+/**
+ * Translated names keep their own capitalization (e.g. German nouns), so only English names are capitalized.
+ * @param {string} charName The character name received from the server.
+ * @returns {string} The character name to display.
+ * @private
+ */
+InsertFromMenuAction.prototype.formatCharName_ = function (charName) {
+  var language = sync.api.Translation.getLanguage();
+  return !language || language.indexOf('en') === 0 ? this.capitalizeWords_(charName) : charName;
 };
 
 /**
