@@ -70,7 +70,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		String query = req.getParameter("q");
 		resp.setContentType("application/json");
 		Map<String, String> charResult = new LinkedHashMap<>();
-		if(!query.isEmpty()) {
+		if(query != null && !query.isEmpty()) {
 			charResult = findCharByNameWithCookieLang(query, getCookieLanguage(req.getCookies()));
 		}
 		objectMapper.writeValue(resp.getOutputStream(), charResult);
