@@ -31,6 +31,8 @@
   <properties>
     <sonar.sources>src/main/java,web,resources</sonar.sources>
     <sonar.exclusions>resources/closure-library/**</sonar.exclusions>
+    <!-- Attach the merged file (generated + third-party-components-character-data.xml) instead of the generated one. -->
+    <thirdPartyComponents>${project.build.directory}/third-party-components/third-party-components.xml</thirdPartyComponents>
   </properties>
   
   <repositories>
@@ -136,6 +138,33 @@
                   <overWrite>true</overWrite>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <id>merge-third-party-components</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${project.basedir}</dir>
+                  <includes>
+                    <include>third-party-components.xml</include>
+                  </includes>
+                  <stylesheet>${project.basedir}/tools/merge-third-party-components.xsl</stylesheet>
+                  <outputDir>${project.build.directory}/third-party-components</outputDir>
+                </transformationSet>
+              </transformationSets>
+              <forceCreation>true</forceCreation>
             </configuration>
           </execution>
         </executions>

@@ -8,7 +8,7 @@ var util = require('util');
 
 var UCD_BASE_URL = 'https://www.unicode.org/Public/';
 var DEFAULT_OUTPUT = path.join(__dirname, '..', 'src', 'main', 'resources', 'en_unicodechars.properties');
-var THIRD_PARTY_COMPONENTS = path.join(__dirname, '..', 'third-party-components.xml');
+var THIRD_PARTY_COMPONENTS = path.join(__dirname, '..', 'third-party-components-character-data.xml');
 var USER_AGENT = 'webapp-charpicker-plugin unicodechars generator';
 var KEY_HEX_DIGITS = 5;
 
@@ -16,7 +16,7 @@ function printUsage() {
   console.log('Usage: node tools/generate-unicodechars.js --version <x.y.z> [options]');
   console.log('');
   console.log('Downloads UnicodeData.txt of the given Unicode version, writes en_unicodechars.properties');
-  console.log('and updates the Unicode Character Database entry in third-party-components.xml.');
+  console.log('and updates the Unicode Character Database entry in third-party-components-character-data.xml.');
   console.log('');
   console.log('Options:');
   console.log('  --version <x.y.z> Unicode version to download, e.g. 18.0.0');
@@ -160,7 +160,7 @@ function propertiesHeader(source, now) {
     lines.push('# Unicode version: ' + source.version);
   }
   lines.push('# Date: ' + formatDate(now));
-  // The Unicode License v3 requires its notice to accompany the derived data; full text is in third-party-components.xml.
+  // The Unicode License v3 requires its notice to accompany the derived data; full text is in third-party-components-character-data.xml.
   lines.push('# Copyright © 1991-' + now.getUTCFullYear() + ' Unicode, Inc.');
   lines.push('# Licensed under the Unicode License v3: https://www.unicode.org/license.txt');
   lines.push('#');

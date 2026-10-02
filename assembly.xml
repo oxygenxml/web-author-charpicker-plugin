@@ -61,7 +61,7 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>third-party-components.xml</source>
+			<source>target/third-party-components/third-party-components.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
