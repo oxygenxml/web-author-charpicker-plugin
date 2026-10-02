@@ -143,7 +143,12 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		query = query.replaceAll("\\s+", " ");
 		// Remove special characters.
 		query = query.replaceAll("[+.^:,*{}\\(\\)\\[\\]]", "");
-		
+		// Trim after the removal, which can expose leading whitespace (e.g. "( euro"). An empty word would match every name.
+		query = query.trim();
+		if (query.isEmpty()) {
+			return new LinkedHashMap<>();
+		}
+
 		String[] queryWords = query.split("\\s+");
 		int maxScore = queryWords.length * SCORE_FULL_MATCH;
 		

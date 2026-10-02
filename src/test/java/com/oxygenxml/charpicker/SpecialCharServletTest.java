@@ -47,6 +47,24 @@ public class SpecialCharServletTest {
 	}
 
 	@Test
+	public void testLeadingWhitespaceIsIgnored() {
+		SpecialCharServlet servlet = new SpecialCharServlet();
+		Map<String, String> chars = ImmutableMap.of("020AC", "Euro Sign", "00041", "Latin Capital Letter A");
+
+		assertEquals(ImmutableMap.of("020AC", "Euro Sign"), servlet.findCharByName(" euro", chars));
+		assertEquals(ImmutableMap.of("020AC", "Euro Sign"), servlet.findCharByName("( euro", chars));
+	}
+
+	@Test
+	public void testQueryWithoutWordsFindsNothing() {
+		SpecialCharServlet servlet = new SpecialCharServlet();
+		Map<String, String> chars = ImmutableMap.of("020AC", "Euro Sign");
+
+		assertTrue(servlet.findCharByName("   ", chars).isEmpty());
+		assertTrue(servlet.findCharByName("()", chars).isEmpty());
+	}
+
+	@Test
 	public void testGetChars() {
 		SpecialCharServlet asd = new SpecialCharServlet();
 		
