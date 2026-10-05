@@ -282,10 +282,9 @@ InsertFromMenuAction.prototype.resetHexInput_ = function () {
  * @private
  */
 InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, absPosChild, e) {
-  var obj = e.target.getResponseJson();
-  var emptyObject = JSON.stringify(obj) === '{}';
+  var results = e.target.getResponseJson();
   charSearchSpinner.hide();
-  if (emptyObject) {
+  if (results.length === 0) {
     absPosChild.textContent = tr(msgs.NO_RESULTS_FOUND_);
     try {
       localStorage.removeItem(this.lastCharacterSearchItemName_);
@@ -293,7 +292,7 @@ InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, 
       console.warn(e);
     }
   } else {
-    this.refreshSymbols_(obj);
+    this.refreshSymbols_(results);
     try {
       localStorage.setItem(this.lastCharacterSearchItemName_, this.nameInput_.value);
     } catch (e) {
@@ -304,14 +303,12 @@ InsertFromMenuAction.prototype.afterSearchByName_ = function(charSearchSpinner, 
 
 /**
  * Add symbol elements to the "find by name" results container.
- * @param {object} obj The object containing symbol results for the find by name query.
+ * @param {Array<{code: string, name: string}>} results The search results, best match first.
  */
-InsertFromMenuAction.prototype.refreshSymbols_ = function (obj) {
+InsertFromMenuAction.prototype.refreshSymbols_ = function (results) {
   goog.dom.removeChildren(this.foundByNameList_);
-  for (var code in obj) {
-    if (obj.hasOwnProperty(code)) {
-      this.renderSymbolCard_(this.foundByNameList_, code, obj[code]);
-    }
+  for (var i = 0; i < results.length; i++) {
+    this.renderSymbolCard_(this.foundByNameList_, results[i].code, results[i].name);
   }
 };
 

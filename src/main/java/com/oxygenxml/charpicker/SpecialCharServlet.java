@@ -73,8 +73,35 @@ public class SpecialCharServlet extends ServletPluginExtension {
 		if(query != null && !query.isEmpty()) {
 			charResult = findCharByNameWithCookieLang(query, getCookieLanguage(req.getCookies()));
 		}
-		objectMapper.writeValue(resp.getOutputStream(), charResult);
+		objectMapper.writeValue(resp.getOutputStream(), toSearchResults(charResult));
 	}
+
+  /**
+   * A search result, as sent to the browser.
+   */
+  static final class SearchResult {
+    public final String code;
+    public final String name;
+
+    SearchResult(String code, String name) {
+      this.code = code;
+      this.name = name;
+    }
+  }
+
+  /**
+   * The results are sent as a list because a JSON object loses the relevance order in the browser:
+   * JavaScript enumerates all-digit codes such as "10300" first, as array indices.
+   * @param charResult The results, best match first.
+   * @return The results in the same order.
+   */
+  static List<SearchResult> toSearchResults(Map<String, String> charResult) {
+    List<SearchResult> results = new ArrayList<>(charResult.size());
+    for (Entry<String, String> entry : charResult.entrySet()) {
+      results.add(new SearchResult(entry.getKey(), entry.getValue()));
+    }
+    return results;
+  }
 
 
   /**

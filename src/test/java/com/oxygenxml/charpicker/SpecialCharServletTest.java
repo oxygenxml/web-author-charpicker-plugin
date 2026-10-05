@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 public class SpecialCharServletTest {
@@ -63,6 +65,18 @@ public class SpecialCharServletTest {
 		assertTrue(servlet.findCharByName("   ", chars).isEmpty());
 		assertTrue(servlet.findCharByName("()", chars).isEmpty());
 	}
+
+  @Test
+  public void testSearchResultsKeepTheRelevanceOrder() throws IOException {
+    // As a JSON object, the browser would enumerate the all-digit "10300" before "000E1".
+    Map<String, String> charResult = new LinkedHashMap<>();
+    charResult.put("000E1", "Latin Small Letter A With Acute");
+    charResult.put("10300", "Old Italic Letter A");
+
+    String json = new ObjectMapper().writeValueAsString(SpecialCharServlet.toSearchResults(charResult));
+    assertEquals("[{\"code\":\"000E1\",\"name\":\"Latin Small Letter A With Acute\"},"
+        + "{\"code\":\"10300\",\"name\":\"Old Italic Letter A\"}]", json);
+  }
 
 	@Test
 	public void testGetChars() {
