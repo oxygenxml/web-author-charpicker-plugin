@@ -42,7 +42,7 @@ public class SpecialCharServlet extends ServletPluginExtension {
 	
 	private Map<String, Map<String, String>> charsMap = new HashMap<>(); 
 	
-	private static final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl");
+	private static final List<String> supportedLanguages = Arrays.asList("en", "fr", "de", "ja", "nl", "zh");
 	
 
 	
