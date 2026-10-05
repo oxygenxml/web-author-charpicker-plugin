@@ -6,10 +6,29 @@
 function addNewRecentCharacters(newCharacters) {
   var newCharactersTitles = window.charsToBeInsertedTitles ? window.charsToBeInsertedTitles : {};
   var characters = newCharacters.concat(getCharListFromStorage(usedCharsItemName));
-  var charactersWithTitles = Object.assign(newCharactersTitles, getUsedCharsTitles());
   goog.array.removeDuplicates(characters);
   characters = characters.slice(0, maxRecentChars);
-  setRecentChars(characters, charactersWithTitles);
+  setRecentChars(characters, getTitlesForCharacters(characters, newCharactersTitles, getUsedCharsTitles()));
+}
+
+/**
+ * Titles for the characters kept in the grid, so the stored titles don't grow past it. A new title replaces
+ * the stored one, since the displayed name depends on the UI language.
+ * @param {Array<String>} characters The characters kept in the grid.
+ * @param {Object.<string, string>} newTitles Titles recorded for the characters just inserted.
+ * @param {Object.<string, string>} storedTitles Titles saved for previously inserted characters.
+ * @returns {Object.<string, string>} Mapping of characters to character titles.
+ */
+function getTitlesForCharacters(characters, newTitles, storedTitles) {
+  var titles = {};
+  for (var character of characters) {
+    var key = '\'' + character + '\'';
+    var title = newTitles[key] || storedTitles[key];
+    if (title) {
+      titles[key] = title;
+    }
+  }
+  return titles;
 }
 
 /**
