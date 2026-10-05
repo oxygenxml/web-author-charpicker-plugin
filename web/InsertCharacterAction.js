@@ -263,8 +263,11 @@ InsertFromMenuAction.prototype.resetHexInput_ = function () {
     var iframeContent = this.charPickerIframe_.contentWindow || this.charPickerIframe_.contentDocument;
     if (iframeContent.document) {
       iframeContent = iframeContent.document;
+      // The input is missing while the iframe is still loading (about:blank); nothing to reset then.
       var hexInput = iframeContent.querySelector('.goog-char-picker-input-box');
-      hexInput.value = '';
+      if (hexInput) {
+        hexInput.value = '';
+      }
     } else {
       console.warn('Failed to get iframe contents.');
     }
