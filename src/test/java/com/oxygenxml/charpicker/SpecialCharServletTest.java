@@ -282,6 +282,18 @@ public class SpecialCharServletTest {
     assertEquals("カタカナ ア", chars.get("030A2"));
   }
 
+  @Test
+  public void testOnlyCanonicalCodesAreLoaded() {
+    Properties props = new Properties();
+    props.setProperty("1F601", "Canonical code");
+    props.setProperty("e1", "Short lowercase code");
+    props.setProperty("1f600", "Lowercase code");
+    props.setProperty("U+00E9", "Not a hex code");
+    props.setProperty("110000", "Six digits");
+
+    assertEquals(ImmutableMap.of("1F601", "Canonical code"), SpecialCharServlet.propsAsMap(props));
+  }
+
   /**
    * Get the scores for the chars.
    * 

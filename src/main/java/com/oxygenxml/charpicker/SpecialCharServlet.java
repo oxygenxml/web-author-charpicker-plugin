@@ -262,12 +262,40 @@ public class SpecialCharServlet extends ServletPluginExtension {
     return charactersByScore;
   }
 	
+	/**
+	 * Codes must be the five uppercase hex digits of the English file, as the README states. A code spelled
+	 * differently would make the same character come out twice in a search, and one the browser cannot parse
+	 * would break the result list, so such entries are rejected and reported to be fixed.
+	 */
 	static Map<String, String> propsAsMap(Properties props) {
 		Map<String, String> map = new HashMap<>();
+		List<String> rejected = new ArrayList<>();
 		for (Map.Entry<Object, Object> entry: props.entrySet()) {
-			map.put((String)entry.getKey(), (String)entry.getValue());
+			String code = (String) entry.getKey();
+			if (isCanonicalCode(code)) {
+				map.put(code, (String) entry.getValue());
+			} else {
+				rejected.add(code + "=" + entry.getValue());
+			}
+		}
+		if (!rejected.isEmpty()) {
+			log.error("Ignoring {} entries of a character name file because the code is not 5 uppercase hex digits, e.g. {}",
+					rejected.size(), rejected.subList(0, Math.min(5, rejected.size())));
 		}
 		return Collections.unmodifiableMap(map);
+	}
+
+	private static boolean isCanonicalCode(String key) {
+		if (key.length() != 5) {
+			return false;
+		}
+		for (int i = 0; i < key.length(); i++) {
+			char c = key.charAt(i);
+			if ((c < '0' || c > '9') && (c < 'A' || c > 'F')) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private ArrayList<Pattern> getFullPatterns(String[] queryWords) {
