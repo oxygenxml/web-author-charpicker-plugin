@@ -124,14 +124,26 @@ public class SpecialCharServlet extends ServletPluginExtension {
     if (!"en".equals(cookieLanguage)) {
       Map<String, String> englishChars = charsMap.get("en");
       if (englishChars != null) {
-        Map<String, String> englishResults = findCharByName(query, englishChars);
-        // Overwrite the general English results with more specific translated results if available.
-        englishResults.putAll(charResult);
-        charResult = englishResults;
+        charResult = fillUpWithEnglish(charResult, findCharByName(query, englishChars));
       }
-    }  
-    
+    }
+
     return charResult;
+  }
+
+  /**
+   * Translated matches come first, as the more specific ones, and English matches fill up to the result
+   * limit. Each search is capped on its own, so the merge has to be capped again.
+   */
+  static Map<String, String> fillUpWithEnglish(Map<String, String> translatedResults, Map<String, String> englishResults) {
+    Map<String, String> results = new LinkedHashMap<>(translatedResults);
+    for (Entry<String, String> english : englishResults.entrySet()) {
+      if (results.size() >= MAX_RESULTS) {
+        break;
+      }
+      results.putIfAbsent(english.getKey(), english.getValue());
+    }
+    return results;
   }
 	
   /**

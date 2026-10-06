@@ -1,6 +1,7 @@
 package com.oxygenxml.charpicker;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -165,6 +168,26 @@ public class SpecialCharServletTest {
     charactersFound = asd.findCharByNameWithCookieLang("zzu", "ja");
     assertTrue(charactersFound.containsKey(expectedCodeFallback));
     assertEquals("Yi Syllable Zzux", charactersFound.get(expectedCodeFallback));
+  }
+
+  @Test
+  public void testEnglishResultsFillUpToTheLimit() {
+    Map<String, String> englishResults = new LinkedHashMap<>();
+    for (int i = 0; i < 600; i++) {
+      englishResults.put(String.format("%05X", i), "English " + i);
+    }
+    Map<String, String> translatedResults = ImmutableMap.of("FFFFF", "Translated", "00001", "Translated 1");
+
+    Map<String, String> results = SpecialCharServlet.fillUpWithEnglish(translatedResults, englishResults);
+
+    assertEquals(500, results.size());
+    // Translated matches first, then the English ones in their order, up to the limit.
+    assertEquals(Arrays.asList("FFFFF", "00001", "00000", "00002"), new ArrayList<>(results.keySet()).subList(0, 4));
+    // This one is a duplicate, keep the translated one.
+    assertEquals("Translated 1", results.get("00001"));
+    // Test the boundary - last English character present and first English character cut off.
+    assertTrue(results.containsKey("001F2"));
+    assertFalse(results.containsKey("001F3"));
   }
 	
 	
