@@ -32,7 +32,7 @@ public class ConfigurationPage extends PluginConfigExtension {
     List<String> defaultCategories = new ArrayList<>();
     PluginResourceBundle rb = ((WebappPluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
     
-    CategoryNames.initialCategories.forEach(category -> defaultCategories.add(CategoryNames.getOriginalFromTagName(category)));
+    CategoryNames.initialCategories.forEach(category -> defaultCategories.add(escapeHtml(CategoryNames.getCategoryName(category))));
     return "<div style=\"font-family: robotolight, Arial, Helvetica, sans-serif;\">"
           + "<div>" + rb.getMessage(TranslationTags.INITIAL_CATEGORIES) + ":"
             + "<div style=\"padding: 5px 10px; color: #969696; margin-bottom: 15px; border: 1px solid lightgray; border-radius: 4px; max-height: 150px; overflow-y: auto;\">" 
@@ -40,11 +40,11 @@ public class ConfigurationPage extends PluginConfigExtension {
           + "</div>"
           + "<label style=\"display: block;\">" 
             + rb.getMessage(TranslationTags.REMOVE_CATEGORIES) + ":"
-            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=\"" + REMOVE_CATEGORIES + "\" id=\"remove_categories\" value=\"" + escapeHtmlAttribute(getOption(REMOVE_CATEGORIES, "")) + "\">"
+            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=\"" + REMOVE_CATEGORIES + "\" id=\"remove_categories\" value=\"" + escapeHtml(getOption(REMOVE_CATEGORIES, "")) + "\">"
             + "<div style=\"padding: 5px 10px 15px 10px; color: #969696;\">" + rb.getMessage(TranslationTags.REMOVE_ALL_CATEGORIES) + "</div>"
           + "</label>"
           + "<label style=\"display: block; margin-top:15px;\">" + rb.getMessage(TranslationTags.DEFAULT_CHARACTERS) + ":"
-            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=\"" + DEFAULT_CHARACTERS + "\" id=\"default_characters\" value=\"" + escapeHtmlAttribute(getOption(DEFAULT_CHARACTERS, "")) + "\">"
+            + "<input style=\"display: block; width: 100%; margin-top: 5px;\" name=\"" + DEFAULT_CHARACTERS + "\" id=\"default_characters\" value=\"" + escapeHtml(getOption(DEFAULT_CHARACTERS, "")) + "\">"
           + "</label>"
         + "</div>";
   }
@@ -67,7 +67,7 @@ public class ConfigurationPage extends PluginConfigExtension {
     }
   }
 
-  private static String escapeHtmlAttribute(String value) {
+  private static String escapeHtml(String value) {
     return value
         .replace("&", "&amp;")
         .replace("<", "&lt;")

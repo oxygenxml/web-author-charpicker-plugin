@@ -4,8 +4,22 @@ goog.require('goog.i18n.CharPickerData');
 goog.require('goog.i18n.uChar.LocalNameFetcher');
 goog.require('goog.ui.CharPicker');
 
-var removeCategory = function (charPickerData, categoryName) {
+/**
+ * @param charPickerData The char picker data object.
+ * @param {string} categoryName The category name, as shown on the plugin's configuration page. The
+ *   translation tag of "Format & Whitespace" spells it with "and", so that spelling is accepted too.
+ * @return {number} The index of the category, or -1.
+ */
+function findCategoryIndex(charPickerData, categoryName) {
   var categoryIndex = charPickerData.categories.indexOf(categoryName);
+  if (categoryIndex === -1 && categoryName === 'Format and Whitespace') {
+    categoryIndex = charPickerData.categories.indexOf('Format & Whitespace');
+  }
+  return categoryIndex;
+}
+
+var removeCategory = function (charPickerData, categoryName) {
+  var categoryIndex = findCategoryIndex(charPickerData, categoryName);
   if (categoryIndex !== -1) {
     charPickerData.categories.splice(categoryIndex, 1);
     charPickerData.charList.splice(categoryIndex, 1);
@@ -154,11 +168,7 @@ function translateCategories(charPickerData, customCategories) {
     var translatedName = category.split('|')[1];
     
     var decoded = decodeTagName(originalName);
-    var categoryFoundIndex = charPickerData.categories.indexOf(decoded);
-    // Give Format & Whitespace another chance.
-    if (decoded === 'Format and Whitespace') {
-      categoryFoundIndex = charPickerData.categories.indexOf('Format & Whitespace');
-    }
+    var categoryFoundIndex = findCategoryIndex(charPickerData, decoded);
     if (categoryFoundIndex !== -1) {
       charPickerData.categories[categoryFoundIndex] = translatedName;
       

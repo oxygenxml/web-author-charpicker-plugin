@@ -60,12 +60,24 @@ public class CategoryNames extends ServletPluginExtension {
 
   /**
    * Get the category name from a tag.
-   * 
+   *
    * @param tagName The tag name.
    * @return The original category name.
    */
   static String getOriginalFromTagName(String tagName) {
     return getOriginalFromTagName(tagName, null);
+  }
+
+  /**
+   * The category name as the char picker knows it, which is what the "Remove categories" option is matched
+   * against. It differs from the tag-derived name only where the real name has a character a translation
+   * key cannot hold.
+   *
+   * @param tagName The tag name.
+   * @return The char picker's category name.
+   */
+  static String getCategoryName(String tagName) {
+    return "utfc_Format_and_Whitespace".equals(tagName) ? "Format & Whitespace" : getOriginalFromTagName(tagName);
   }
 
   /**

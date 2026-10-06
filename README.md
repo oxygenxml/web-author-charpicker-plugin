@@ -18,7 +18,7 @@ Clicking on the **More symbols...** button will open a dialog box where you can 
 
 ## Configuration
 From the plugin configuration page (found in the "Plugins" section in Web Author's administration page), you can:
-- Use the **Remove categories** field to remove one or more categories shown in the "By categories" tab (you can also use the * character to completely remove the "By categories" view).
+- Use the **Remove categories** field to remove one or more categories shown in the "By categories" tab, using the English names as listed on the configuration page (you can also use the * character to completely remove the "By categories" view).
 - Use the **Default recently used characters** field to set the default characters shown in the recently used characters grid.
 
 ## Translating character names
