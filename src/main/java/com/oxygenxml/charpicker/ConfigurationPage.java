@@ -10,12 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import ro.sync.ecss.extensions.api.webapp.access.WebappPluginWorkspace;
-import ro.sync.ecss.extensions.api.webapp.plugin.PluginConfigExtension;
+import ro.sync.ecss.extensions.api.webapp.plugin.ServletPluginConfigExtension;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 @Slf4j
-public class ConfigurationPage extends PluginConfigExtension {
+public class ConfigurationPage extends ServletPluginConfigExtension {
 
   static final String REMOVE_CATEGORIES = "charp.remove_categories";
   static final String DEFAULT_CHARACTERS = "charp.recently.used.characters";
